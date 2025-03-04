@@ -22,10 +22,10 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 @SpringBootTest
@@ -109,5 +109,21 @@ public class EstimateServiceTest {
         assertNotNull(capturedEstimate);
         assertEquals("seller1", capturedEstimate.getSeller().getUsername());
         assertEquals(8000, capturedEstimate.getTotalPrice());
+    }
+
+    @Test
+    public void createEstimate_estimateRequestNotFound() {
+        when(estimateRequestService.getEstimateRequestById(1)).thenReturn(Optional.empty());
+
+        EstimateCreateRequest request = new EstimateCreateRequest(
+                1,
+                1,
+                List.of(
+                        new EstimateItemDto(1L, 3000),
+                        new EstimateItemDto(2L, 5000)
+                )
+        );
+
+        assertThrows(NoSuchElementException.class, () -> estimateService.createEstimate(request, "seller1"));
     }
 }
