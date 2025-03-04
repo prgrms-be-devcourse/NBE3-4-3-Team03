@@ -1,0 +1,85 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  frontend:
+    name: Frontend Build & Test
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 저장소 체크아웃
+        uses: actions/checkout@v3
+
+      - name: Node.js 설정
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18
+
+      - name: 의존성 설치
+        working-directory: frontend
+        run: npm install
+
+      - name: Next.js 빌드
+        working-directory: frontend
+        run: npm run build
+
+  backend:
+    name: Backend Build & Test
+    runs-on: ubuntu-latest
+
+    services:
+      mysql:
+        image: mysql:8.0
+        env:
+          MYSQL_ROOT_PASSWORD: ${{ secrets.DB_PASSWORD }}
+          MYSQL_DATABASE: pcquotation
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd="mysqladmin ping"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=3
+
+    steps:
+      - name: 저장소 체크아웃
+        uses: actions/checkout@v3
+
+      - name: Java 설정
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      - name: Gradle 실행 권한 부여
+        working-directory: backend
+        run: chmod +x gradlew
+
+      - name: 의존성 설치 및 빌드
+        working-directory: backend
+        env:
+          DB_URL: ${{ secrets.DB_URL }}
+          DB_USERNAME: ${{ secrets.DB_USERNAME }}
+          DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+          JWT_SECRET_KEY: ${{ secrets.JWT_SECRET_KEY }}
+          JWT_EXPIRATIONSECOND: ${{ secrets.JWT_EXPIRATIONSECOND }}
+          BUSINESS_ENCODING_KEY: ${{ secrets.BUSINESS_ENCODING_KEY }}
+        run: ./gradlew build -x test --no-daemon
+
+      - name: 테스트 실행
+        working-directory: backend
+        env:
+          DB_URL: ${{ secrets.DB_URL }}
+          DB_USERNAME: ${{ secrets.DB_USERNAME }}
+          DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+          JWT_SECRET_KEY: ${{ secrets.JWT_SECRET_KEY }}
+          JWT_EXPIRATIONSECOND: ${{ secrets.JWT_EXPIRATIONSECOND }}
+          BUSINESS_ENCODING_KEY: ${{ secrets.BUSINESS_ENCODING_KEY }}
+        run: ./gradlew test --no-daemon

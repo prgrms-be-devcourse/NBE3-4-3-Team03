@@ -1,0 +1,38 @@
+server:
+  port: 8080
+spring:
+  config:
+    import:
+      - optional:file:.env[.properties]
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: ${DB_URL}
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
+
+  jpa:
+    show-sql: true
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        format_sql: true
+        dialect: org.hibernate.dialect.MySQLDialect
+    defer-datasource-initialization: true
+  sql:
+    init:
+      mode: always
+
+openapi:
+  url: http://api.odcloud.kr/api/nts-businessman/v1/status?serviceKey=
+  authentication-key:
+    encoding: ${BUSINESS_ENCODING_KEY}
+
+jwt:
+  secretKey: ${JWT_SECRET_KEY}
+  accessToken:
+    expirationSeconds: ${JWT_EXPIRATIONSECOND}
+
+image:
+  file:
+    path: src/main/resources/static/image/item/
