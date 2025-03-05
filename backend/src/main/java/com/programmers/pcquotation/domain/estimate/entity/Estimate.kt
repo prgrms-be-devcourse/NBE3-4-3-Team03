@@ -7,7 +7,7 @@ import jakarta.persistence.*
 import java.time.LocalDateTime
 
 @Entity
-class Estimate (
+class Estimate(
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	var id: Int = 0,
