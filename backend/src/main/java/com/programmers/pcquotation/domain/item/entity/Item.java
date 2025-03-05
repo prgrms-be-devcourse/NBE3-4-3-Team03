@@ -24,7 +24,7 @@ import lombok.NoArgsConstructor;
 @Entity
 @Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@AllArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor
 public class Item {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -57,4 +57,3 @@ public class Item {
 		return item;
 	}
 }
-
