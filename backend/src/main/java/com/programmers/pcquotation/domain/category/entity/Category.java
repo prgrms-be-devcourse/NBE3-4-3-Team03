@@ -21,7 +21,7 @@ import lombok.NoArgsConstructor;
 @Entity
 @Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@AllArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor
 public class Category {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
