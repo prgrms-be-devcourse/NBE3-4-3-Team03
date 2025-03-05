@@ -11,6 +11,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.springframework.test.context.ActiveProfiles;
 
 import com.programmers.pcquotation.domain.category.dto.CategoryCreateRequest;
 import com.programmers.pcquotation.domain.category.dto.CategoryCreateResponse;
@@ -19,7 +20,7 @@ import com.programmers.pcquotation.domain.category.dto.CategoryInfoResponse;
 import com.programmers.pcquotation.domain.category.dto.CategoryUpdateRequest;
 import com.programmers.pcquotation.domain.category.entity.Category;
 import com.programmers.pcquotation.domain.category.repository.CategoryRepository;
-
+@ActiveProfiles("test")
 public class CategoryServiceTest {
 
 	private CategoryService categoryService;
