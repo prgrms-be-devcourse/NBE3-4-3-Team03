@@ -71,8 +71,6 @@ public class EstimateService {
 	public List<ReceivedQuoteDTO> getEstimateByRequest(Integer id) {
 		List<Estimate> list = estimateRepository.getAllByEstimateRequest_Id(id);
 
-		System.out.print(list.size());
-
 		return list.stream().map(quoto -> {
 			return ReceivedQuoteDTO.builder()
 				.id(quoto.getId())

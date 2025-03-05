@@ -84,6 +84,16 @@ public class EstimateServiceTest {
             List.of()
     );
 
+    Estimate sampleEstimate = new Estimate(
+            1,
+            estimateRequest,
+            sampleSeller,
+            5000,
+            List.of(),
+            LocalDateTime.of(2025, 3, 4, 12, 0),
+            List.of()
+    );
+
     @Test
     public void createEstimate_success() {
         when(estimateRequestService.getEstimateRequestById(1)).thenReturn(Optional.of(estimateRequest));
@@ -141,5 +151,12 @@ public class EstimateServiceTest {
         );
 
         assertThrows(NoSuchElementException.class, () -> estimateService.createEstimate(request, "seller1"));
+    }
+
+    @Test
+    public void getEstimateByEstimateRequest_Success() {
+        when(estimateRepository.getAllByEstimateRequest_Id(1)).thenReturn(List.of(sampleEstimate));
+
+        assertEquals(1, estimateService.getEstimateByRequest(1).size());
     }
 }
