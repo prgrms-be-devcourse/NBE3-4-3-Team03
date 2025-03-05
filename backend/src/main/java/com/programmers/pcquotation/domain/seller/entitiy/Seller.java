@@ -62,7 +62,7 @@ public class Seller implements Member {
 	}
 
 	@Override
-	public long getId() {
+	public Long getId() {
 		return id;
 	}
 
