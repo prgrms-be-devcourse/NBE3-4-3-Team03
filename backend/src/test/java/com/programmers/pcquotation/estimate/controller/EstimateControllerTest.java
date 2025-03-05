@@ -40,7 +40,6 @@ class EstimateControllerTest {
 		String requestBody = """
 			{
 			   "estimateRequestId" : 1,
-			   "sellerId" : "seller123",
 			   "item" : [
 			     {
 			       "item" : 1,
