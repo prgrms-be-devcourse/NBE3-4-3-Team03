@@ -159,4 +159,12 @@ public class EstimateServiceTest {
 
         assertEquals(1, estimateService.getEstimateByRequest(1).size());
     }
+
+    @Test
+    public void getEstimateBySeller_Success() {
+        when(sellerService.findByUserName("seller1")).thenReturn(Optional.of(sampleSeller));
+        when(estimateRepository.getAllBySeller(sampleSeller)).thenReturn(List.of(sampleEstimate));
+
+        assertEquals(1, estimateService.getEstimateBySeller("seller1").size());
+    }
 }

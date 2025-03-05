@@ -90,9 +90,8 @@ public class EstimateService {
 
 		Seller seller = sellerService.findByUserName(username)
 			.orElseThrow(() -> new NoSuchElementException("존재하지 않는 판매자입니다."));
-		System.out.println(seller.getUsername());
+
 		List<Estimate> list = estimateRepository.getAllBySeller(seller);
-		System.out.println(list.size());
 
 		return list.stream().map(quoto -> {
 
