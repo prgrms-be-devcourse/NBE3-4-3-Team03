@@ -184,4 +184,11 @@ public class EstimateServiceTest {
 
         verify(estimateRepository, times(1)).delete(sampleEstimate);
     }
+
+    @Test
+    public void deleteEstimate_estimateNotFound() {
+        when(estimateRepository.findById(1)).thenReturn(Optional.empty());
+
+        assertThrows(NoSuchElementException.class, () -> estimateService.deleteEstimate(1));
+    }
 }
