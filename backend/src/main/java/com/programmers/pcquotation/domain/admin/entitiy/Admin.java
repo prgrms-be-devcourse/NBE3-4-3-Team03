@@ -45,7 +45,7 @@ public class Admin implements Member {
 	}
 
 	@Override
-	public long getId() {
+	public Long getId() {
 		return id;
 	}
 
