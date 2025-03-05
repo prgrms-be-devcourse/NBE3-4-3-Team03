@@ -9,6 +9,5 @@ import lombok.Getter;
 @Getter
 public class EstimateCreateRequest {
 	private Integer estimateRequestId;
-	private Integer sellerId;
 	private List<EstimateItemDto> item;
 }

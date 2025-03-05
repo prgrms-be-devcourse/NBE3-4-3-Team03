@@ -105,7 +105,6 @@ public class EstimateServiceTest {
 
         EstimateCreateRequest request = new EstimateCreateRequest(
                 1,
-                1,
                 List.of(
                         new EstimateItemDto(1L, 3000),
                         new EstimateItemDto(2L, 5000)
@@ -129,7 +128,6 @@ public class EstimateServiceTest {
 
         EstimateCreateRequest request = new EstimateCreateRequest(
                 1,
-                1,
                 List.of(
                         new EstimateItemDto(1L, 3000),
                         new EstimateItemDto(2L, 5000)
@@ -144,7 +142,6 @@ public class EstimateServiceTest {
         when(sellerService.findByUserName("seller1")).thenReturn(Optional.empty());
 
         EstimateCreateRequest request = new EstimateCreateRequest(
-                1,
                 1,
                 List.of(
                         new EstimateItemDto(1L, 3000),
