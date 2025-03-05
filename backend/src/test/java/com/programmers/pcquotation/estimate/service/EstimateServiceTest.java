@@ -167,4 +167,11 @@ public class EstimateServiceTest {
 
         assertEquals(1, estimateService.getEstimateBySeller("seller1").size());
     }
+
+    @Test
+    public void getEstimateBySeller_SellerNotFound() {
+        when(sellerService.findByUserName("seller1")).thenReturn(Optional.empty());
+
+        assertThrows(NoSuchElementException.class, () -> estimateService.getEstimateBySeller("seller1"));
+    }
 }
