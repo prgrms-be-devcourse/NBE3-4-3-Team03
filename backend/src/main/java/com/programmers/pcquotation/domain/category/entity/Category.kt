@@ -17,33 +17,27 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-@Getter
 @Entity
-@Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PROTECTED)
-public class Category {
+class Category(
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Long id;
+	val id: Long = 0,
 
-	private String category;
+	var category: String,
 
-	@OneToMany(mappedBy = "category", cascade = CascadeType.ALL, orphanRemoval = true)
-	final private List<Item> items = new ArrayList<>();
+	@OneToMany(mappedBy = "category", cascade = [CascadeType.ALL], orphanRemoval = true)
+	val items: MutableList<Item> = mutableListOf()
+) {
 
-	public void updateCategory(String category) {
-		this.category = category;
+	fun updateCategory(category: String) {
+		this.category = category
 	}
 
-	public static Category createTestCategory(
-		Long id,
-		String categoryName
-	) {
-
-		Category category = new Category();
-		category.id = id;
-		category.category = categoryName;
-		return category;
+	companion object {
+		fun createTestCategory(id: Long, categoryName: String): Category {
+			return Category(id = id, category = categoryName)
+		}
 	}
 }
