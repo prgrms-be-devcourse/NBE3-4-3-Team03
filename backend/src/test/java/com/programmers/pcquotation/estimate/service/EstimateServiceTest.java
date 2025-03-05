@@ -21,6 +21,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
@@ -89,7 +90,7 @@ public class EstimateServiceTest {
             estimateRequest,
             sampleSeller,
             5000,
-            List.of(),
+            new ArrayList<>(),
             LocalDateTime.of(2025, 3, 4, 12, 0),
             List.of()
     );
@@ -173,5 +174,14 @@ public class EstimateServiceTest {
         when(sellerService.findByUserName("seller1")).thenReturn(Optional.empty());
 
         assertThrows(NoSuchElementException.class, () -> estimateService.getEstimateBySeller("seller1"));
+    }
+
+    @Test
+    public void deleteEstimate_Success() {
+        when(estimateRepository.findById(1)).thenReturn(Optional.of(sampleEstimate));
+
+        estimateService.deleteEstimate(1);
+
+        verify(estimateRepository, times(1)).delete(sampleEstimate);
     }
 }
