@@ -1,4 +1,3 @@
-package com.programmers.pcquotation.domain.delivery.exception;
+package com.programmers.pcquotation.domain.delivery.exception
 
-public class NullEntityException extends RuntimeException{
-}
+class NullEntityException : RuntimeException()

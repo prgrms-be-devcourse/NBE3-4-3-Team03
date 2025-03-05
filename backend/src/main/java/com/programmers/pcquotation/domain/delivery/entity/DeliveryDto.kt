@@ -1,18 +1,15 @@
-package com.programmers.pcquotation.domain.delivery.entity;
+package com.programmers.pcquotation.domain.delivery.entity
 
-import lombok.Getter;
+data class DeliveryDto(val delivery: Delivery) {
+    private val id: Int
+    private val address: String
+    private val estimateId: Int
+    private val status: DeliveryStatus
 
-@Getter
-public class DeliveryDto {
-    private Integer id;
-    private String address;
-    private Integer estimateId;
-    private DeliveryStatus status;
-
-    public DeliveryDto(Delivery delivery){
-        this.id = delivery.getId();
-        this.address = delivery.getAddress();
-        this.estimateId = delivery.getEstimate().getId();
-        this.status = delivery.getStatus();
+    init {
+        this.id = delivery.id
+        this.address = delivery.address
+        this.estimateId = delivery.estimate.id
+        this.status = delivery.status
     }
 }

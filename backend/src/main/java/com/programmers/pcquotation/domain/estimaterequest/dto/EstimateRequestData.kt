@@ -1,6 +1,6 @@
-package com.programmers.pcquotation.domain.estimaterequest.dto;
+package com.programmers.pcquotation.domain.estimaterequest.dto
 
-import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotBlank
 
-public record EstimateRequestData(@NotBlank String purpose, Integer budget, String otherRequest) {
-}
+@JvmRecord
+data class EstimateRequestData(val purpose: @NotBlank String, val budget: Int, val otherRequest: String)

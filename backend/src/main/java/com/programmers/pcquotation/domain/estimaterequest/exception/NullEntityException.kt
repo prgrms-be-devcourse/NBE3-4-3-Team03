@@ -1,4 +1,3 @@
-package com.programmers.pcquotation.domain.estimaterequest.exception;
+package com.programmers.pcquotation.domain.estimaterequest.exception
 
-public class NullEntityException extends RuntimeException{
-}
+class NullEntityException : RuntimeException()

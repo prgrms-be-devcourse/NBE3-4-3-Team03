@@ -1,6 +1,7 @@
-package com.programmers.pcquotation.domain.delivery.entity;
+package com.programmers.pcquotation.domain.delivery.entity
 
-import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotBlank
 
-public record DeliveryCreateRequest(@NotBlank String address){}
+@JvmRecord
+data class DeliveryCreateRequest(@JvmField val address: @NotBlank String)
 

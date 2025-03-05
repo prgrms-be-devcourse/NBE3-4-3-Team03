@@ -1,33 +1,32 @@
-package com.programmers.pcquotation.domain.delivery.entity;
+package com.programmers.pcquotation.domain.delivery.entity
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.programmers.pcquotation.domain.estimate.entity.Estimate;
-import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import com.programmers.pcquotation.domain.estimate.entity.Estimate
+import com.programmers.pcquotation.domain.estimaterequest.entity.EstimateRequest
+import com.programmers.pcquotation.domain.seller.entitiy.Seller
+import jakarta.persistence.*
+
 
 @Entity
-@AllArgsConstructor
-@NoArgsConstructor
-@Builder
-@Getter
-public class Delivery {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
-
+class Delivery(
     @OneToOne(fetch = FetchType.LAZY)
-    private Estimate estimate;
+    val estimate: Estimate,
 
     @Enumerated(EnumType.STRING)
-    private DeliveryStatus status; // 0: 주문완료(배송준비중), 1: 배송중
+    var status: DeliveryStatus, // 0: 주문완료(배송준비중), 1: 배송중
 
     @Column(length = 50)
-    private String address;
+    var address: String
+){
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    var id:Int = 0
 
-    public void updateAddress(String address){
-        this.address = address;
+    constructor() : this(Estimate(
+        EstimateRequest(), Seller(), 0, emptyList()
+    ), DeliveryStatus.ORDER_COMPLETED, "")
+
+    fun updateAddress(address: String) {
+        this.address = address
     }
 }
+

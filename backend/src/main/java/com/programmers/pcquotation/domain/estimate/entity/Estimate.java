@@ -1,54 +1,46 @@
 package com.programmers.pcquotation.domain.estimate.entity;
 
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-
 import com.programmers.pcquotation.domain.comment.emtity.Comment;
 import com.programmers.pcquotation.domain.estimaterequest.entity.EstimateRequest;
 import com.programmers.pcquotation.domain.seller.entitiy.Seller;
-
-import jakarta.persistence.CascadeType;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToMany;
+import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
-import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+
 @Entity
 @Getter
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@NoArgsConstructor
 public class Estimate {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Integer id;
+	public Integer id;
 
 	@NotNull
 	@ManyToOne
-	private EstimateRequest estimateRequest;
+	public EstimateRequest estimateRequest;
 
 	@NotNull
 	@ManyToOne
-	private Seller seller;
+	public Seller seller;
 
 	@Setter
-	private Integer totalPrice;
+	public  Integer totalPrice;
 
 	@Setter
 	@OneToMany(mappedBy = "estimate", cascade = CascadeType.ALL, orphanRemoval = true)
-	private List<EstimateComponent> estimateComponents = new ArrayList<>();
+	public List<EstimateComponent> estimateComponents = new ArrayList<>();
 
-	private LocalDateTime createDate;
+	public  LocalDateTime createDate;
 
 	@OneToMany(mappedBy = "estimate", cascade = CascadeType.ALL, orphanRemoval = true)
-	private List<Comment> comments;
+	public List<Comment> comments;
 
 	@Builder
 	public Estimate(EstimateRequest estimateRequest, Seller seller, Integer totalPrice,

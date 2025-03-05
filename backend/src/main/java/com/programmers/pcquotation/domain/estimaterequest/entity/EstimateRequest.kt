@@ -1,57 +1,50 @@
-package com.programmers.pcquotation.domain.estimaterequest.entity;
+package com.programmers.pcquotation.domain.estimaterequest.entity
 
-import java.time.LocalDateTime;
-import java.util.List;
+import com.programmers.pcquotation.domain.customer.entity.Customer
+import com.programmers.pcquotation.domain.estimate.entity.Estimate
+import com.programmers.pcquotation.domain.estimaterequest.dto.EstimateRequestData
+import jakarta.persistence.*
+import org.springframework.data.annotation.CreatedDate
+import java.time.LocalDateTime
 
-import com.programmers.pcquotation.domain.customer.entity.Customer;
-
-import com.programmers.pcquotation.domain.delivery.entity.DeliveryStatus;
-import com.programmers.pcquotation.domain.estimate.entity.Estimate;
-import com.programmers.pcquotation.domain.estimaterequest.dto.EstimateRequestData;
-import jakarta.persistence.*;
-import jakarta.validation.constraints.NotBlank;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
 
 @Entity
-@Getter
-@Builder
-@NoArgsConstructor
-@AllArgsConstructor
-public class EstimateRequest {
-	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Integer id;
+class EstimateRequest(
+    @Column(length = 20)
+    var purpose: String,
 
-	@Column(length = 20)
-	private String purpose;
+    @Column(columnDefinition = "INTEGER")
+    var budget: Int,
 
-	@Column(columnDefinition = "INTEGER")
-	private Integer budget;
+    @Column(length = 200)
+    var otherRequest: String,
 
-	@Column(length = 200)
-	private String otherRequest;
+    @CreatedDate
+    var createDate: LocalDateTime,
 
-	LocalDateTime createDate;
+    @ManyToOne
+    var customer: Customer,
 
-	@ManyToOne
-	private Customer customer;
+    @Enumerated(EnumType.STRING)
+    var status: EstimateRequestStatus // 0: 대기 중, 1: 채택됨
+) {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    var id: Int = 0
 
-	@OneToMany(mappedBy = "estimateRequest", cascade = CascadeType.REMOVE)
-	private List<Estimate> estimate;
+    @OneToMany(mappedBy = "estimateRequest", cascade = [CascadeType.REMOVE])
+    var estimate: List<Estimate> = emptyList()
 
-	@Enumerated(EnumType.STRING)
-	private EstimateRequestStatus status; // 0: 대기 중, 1: 채택됨
+    fun updateEstimateRequest(estimateRequestData: EstimateRequestData) {
+        this.purpose = estimateRequestData.purpose
+        this.budget = estimateRequestData.budget
+        this.otherRequest = estimateRequestData.otherRequest
+    }
 
-	public void UpdateEstimateRequest(EstimateRequestData estimateRequestData) {
-		this.purpose = estimateRequestData.purpose();
-		this.budget = estimateRequestData.budget();
-		this.otherRequest = estimateRequestData.otherRequest();
-	}
+    fun updateDeliveryStatus(estimateRequestStatus: EstimateRequestStatus) {
+        this.status = estimateRequestStatus
+    }
 
-	public void UpdateDeliveryStatus(EstimateRequestStatus estimateRequestStatus) {
-		this.status = estimateRequestStatus;
-	}
+    constructor() : this( "", 0, "", LocalDateTime.now(), Customer(), EstimateRequestStatus.Wait){
+    }
 }

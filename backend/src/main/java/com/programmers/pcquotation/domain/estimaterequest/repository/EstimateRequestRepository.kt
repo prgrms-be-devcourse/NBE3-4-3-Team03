@@ -1,15 +1,12 @@
-package com.programmers.pcquotation.domain.estimaterequest.repository;
+package com.programmers.pcquotation.domain.estimaterequest.repository
 
-import java.util.List;
-import java.util.Optional;
+import com.programmers.pcquotation.domain.customer.entity.Customer
+import com.programmers.pcquotation.domain.estimaterequest.entity.EstimateRequest
+import org.springframework.data.jpa.repository.JpaRepository
+import java.util.*
 
-import org.springframework.data.jpa.repository.JpaRepository;
+interface EstimateRequestRepository : JpaRepository<EstimateRequest, Int> {
+    fun getEstimateRequestById(id: Int): Optional<EstimateRequest>
 
-import com.programmers.pcquotation.domain.customer.entity.Customer;
-import com.programmers.pcquotation.domain.estimaterequest.entity.EstimateRequest;
-
-public interface EstimateRequestRepository extends JpaRepository<EstimateRequest, Integer> {
-	Optional<EstimateRequest> getEstimateRequestById(Integer id);
-
-	List<EstimateRequest> getAllByCustomer(Customer customer);
+    fun getAllByCustomer(customer: Customer): List<EstimateRequest>
 }

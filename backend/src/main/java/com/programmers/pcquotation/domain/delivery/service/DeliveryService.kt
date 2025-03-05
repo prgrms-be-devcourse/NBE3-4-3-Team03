@@ -1,69 +1,16 @@
-package com.programmers.pcquotation.domain.delivery.service;
+package com.programmers.pcquotation.domain.delivery.service
 
-import com.programmers.pcquotation.domain.delivery.entity.Delivery;
-import com.programmers.pcquotation.domain.delivery.entity.DeliveryDto;
-import com.programmers.pcquotation.domain.delivery.entity.DeliveryStatus;
-import com.programmers.pcquotation.domain.delivery.exception.NullEntityException;
-import com.programmers.pcquotation.domain.delivery.repository.DeliveryRepository;
-import com.programmers.pcquotation.domain.estimate.repository.EstimateRepository;
-import com.programmers.pcquotation.domain.estimaterequest.entity.EstimateRequest;
-import com.programmers.pcquotation.domain.estimaterequest.entity.EstimateRequestStatus;
-import com.programmers.pcquotation.domain.estimaterequest.repository.EstimateRequestRepository;
-import jakarta.transaction.Transactional;
-import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Service;
+import com.programmers.pcquotation.domain.delivery.entity.DeliveryCreateRequest
+import com.programmers.pcquotation.domain.delivery.entity.DeliveryDto
 
-import java.util.List;
+interface DeliveryService {
+    fun create(deliveryCreateRequest: DeliveryCreateRequest, id: Int)
 
-@Service
-@RequiredArgsConstructor
-@Transactional
-public class DeliveryService {
-    private final DeliveryRepository deliveryRepository;
-    private final EstimateRepository estimateRepository;
+    fun findAll(): List<DeliveryDto>
 
-    //배달 생성을 통해 채택된 상태로 변경
-    public void create(String address, Integer id) {
-        Delivery delivery = deliveryRepository.save(Delivery
-                .builder()
-                    .address(address)
-                    .status(DeliveryStatus.ORDER_COMPLETED)
-                    .estimate(estimateRepository.findById(id).orElseThrow(NullEntityException::new))
-                .build());
+    fun findByDeliveryId(id: Int): DeliveryDto
 
-        delivery.getEstimate().getEstimateRequest().UpdateDeliveryStatus(EstimateRequestStatus.Adopt);
-    }
+    fun deleteByDeliveryId(id: Int)
 
-    public List<DeliveryDto> findAll() {
-        if (!deliveryRepository.findAll().isEmpty()){
-            return deliveryRepository
-                    .findAll()
-                    .stream()
-                    .map(DeliveryDto::new).toList();
-        }else throw new NullEntityException();
-    }
-
-    public DeliveryDto findOne(Integer id) {
-        return deliveryRepository
-                .findById(id)
-                .stream()
-                .map(DeliveryDto::new)
-                .findAny()
-                .orElseThrow(NullEntityException::new);
-    }
-
-    //배달 삭제 로직을 통해 견적 요청 상태가 초기값으로 돌아가게함
-    public void delete(Integer id) {
-        Delivery delivery = deliveryRepository.findById(id).orElseThrow(NullEntityException::new);
-        delivery.getEstimate().getEstimateRequest().UpdateDeliveryStatus(EstimateRequestStatus.Wait);
-
-        deliveryRepository.delete(delivery);
-    }
-
-    public void modify(Integer id, String address) {
-        deliveryRepository
-                .findById(id)
-                .orElseThrow(NullEntityException::new)
-                .updateAddress(address);
-    }
+    fun modify(id: Int, deliveryCreateRequest:DeliveryCreateRequest)
 }
