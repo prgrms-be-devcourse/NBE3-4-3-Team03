@@ -4,6 +4,7 @@ import com.programmers.pcquotation.domain.category.entity.Category;
 import com.programmers.pcquotation.domain.customer.entity.Customer;
 import com.programmers.pcquotation.domain.estimate.dto.EstimateCreateRequest;
 import com.programmers.pcquotation.domain.estimate.dto.EstimateItemDto;
+import com.programmers.pcquotation.domain.estimate.dto.EstimateUpdateReqDto;
 import com.programmers.pcquotation.domain.estimate.entity.Estimate;
 import com.programmers.pcquotation.domain.estimate.repository.EstimateRepository;
 import com.programmers.pcquotation.domain.estimate.service.EstimateService;
@@ -190,5 +191,28 @@ public class EstimateServiceTest {
         when(estimateRepository.findById(1)).thenReturn(Optional.empty());
 
         assertThrows(NoSuchElementException.class, () -> estimateService.deleteEstimate(1));
+    }
+
+    @Test
+    public void updateEstimate_Success() {
+        when(estimateRepository.getEstimateById(1)).thenReturn(sampleEstimate);
+        when(itemRepository.findById(1L)).thenReturn(Optional.of(sampleItem1));
+
+        EstimateUpdateReqDto request = new EstimateUpdateReqDto(
+                1,
+                List.of(
+                        new EstimateItemDto(1L, 3000)
+                )
+        );
+
+        estimateService.updateEstimate(request);
+
+        ArgumentCaptor<Estimate> estimateCaptor = ArgumentCaptor.forClass(Estimate.class);
+        verify(estimateRepository, times(1)).save(estimateCaptor.capture());
+
+        Estimate capturedEstimate = estimateCaptor.getValue();
+        assertNotNull(capturedEstimate);
+        assertEquals("seller1", capturedEstimate.getSeller().getUsername());
+        assertEquals(3000, capturedEstimate.getTotalPrice());
     }
 }
