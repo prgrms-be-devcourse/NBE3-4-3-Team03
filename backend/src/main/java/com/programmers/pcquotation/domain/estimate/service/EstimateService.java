@@ -41,11 +41,10 @@ public class EstimateService {
 		Seller seller = sellerService.findByUserName(sellerName)
 			.orElseThrow(() -> new NoSuchElementException("존재하지 않는 판매자입니다."));
 
-		Estimate estimate = Estimate.builder()
-			.estimateRequest(estimateRequest)
-			.seller(seller)
-			.totalPrice(getTotalPrice(request.getItem()))
-			.build();
+		Estimate estimate = new Estimate();
+		estimate.setEstimateRequest(estimateRequest);
+		estimate.setSeller(seller);
+		estimate.setTotalPrice(getTotalPrice(request.getItem()));
 
 		List<EstimateComponent> components = request.getItem().stream()
 			.map(itemDto -> {

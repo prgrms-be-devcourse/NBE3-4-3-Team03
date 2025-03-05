@@ -19,7 +19,7 @@ import lombok.Setter;
 public class EstimateComponent {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Integer id;
+	private Long id;
 
 	@ManyToOne
 	@Setter
