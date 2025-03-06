@@ -42,19 +42,21 @@ class EstimateService(
         val list = estimateRepository.getAllByEstimateRequest_Id(id)
 
         return list.map { estimate ->
-            EstimateForCustomerResponse(
-                id = estimate.id,
-                companyName = estimate.seller.companyName,
-                createdDate = estimate.createDate,
-                totalPrice = estimate.totalPrice,
-                items = estimate.estimateComponents.stream()
-                    .collect(
-                        Collectors.toMap(
-                            { estimateComponent -> estimateComponent.item.category.category },
-                            { estimateComponent -> estimateComponent.item.name },
-                            { existingValue: String, newValue: String? -> existingValue })
-                    )
-            )
+            with(estimate) {
+                EstimateForCustomerResponse(
+                    id = id,
+                    companyName = seller.companyName,
+                    createdDate = createDate,
+                    totalPrice = totalPrice,
+                    items = estimateComponents.stream()
+                        .collect(
+                            Collectors.toMap(
+                                { estimateComponent -> estimateComponent.item.category.category },
+                                { estimateComponent -> estimateComponent.item.name },
+                                { existingValue: String, newValue: String? -> existingValue })
+                        )
+                )
+            }
         }
     }
 
@@ -65,20 +67,22 @@ class EstimateService(
         val list = estimateRepository.getAllBySeller(seller).toList()
 
         return list.map { estimate ->
-            EstimateForSellerResponse(
-                id = estimate.id,
-                purpose = estimate.estimateRequest.purpose,
-                budget = estimate.estimateRequest.budget,
-                customerName = estimate.estimateRequest.customer.customerName,
-                createdDate = estimate.estimateRequest.createDate,
-                totalPrice = estimate.totalPrice,
-                items = estimate.estimateComponents.stream()
-                    .collect(
-                        Collectors.toMap(
-                            { estimateComponent -> estimateComponent.item.category.category },
-                            { estimateComponent -> estimateComponent.item.name })
-                    )
-            )
+            with(estimate) {
+                EstimateForSellerResponse(
+                    id = id,
+                    purpose = estimateRequest.purpose,
+                    budget = estimateRequest.budget,
+                    customerName = estimateRequest.customer.customerName,
+                    createdDate = estimateRequest.createDate,
+                    totalPrice = totalPrice,
+                    items = estimateComponents.stream()
+                        .collect(
+                            Collectors.toMap(
+                                { estimateComponent -> estimateComponent.item.category.category },
+                                { estimateComponent -> estimateComponent.item.name })
+                        )
+                )
+            }
         }
     }
 
@@ -94,11 +98,14 @@ class EstimateService(
     fun updateEstimate(request: EstimateUpdateReqDto) {
         val estimate = estimateRepository.getEstimateById(request.estimateId)
 
-        estimate.totalPrice = request.items.sumOf { it.price }
-        estimate.deleteEstimateComponents()
+        estimate.apply {
+            deleteEstimateComponents()
 
-        val components = mapItemsToEstimateComponents(estimate, request.items)
-        estimate.addEstimateComponents(components)
+            val components = mapItemsToEstimateComponents(this, request.items)
+            addEstimateComponents(components)
+
+            totalPrice = request.items.sumOf { it.price }
+        }
 
         estimateRepository.save(estimate)
     }
