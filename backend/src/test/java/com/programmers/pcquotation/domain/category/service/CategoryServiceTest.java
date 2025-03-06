@@ -38,23 +38,23 @@ public class CategoryServiceTest {
 	void addCategoryTest() {
 
 		CategoryCreateRequest request = new CategoryCreateRequest("카테고리");
-		Category category = Category.builder().category("카테고리").build();
-		Category savedCategory = Category.builder().id(1L).category("카테고리").build();
+		Category category = new Category(0L, "카테고리", null);
+		Category savedCategory = new Category(1L, "카테고리", null);
 
 		when(categoryRepository.save(any(Category.class))).thenReturn(savedCategory);
 
 		CategoryCreateResponse response = categoryService.addCategory(request);
 
-		assertThat(response.id()).isEqualTo(1L);
-		assertThat(response.message()).isEqualTo("카테고리 생성 완료");
+		assertThat(response.getId()).isEqualTo(1L);
+		assertThat(response.getMessage()).isEqualTo("카테고리 생성 완료");
 	}
 
 	@Test
 	@DisplayName("카테고리 다건조회 테스트")
 	void getCategoryListTest() {
 
-		Category category1 = Category.builder().id(1L).category("카테고리").build();
-		Category category2 = Category.builder().id(2L).category("카테고리2").build();
+		Category category1 = new Category(1L, "카테고리", null);
+		Category category2 = new Category(2L, "카테고리2", null);
 
 		when(categoryRepository.findAll()).thenReturn(List.of(category1, category2));
 
@@ -67,8 +67,8 @@ public class CategoryServiceTest {
 
 		assertThat(response).hasSize(expectedList.size());
 		for (int i = 0; i < response.size(); i++) {
-			assertThat(response.get(i).id()).isEqualTo(expectedList.get(i).id());
-			assertThat(response.get(i).category()).isEqualTo(expectedList.get(i).category());
+			assertThat(response.get(i).getId()).isEqualTo(expectedList.get(i).getId());
+			assertThat(response.get(i).getCategory()).isEqualTo(expectedList.get(i).getCategory());
 		}
 	}
 
@@ -97,8 +97,8 @@ public class CategoryServiceTest {
 
 		CategoryDeleteResponse response = categoryService.deleteCategory(categoryId);
 
-		assertThat(response.id()).isEqualTo(categoryId);
-		assertThat(response.message()).isEqualTo("카테고리 삭제 완료");
+		assertThat(response.getId()).isEqualTo(categoryId);
+		assertThat(response.getMessage()).isEqualTo("카테고리 삭제 완료");
 		verify(categoryRepository).delete(any(Category.class));
 
 	}
