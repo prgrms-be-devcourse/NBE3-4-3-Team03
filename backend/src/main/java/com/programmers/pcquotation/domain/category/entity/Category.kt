@@ -13,27 +13,27 @@ import jakarta.validation.constraints.NotEmpty
 
 @Entity
 class Category(
-	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	val id: Long = 0,
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    val id: Long = 0,
 
-	@field:NotEmpty
-	var category: String,
+    @field:NotEmpty
+    var category: String,
 
-	@OneToMany(mappedBy = "category", cascade = [CascadeType.ALL], orphanRemoval = true)
-	val items: MutableList<Item> = mutableListOf()
+    @OneToMany(mappedBy = "category", cascade = [CascadeType.ALL], orphanRemoval = true)
+    val items: MutableList<Item> = mutableListOf()
 ) {
 
-	constructor() : this(0, "", mutableListOf())
+    constructor() : this(0, "", mutableListOf())
 
-	fun updateCategory(category: String) {
-		this.category = category
-	}
+    fun updateCategory(category: String) {
+        this.category = category
+    }
 
-	companion object {
-		@JvmStatic
-		fun createTestCategory(id: Long, categoryName: String): Category {
-			return Category(id = id, category = categoryName)
-		}
-	}
+    companion object {
+        @JvmStatic
+        fun createTestCategory(id: Long, categoryName: String): Category {
+            return Category(id = id, category = categoryName)
+        }
+    }
 }
