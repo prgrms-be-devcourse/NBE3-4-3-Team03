@@ -74,7 +74,7 @@ public class EstimateServiceTest {
             1L,
             "CPU1",
             "cpu1.png",
-            new Category(1L, "CPU"),
+            new Category(1L, "CPU", List.of()),
             List.of()
     );
 
@@ -82,7 +82,7 @@ public class EstimateServiceTest {
             2L,
             "RAM1",
             "ram1.png",
-            new Category(2L, "RAM"),
+            new Category(2L, "RAM", List.of()),
             List.of()
     );
 
