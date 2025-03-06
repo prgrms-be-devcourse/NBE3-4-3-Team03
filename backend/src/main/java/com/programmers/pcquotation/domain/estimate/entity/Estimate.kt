@@ -21,15 +21,28 @@ class Estimate(
 	var totalPrice: Int,
 
 	@OneToMany(mappedBy = "estimate", cascade = [CascadeType.ALL], orphanRemoval = true)
-	var estimateComponents: MutableList<EstimateComponent> = mutableListOf(),
+	private val _estimateComponents: MutableList<EstimateComponent> = mutableListOf(),
 
 	var createDate: LocalDateTime = LocalDateTime.now(),
 
 	@OneToMany(mappedBy = "estimate", cascade = [CascadeType.ALL], orphanRemoval = true)
 	var comments: List<Comment> = ArrayList()
 ) {
-	fun addEstimateComponent(component: EstimateComponent) {
-		estimateComponents.add(component)
+	val estimateComponents: List<EstimateComponent>
+		get() = _estimateComponents.toList()
+
+	fun addEstimateComponents(components: List<EstimateComponent>) {
+		components.forEach { component ->
+			addEstimateComponent(component)
+		}
+	}
+
+	fun deleteEstimateComponents() {
+		_estimateComponents.clear()
+	}
+
+	private fun addEstimateComponent(component: EstimateComponent) {
+		_estimateComponents.add(component)
 		component.estimate = this
 	}
 }

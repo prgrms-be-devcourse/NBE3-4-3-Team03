@@ -2,7 +2,7 @@ package com.programmers.pcquotation.domain.estimate.service
 
 import com.programmers.pcquotation.domain.estimate.dto.*
 import com.programmers.pcquotation.domain.estimate.entity.Estimate
-import com.programmers.pcquotation.domain.estimate.entity.EstimateComponent.Companion.createComponent
+import com.programmers.pcquotation.domain.estimate.entity.EstimateComponent
 import com.programmers.pcquotation.domain.estimate.repository.EstimateRepository
 import com.programmers.pcquotation.domain.estimaterequest.service.EstimateRequestService
 import com.programmers.pcquotation.domain.item.repository.ItemRepository
@@ -32,15 +32,8 @@ class EstimateService(
             totalPrice = request.items.sumOf { it.price }
         )
 
-        val components = request.items.stream()
-            .map { itemDto ->
-                val item = itemRepository.findById(itemDto.itemId)
-                    .orElseThrow { NoSuchElementException("존재하지 않는 아이템입니다.") }
-                createComponent(item, itemDto.price, estimate)
-            }
-            .toList()
-
-        estimate.estimateComponents = components
+        val components = mapItemsToEstimateComponents(estimate, request.items)
+        estimate.addEstimateComponents(components)
 
         estimateRepository.save(estimate)
     }
@@ -48,7 +41,7 @@ class EstimateService(
     fun getEstimateByRequest(id: Int): List<EstimateForCustomerResponse> {
         val list = estimateRepository.getAllByEstimateRequest_Id(id)
 
-        return list.stream().map { estimate ->
+        return list.map { estimate ->
             EstimateForCustomerResponse(
                 id = estimate.id,
                 companyName = estimate.seller.companyName,
@@ -62,7 +55,7 @@ class EstimateService(
                             { existingValue: String, newValue: String? -> existingValue })
                     )
             )
-        }.toList()
+        }
     }
 
     fun getEstimateBySeller(username: String): List<EstimateForSellerResponse> {
@@ -86,42 +79,43 @@ class EstimateService(
                             { estimateComponent -> estimateComponent.item.name })
                     )
             )
-        }.toList()
+        }
     }
 
     @Transactional
     fun deleteEstimate(id: Int) {
-        // 견적서가 존재하는지 확인
         val estimate = estimateRepository.findById(id)
             .orElseThrow { NoSuchElementException("존재하지 않는 견적서입니다.") }
 
-
-        // 연관된 EstimateComponent들 먼저 제거
-        estimate.estimateComponents.clear()
-
-
-        // 견적서 삭제
+        estimate.deleteEstimateComponents()
         estimateRepository.delete(estimate)
     }
 
     fun updateEstimate(request: EstimateUpdateReqDto) {
         val estimate = estimateRepository.getEstimateById(request.estimateId)
 
-        // 기존 컴포넌트들을 모두 제거
-        estimate.estimateComponents.clear()
-
-        // 새로운 총 가격 설정
         estimate.totalPrice = request.items.sumOf { it.price }
+        estimate.deleteEstimateComponents()
 
-        // 새로운 컴포넌트들 생성 및 설정
-        request.items.stream()
-            .forEach { itemDto ->
-                val item = itemRepository.findById(itemDto.itemId)
-                    .orElseThrow { NoSuchElementException("존재하지 않는 아이템입니다.") }
-                val component = createComponent(item, itemDto.price, estimate)
-                estimate.addEstimateComponent(component)
-            }
+        val components = mapItemsToEstimateComponents(estimate, request.items)
+        estimate.addEstimateComponents(components)
 
         estimateRepository.save(estimate)
+    }
+
+    private fun mapItemsToEstimateComponents(
+        estimate: Estimate,
+        items: List<EstimateItemDto>
+    ): List<EstimateComponent> {
+        return items.map { itemDto ->
+            val item = itemRepository.findById(itemDto.itemId)
+                .orElseThrow { NoSuchElementException("존재하지 않는 아이템입니다.") }
+
+            EstimateComponent(
+                item = item,
+                price = itemDto.price,
+                estimate = estimate
+            )
+        }
     }
 }

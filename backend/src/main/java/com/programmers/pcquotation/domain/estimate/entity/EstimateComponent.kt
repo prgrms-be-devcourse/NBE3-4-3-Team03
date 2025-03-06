@@ -23,15 +23,4 @@ class EstimateComponent(
     @JoinColumn(name = "estimate_id")
     @ManyToOne
     var estimate: Estimate
-) {
-    companion object {
-        @JvmStatic
-        fun createComponent(item: Item, price: Int, estimate: Estimate): EstimateComponent {
-            return EstimateComponent(
-                item = item,
-                price = price,
-                estimate = estimate
-            )
-        }
-    }
-}
+)
