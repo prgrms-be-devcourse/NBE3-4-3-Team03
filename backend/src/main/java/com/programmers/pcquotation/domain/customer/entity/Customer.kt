@@ -33,7 +33,6 @@ class Customer : Member<Any?> {
     @OneToMany(mappedBy = "customer", cascade = [CascadeType.ALL], orphanRemoval = true)
     var comments: MutableList<Comment> = mutableListOf()
 
-    constructor()
     constructor(
         username: String,
         password: String

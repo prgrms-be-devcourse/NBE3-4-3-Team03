@@ -6,13 +6,13 @@ import lombok.Getter
 
 
 data class CustomerSignupRequest (
-    var username: String? = null,
-    var password: String? = null,
-    var confirmPassword: String? = null,
-    var customerName: String? = null,
-    var email: String? = null,
-    var verificationQuestion: String? = null,
-    var verificationAnswer: String? = null,
+    var username: String?,
+    var password: String?,
+    var confirmPassword: String?,
+    var customerName: String?,
+    var email: String?,
+    var verificationQuestion: String?,
+    var verificationAnswer: String?,
 
 )
 {

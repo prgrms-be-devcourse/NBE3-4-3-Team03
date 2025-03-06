@@ -9,11 +9,11 @@ import lombok.Getter
 @AllArgsConstructor
 @Builder
 class SellerSignupResponse{
-    var id: Long? = null
-    var username: String? = null
-    var companyName: String? = null
-    var email: String? = null
-    var message: String? = null
+    var id: Long?
+    var username: String?
+    var companyName: String?
+    var email: String?
+    var message: String?
 
     constructor(seller:Seller,message:String) {
         this.id = seller.id

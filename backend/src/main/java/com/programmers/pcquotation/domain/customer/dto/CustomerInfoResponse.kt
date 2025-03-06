@@ -5,8 +5,8 @@ import lombok.Getter
 
 
 data class CustomerInfoResponse (
-    var id: Long? = null,
-    var username: String? = null,
-    var customerName: String? = null,
-    var email: String? = null
+    var id: Long?,
+    var username: String?,
+    var customerName: String?,
+    var email: String?
 )

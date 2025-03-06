@@ -44,7 +44,6 @@ class Seller : Member<Any?> {
         .map { role: String? -> SimpleGrantedAuthority(role) }
         .toList()
 
-    constructor()
     constructor(
         username: String,
         password: String,

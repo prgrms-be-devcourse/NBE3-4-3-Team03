@@ -31,7 +31,6 @@ class Admin : Member<Any?> {
          = listOf("ROLE_ADMIN").stream()
             .map { role: String? -> SimpleGrantedAuthority(role) }
             .toList()
-    constructor()
     constructor(username:String,password:String){
         this.username = username
         this.password = password
