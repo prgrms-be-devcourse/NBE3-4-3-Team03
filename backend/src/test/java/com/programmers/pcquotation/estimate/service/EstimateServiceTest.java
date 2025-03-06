@@ -17,6 +17,8 @@ import com.programmers.pcquotation.domain.seller.entitiy.Seller;
 import com.programmers.pcquotation.domain.seller.service.SellerService;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
@@ -33,19 +35,19 @@ import static org.mockito.Mockito.*;
 @ActiveProfiles("test")
 @SpringBootTest
 public class EstimateServiceTest {
-    @Autowired
+    @InjectMocks
     private EstimateService estimateService;
 
-    @MockitoBean
+    @Mock
     private EstimateRequestService estimateRequestService;
 
-    @MockitoBean
+    @Mock
     private SellerService sellerService;
 
-    @MockitoBean
+    @Mock
     private EstimateRepository estimateRepository;
 
-    @MockitoBean
+    @Mock
     private ItemRepository itemRepository;
 
     private final EstimateRequest estimateRequest = new EstimateRequest(
