@@ -115,10 +115,9 @@ public class AuthServiceTest {
                 "1234"
         );
 
-        Customer customer = Customer.builder()
-                .username("user1")
-                .password("1111")
-                .build();
+        Customer customer = new Customer(
+                "user1",
+                "1111");
 
         when(customerRepository.getCustomerByUsername("user1")).thenReturn(Optional.of(customer));
 

@@ -23,6 +23,7 @@ import org.springframework.beans.factory.annotation.Value
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
 import java.util.*
+import java.util.Optional.*
 
 @RequiredArgsConstructor
 @Service
@@ -40,13 +41,6 @@ class AuthService(
 
 
     fun processSignup(customerSignupRequest: CustomerSignupRequest): CustomerSignupResponse {
-        println(2235235)
-        println(2235235)
-        println(2235235)
-        println(2235235)
-        println(2235235)
-        println(2235235)
-        println(2235235)
         if (customerSignupRequest.password != customerSignupRequest.confirmPassword) {
             throw PasswordMismatchException()
         }
@@ -58,30 +52,11 @@ class AuthService(
         if (customerService.findCustomerByEmail(customerSignupRequest.email).isPresent) {
             throw CustomerAlreadyExistException()
         }
-        println(2235235)
-        println(2235235)
-        println(2235235)
-        println(2235235)
-        println(2235235)
-        println(2235235)
-        println(2235235)
+
         val customer = customerSignupRequest.toCustomer()
         customer.apiKey = UUID.randomUUID().toString()
         customer.password = passwordEncoder.encode(customer.password)
-        println(1111)
-        println(1111)
-        println(1111)
-        println(1111)
-        println(1111)
-
         customerService.createCustomer(customer)
-        println(2222)
-        println(2222)
-        println(2222)
-        println(2222)
-        println(2222)
-        println(2222)
-
         return CustomerSignupResponse(customer, "회원가입 성공")
     }
 

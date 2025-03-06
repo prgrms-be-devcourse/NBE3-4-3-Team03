@@ -29,6 +29,7 @@ import com.programmers.pcquotation.domain.seller.service.SellerService;
 @SpringBootTest
 @AutoConfigureMockMvc
 @Transactional
+@ActiveProfiles("test")
 class PcquotationApplicationTests {
 	@Autowired
 	SellerService sellerService;

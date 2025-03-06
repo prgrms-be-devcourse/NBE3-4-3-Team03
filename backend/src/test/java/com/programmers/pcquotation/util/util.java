@@ -92,7 +92,7 @@ public class util {
 			)
 			.andDo(print())
 			.andExpect(status().isCreated())
-			.andExpect(jsonPath("$.message").value("회원가입 성공"));;
+			.andExpect(jsonPath("$.message").value("회원가입 성공"));
 		Optional<Customer> customer = customerService.findCustomerByUsername(username);
 		assertNotNull(customer.get());
 		return customer.get();
