@@ -10,7 +10,6 @@ import org.springframework.stereotype.Repository;
 import com.programmers.pcquotation.domain.admin.entitiy.Admin;
 import com.programmers.pcquotation.domain.item.entity.Item;
 
-@Repository
 public interface ItemRepository extends JpaRepository<Item, Long> {
 	@Query("SELECT i FROM Item i JOIN FETCH i.category WHERE i.category.id = :categoryId")
 	List<Item> findByCategoryId(Long categoryId);

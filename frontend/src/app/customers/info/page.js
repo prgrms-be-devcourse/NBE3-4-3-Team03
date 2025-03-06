@@ -91,11 +91,11 @@ const QuoteComponent = ({quote,onConfirm,onComment,onSelectQuote, onDelete, onEd
                 {receivedQuotes.map(receivedQuote => (
                     <div key={receivedQuote.id} className="bg-gray-50 dark:bg-gray-700 p-4 rounded-lg">
                       <div className="flex justify-between items-center mb-2">
-                        <span className="font-medium dark:text-white">{receivedQuote.seller}</span>
+                        <span className="font-medium dark:text-white">{receivedQuote.companyName}</span>
                       </div>
                       <div className="grid grid-cols-2 gap-2 text-sm">
                         <div className="text-gray-600 dark:text-gray-400">받은날짜</div>
-                        <div className="dark:text-white">{new Date(receivedQuote.date).toLocaleDateString()}</div>
+                        <div className="dark:text-white">{new Date(receivedQuote.createdDate).toLocaleDateString()}</div>
                         <div className="text-gray-600 dark:text-gray-400">견적금액</div>
                         <div className="dark:text-white">{receivedQuote.totalPrice}</div>
                       </div>
@@ -527,8 +527,8 @@ export default function MyPage() {
                   <div className="bg-gray-50 dark:bg-gray-700 p-4 rounded-lg">
                     <div className="flex justify-between items-center">
                       <div>
-                        <span className="font-medium dark:text-white text-lg">{selectedQuote.seller}</span>
-                        <div className="text-sm text-gray-500 dark:text-gray-400 mt-1">견적 받은 날짜: {new Date(selectedQuote.date).toLocaleDateString()}</div>
+                        <span className="font-medium dark:text-white text-lg">{selectedQuote.companyName}</span>
+                        <div className="text-sm text-gray-500 dark:text-gray-400 mt-1">견적 받은 날짜: {new Date(selectedQuote.createdDate).toLocaleDateString()}</div>
                       </div>
                       <span className="px-3 py-1 rounded-full text-sm bg-blue-100 text-blue-600 dark:bg-blue-900 dark:text-blue-300">
                     {selectedQuote.status}

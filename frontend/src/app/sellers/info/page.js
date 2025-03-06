@@ -431,9 +431,9 @@ const fetchComments = async (estimateId) => {
                                 </div>
                                 <div className="grid grid-cols-2 gap-2 text-sm mb-6">
                                   <div className="text-gray-600 dark:text-gray-400">요청자</div>
-                                  <div className="dark:text-white">{quote.customer}</div>
+                                  <div className="dark:text-white">{quote.customerName}</div>
                                   <div className="text-gray-600 dark:text-gray-400">요청일</div>
-                                  <div className="dark:text-white">{new Date(quote.date).toLocaleDateString()}</div>
+                                  <div className="dark:text-white">{new Date(quote.createdDate).toLocaleDateString()}</div>
                                   <div className="text-gray-600 dark:text-gray-400">용도</div>
                                   <div className="dark:text-white">{quote.purpose}</div>
                                   <div className="text-gray-600 dark:text-gray-400">예산</div>
@@ -649,4 +649,3 @@ const fetchComments = async (estimateId) => {
       </div>
   );
 }
-
