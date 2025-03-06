@@ -22,7 +22,7 @@ class Category(
 	val items: MutableList<Item> = mutableListOf()
 ) {
 
-	protected constructor() : this(0, "")
+	protected constructor() : this(0, "", mutableListOf())
 
 	fun updateCategory(category: String) {
 		this.category = category

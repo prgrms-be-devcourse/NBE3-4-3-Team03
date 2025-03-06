@@ -3,6 +3,7 @@ package com.programmers.pcquotation.domain.category.service;
 import static org.assertj.core.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -38,10 +39,10 @@ public class CategoryServiceTest {
 	void addCategoryTest() {
 
 		CategoryCreateRequest request = new CategoryCreateRequest("카테고리");
-		Category category = new Category(0L, "카테고리", null);
-		Category savedCategory = new Category(1L, "카테고리", null);
+		Category savedCategory = new Category(1L, "카테고리", new ArrayList<>()); // items는 기본값인 빈 리스트로 설정됨
 
-		when(categoryRepository.save(any(Category.class))).thenReturn(savedCategory);
+		when(categoryRepository.save(argThat(category -> category.getCategory().equals("카테고리"))))
+			.thenReturn(savedCategory);
 
 		CategoryCreateResponse response = categoryService.addCategory(request);
 
@@ -53,8 +54,8 @@ public class CategoryServiceTest {
 	@DisplayName("카테고리 다건조회 테스트")
 	void getCategoryListTest() {
 
-		Category category1 = new Category(1L, "카테고리", null);
-		Category category2 = new Category(2L, "카테고리2", null);
+		Category category1 = new Category(1L, "카테고리", new ArrayList<>());
+		Category category2 = new Category(2L, "카테고리2", new ArrayList<>());
 
 		when(categoryRepository.findAll()).thenReturn(List.of(category1, category2));
 
