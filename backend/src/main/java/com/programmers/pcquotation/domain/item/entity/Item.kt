@@ -1,7 +1,5 @@
 package com.programmers.pcquotation.domain.item.entity;
 
-import java.util.List;
-
 import com.programmers.pcquotation.domain.category.entity.Category;
 import com.programmers.pcquotation.domain.estimate.entity.EstimateComponent;
 
@@ -14,46 +12,41 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.validation.constraints.NotEmpty;
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
 
-@Getter
+
 @Entity
-@Builder
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
-@AllArgsConstructor
-public class Item {
-	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Long id;
-	@NotEmpty
-	private String name;        // 부품 이름
-	@NotEmpty
-	private String imgFilename;
+class Item(
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    val id: Long? = null,
 
-	@ManyToOne
-	@JoinColumn(name = "category_id", nullable = false)
-	private Category category;
+    @field:NotEmpty
+    var name: String,
 
-	@OneToMany(mappedBy = "item", cascade = CascadeType.ALL, orphanRemoval = true)
-	private List<EstimateComponent> estimateComponents;
+    @field:NotEmpty
+    var imgFilename: String,
 
-	public void updateItem(String name, String imgFilename, Category category) {
-		this.name = name;
-		this.imgFilename = imgFilename;
-		this.category = category;
-	}
+    @ManyToOne
+    @JoinColumn(name = "category_id", nullable = false)
+    var category: Category,
 
-	public static Item createTestItem(Long id, String name, String imgFilename, Category category) {
+    @OneToMany(mappedBy = "item", cascade = [CascadeType.ALL], orphanRemoval = true)
+    var estimateComponents: MutableList<EstimateComponent> = mutableListOf()
 
-		Item item = new Item();
-		item.id = id;
-		item.name = name;
-		item.imgFilename = imgFilename;
-		item.category = category;
-		return item;
-	}
+) {
+
+    constructor() : this(null, "", "", Category(), mutableListOf())
+
+    fun updateItem(name: String, imgFilename: String, category: Category) {
+        this.name = name
+        this.imgFilename = imgFilename
+        this.category = category
+    }
+
+    companion object {
+        @JvmStatic
+        fun createTestItem(id: Long, name: String, imgFilename: String, category: Category): Item {
+            return Item(id, name, imgFilename, category)
+        }
+    }
 }
