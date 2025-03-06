@@ -22,7 +22,7 @@ open class CategoryService(
 
     @Transactional
     open fun addCategory(request: CategoryCreateRequest): CategoryCreateResponse {
-        val category = Category(category = request.category())
+        val category = Category(category = request.category)
 
         val savedCategory = categoryRepository.save(category)
 
@@ -44,7 +44,7 @@ open class CategoryService(
         val category = categoryRepository.findById(id)
             .orElseThrow { CategoryNotFoundException(id) }
 
-        category.updateCategory(request.category())
+        category.updateCategory(request.category)
 
         categoryRepository.save(category)
 
