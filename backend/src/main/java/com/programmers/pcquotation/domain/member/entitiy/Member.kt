@@ -3,9 +3,9 @@ package com.programmers.pcquotation.domain.member.entitiy
 import org.springframework.security.core.GrantedAuthority
 
 interface Member<T> {
-    fun getId():Long?
-    fun getUsername():String?
-    fun getAuthorities():Collection<GrantedAuthority>?
-    fun getApiKey():String
-    fun getPassword():String
+    var id:Long?
+    var username:String?
+    var authorities:Collection<GrantedAuthority>?
+    var apiKey:String?
+    var password:String?
 }

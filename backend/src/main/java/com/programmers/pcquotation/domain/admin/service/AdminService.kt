@@ -18,7 +18,7 @@ class AdminService (
     }
 
     fun findById(id: Long): Optional<Member<*>> {
-        return adminRepository.findById(id).map { admin: Admin -> admin }
+        return adminRepository.findById(id).map { admin: Member<*> -> admin }
     }
 
     fun create(admin: Admin) {
@@ -26,6 +26,6 @@ class AdminService (
     }
 
     fun findByApiKey(apiKey: String): Optional<Member<*>> {
-        return adminRepository.findByApiKey(apiKey).map { admin: Admin -> admin }
+        return adminRepository.findByApiKey(apiKey).map { admin: Member<*> -> admin }
     }
 }
