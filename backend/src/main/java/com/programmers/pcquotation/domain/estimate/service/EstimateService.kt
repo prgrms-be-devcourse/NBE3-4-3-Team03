@@ -29,7 +29,7 @@ class EstimateService(
         val estimate = Estimate(
             estimateRequest = estimateRequest,
             seller = seller,
-            totalPrice = getTotalPrice(request.items)
+            totalPrice = request.items.sumOf { it.price }
         )
 
         val components = request.items.stream()
@@ -43,14 +43,6 @@ class EstimateService(
         estimate.estimateComponents = components
 
         estimateRepository.save(estimate)
-    }
-
-    fun getTotalPrice(items: List<EstimateItemDto>): Int {
-        var total = 0
-        for (item in items) {
-            total += item.price
-        }
-        return total
     }
 
     fun getEstimateByRequest(id: Int): List<EstimateForCustomerResponse> {
@@ -119,7 +111,7 @@ class EstimateService(
         estimate.estimateComponents.clear()
 
         // 새로운 총 가격 설정
-        estimate.totalPrice = getTotalPrice(request.items)
+        estimate.totalPrice = request.items.sumOf { it.price }
 
         // 새로운 컴포넌트들 생성 및 설정
         request.items.stream()
