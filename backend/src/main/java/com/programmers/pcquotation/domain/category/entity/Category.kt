@@ -8,6 +8,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
+import jakarta.validation.constraints.NotEmpty
 
 
 @Entity
@@ -16,6 +17,7 @@ class Category(
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	val id: Long = 0,
 
+	@field:NotEmpty
 	var category: String,
 
 	@OneToMany(mappedBy = "category", cascade = [CascadeType.ALL], orphanRemoval = true)
