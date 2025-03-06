@@ -19,10 +19,8 @@ import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -50,15 +48,16 @@ public class EstimateServiceTest {
     @Mock
     private ItemRepository itemRepository;
 
-    private final EstimateRequest estimateRequest = new EstimateRequest(
-            1,
-            "게임용",
-            1_000_000,
-            "롤",
-            LocalDateTime.of(2025, 3, 4, 12, 0, 0),
-            mock(Customer.class),
-            List.of(),
-            EstimateRequestStatus.Wait
+    private final Customer sampleCustomer = new Customer(
+            1L,
+            "customer1",
+            "1234",
+            "홍길동",
+            "customer1@test.com",
+            "좋아하는 음식은?",
+            "밥",
+            "api-key",
+            List.of()
     );
 
     private final Seller sampleSeller = new Seller(
@@ -71,6 +70,17 @@ public class EstimateServiceTest {
             "밥",
             true,
             "api-key"
+    );
+
+    private final EstimateRequest estimateRequest = new EstimateRequest(
+            1,
+            "게임용",
+            1_000_000,
+            "롤",
+            LocalDateTime.of(2025, 3, 4, 12, 0, 0),
+            sampleCustomer,
+            List.of(),
+            EstimateRequestStatus.Wait
     );
 
     private final Item sampleItem1 = new Item(

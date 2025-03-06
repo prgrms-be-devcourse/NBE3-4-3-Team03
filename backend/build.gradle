@@ -4,10 +4,9 @@ plugins {
     id 'io.spring.dependency-management' version '1.1.7'
     id 'org.jetbrains.kotlin.jvm' version '2.1.10'
     id 'org.jetbrains.kotlin.plugin.jpa' version '2.1.10'
-    id 'org.jetbrains.kotlin.plugin.allopen' version '2.1.10'
     id 'org.jetbrains.kotlin.plugin.lombok' version '2.1.10'
     id 'io.freefair.lombok' version '8.10'
-
+    id "org.jetbrains.kotlin.plugin.spring" version "2.1.10"
 }
 
 group = 'com.programmers'
@@ -51,10 +50,6 @@ dependencies {
     // Kotlin
     implementation 'org.jetbrains.kotlin:kotlin-stdlib'
     implementation 'org.jetbrains.kotlin:kotlin-reflect'
-}
-
-allOpen {
-    annotations('javax.persistence.Entity', 'javax.persistence.MappedSuperclass', 'javax.persistence.Embedabble')
 }
 
 tasks.named('test') {

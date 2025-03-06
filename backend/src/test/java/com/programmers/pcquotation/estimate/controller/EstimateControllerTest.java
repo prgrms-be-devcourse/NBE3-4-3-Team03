@@ -41,13 +41,13 @@ class EstimateControllerTest {
 		String requestBody = """
 			{
 			   "estimateRequestId" : 1,
-			   "item" : [
+			   "items" : [
 			     {
-			       "item" : 1,
+			       "itemId" : 1,
 			       "price" : 135000
 			     },
 			     {
-			       "item" : 2,
+			       "itemId" : 2,
 			       "price" : 199000
 			     }
 			   ]
@@ -92,8 +92,8 @@ class EstimateControllerTest {
 			.andExpect(jsonPath("$").isArray())
 			// 응답의 각 필드 존재 여부 확인
 			.andExpect(jsonPath("$[0].id").exists())
-			.andExpect(jsonPath("$[0].seller").exists())
-			.andExpect(jsonPath("$[0].date").exists())
+			.andExpect(jsonPath("$[0].companyName").exists())
+			.andExpect(jsonPath("$[0].createdDate").exists())
 			.andExpect(jsonPath("$[0].totalPrice").exists())
 			.andExpect(jsonPath("$[0].items").exists());
 	}
