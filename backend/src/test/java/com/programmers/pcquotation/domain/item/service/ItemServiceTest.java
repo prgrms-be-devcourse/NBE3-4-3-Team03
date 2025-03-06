@@ -12,6 +12,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.programmers.pcquotation.domain.category.entity.Category;
@@ -24,7 +25,7 @@ import com.programmers.pcquotation.domain.item.dto.ItemUpdateRequest;
 import com.programmers.pcquotation.domain.item.dto.ItemUpdateResponse;
 import com.programmers.pcquotation.domain.item.entity.Item;
 import com.programmers.pcquotation.domain.item.repository.ItemRepository;
-
+@ActiveProfiles("test")
 class ItemServiceTest {
 	@InjectMocks // ItemService에 Mock 객체 자동 주입
 	private ItemService itemService;
