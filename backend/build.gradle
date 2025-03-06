@@ -5,15 +5,9 @@ plugins {
     id 'org.jetbrains.kotlin.jvm' version '2.1.10'
     id "org.jetbrains.kotlin.plugin.spring" version '2.1.10'
     id "org.jetbrains.kotlin.plugin.jpa" version '2.1.10'
-    id 'org.jetbrains.kotlin.plugin.allopen' version '2.1.10'
 
 }
-allOpen {
-    annotation("org.springframework.stereotype.Component")
-    annotation("org.springframework.transaction.annotation.Transactional")
-    annotation("org.springframework.web.bind.annotation.RestController")
-    annotation("org.springframework.web.bind.annotation.Controller")
-}
+
 group = 'com.programmers'
 version = '0.0.1-SNAPSHOT'
 
