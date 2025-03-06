@@ -41,7 +41,7 @@ class EstimateService(
         return estimateRepository.save(estimate)
     }
 
-    fun getEstimateByRequest(id: Int): List<EstimateForCustomerResponse> {
+    fun getEstimatesForCustomer(id: Int): List<EstimateForCustomerResponse> {
         val list = estimateRepository.getAllByEstimateRequestId(id)
 
         return list.map { estimate ->
@@ -63,7 +63,7 @@ class EstimateService(
         }
     }
 
-    fun getEstimateBySeller(username: String): List<EstimateForSellerResponse> {
+    fun getEstimatesForSeller(username: String): List<EstimateForSellerResponse> {
         val seller = sellerService.findByUserName(username)
             .orElseThrow { NoSuchElementException("존재하지 않는 판매자입니다.") }
 
