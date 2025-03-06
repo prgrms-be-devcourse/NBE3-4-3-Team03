@@ -1,19 +1,13 @@
 package com.programmers.pcquotation.global.security;
 
 import java.io.IOException;
-import java.util.List;
 import java.util.Optional;
 
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
-import com.programmers.pcquotation.domain.customer.entity.Customer;
 import com.programmers.pcquotation.domain.member.entitiy.Member;
 import com.programmers.pcquotation.domain.member.service.AuthService;
-import com.programmers.pcquotation.domain.seller.entitiy.Seller;
-import com.programmers.pcquotation.domain.seller.service.SellerService;
 import com.programmers.pcquotation.global.enums.UserType;
 import com.programmers.pcquotation.global.rq.Rq;
 
@@ -65,16 +59,15 @@ public class CustomAuthenticationFilter extends OncePerRequestFilter {
 
 	}
 
-	private Member refreshAccessTokenByApiKey(String apiKey, UserType userType) {
-		Optional<Member> opMemberByApiKey = authService.findByApiKey(apiKey, userType);
+	private Optional<Member<?>> refreshAccessTokenByApiKey(String apiKey, UserType userType) {
+		Optional<Member<?>> opMemberByApiKey = authService.findByApiKey(apiKey, userType);
 
 		if (opMemberByApiKey.isEmpty()) {
-			return null;
+			return Optional.empty();
 		}
-		Member member = opMemberByApiKey.get();
-		refreshAccessToken(member,userType);
+		refreshAccessToken(opMemberByApiKey.get(),userType);
 
-		return member;
+		return opMemberByApiKey;
 
 	}
 
@@ -95,12 +88,11 @@ public class CustomAuthenticationFilter extends OncePerRequestFilter {
 		String accessToken = authTokens.accessToken;
 		UserType userType = authTokens.userType;
 
-		Member member = authService.getMemberFromAccessToken(accessToken, userType);
-		if (member == null)
+		Optional<Member<?>> member = authService.getMemberFromAccessToken(accessToken, userType);
+		if (member.isEmpty())
 			member = refreshAccessTokenByApiKey(apiKey, userType);
-
-		if (member != null)
-			rq.setLogin(member);
+		if (member.isPresent())
+			rq.setLogin(member.get());
 
 		filterChain.doFilter(request, response);
 	}

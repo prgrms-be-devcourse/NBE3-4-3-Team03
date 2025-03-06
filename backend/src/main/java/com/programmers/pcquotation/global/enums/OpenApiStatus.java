@@ -10,6 +10,6 @@ public enum OpenApiStatus {
 	Suspension("휴업자"),
 	Closure("폐업자"),
 	None("");
-	private final String value;
+	public final String value;
 
 }
