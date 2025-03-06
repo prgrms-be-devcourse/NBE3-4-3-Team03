@@ -42,7 +42,7 @@ class EstimateService(
     }
 
     fun getEstimateByRequest(id: Int): List<EstimateForCustomerResponse> {
-        val list = estimateRepository.getAllByEstimateRequest_Id(id)
+        val list = estimateRepository.getAllByEstimateRequestId(id)
 
         return list.map { estimate ->
             with(estimate) {

@@ -170,7 +170,7 @@ public class EstimateServiceTest {
 
     @Test
     public void getEstimateByEstimateRequest_Success() {
-        when(estimateRepository.getAllByEstimateRequest_Id(1)).thenReturn(List.of(sampleEstimate));
+        when(estimateRepository.getAllByEstimateRequestId(1)).thenReturn(List.of(sampleEstimate));
 
         assertEquals(1, estimateService.getEstimateByRequest(1).size());
     }
