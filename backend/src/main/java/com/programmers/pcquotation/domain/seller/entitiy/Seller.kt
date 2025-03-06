@@ -2,7 +2,6 @@ package com.programmers.pcquotation.domain.seller.entitiy
 
 import com.programmers.pcquotation.domain.member.entitiy.Member
 import jakarta.persistence.*
-import lombok.*
 import org.springframework.security.core.GrantedAuthority
 import org.springframework.security.core.authority.SimpleGrantedAuthority
 
@@ -41,22 +40,46 @@ class Seller : Member<Any?> {
 	*/
     // @OneToMany(mappedBy = "seller", cascade = CascadeType.ALL, orphanRemoval = true)
     // private List<Comment> comments;
-    override var authorities: Collection<GrantedAuthority>? =listOf("ROLE_SELLER").stream()
-            .map { role: String? -> SimpleGrantedAuthority(role) }
-            .toList()
+    override var authorities: Collection<GrantedAuthority>? = listOf("ROLE_SELLER").stream()
+        .map { role: String? -> SimpleGrantedAuthority(role) }
+        .toList()
+
     constructor()
-    constructor(username:String,
-                password:String,
-                companyName:String,
-                email:String,
-                verificationQuestion:String,
-                verificationAnswer:String){
+    constructor(
+        username: String,
+        password: String,
+        companyName: String,
+        email: String,
+        verificationQuestion: String,
+        verificationAnswer: String
+    ) {
         this.username = username
         this.password = password
         this.companyName = companyName
         this.email = email
         this.verificationQuestion = verificationQuestion
         this.verificationAnswer = verificationAnswer
+    }
+    constructor(
+        id: Long,
+        username: String,
+        password: String,
+        companyName: String,
+        email: String,
+        verificationQuestion: String,
+        verificationAnswer: String,
+        isVerified:Boolean,
+        apiKey: String
+    ) {
+        this.id = id
+        this.username = username
+        this.password = password
+        this.companyName = companyName
+        this.email = email
+        this.verificationQuestion = verificationQuestion
+        this.verificationAnswer = verificationAnswer
+        this.isVerified = isVerified
+        this.apiKey = apiKey
     }
 
 }
