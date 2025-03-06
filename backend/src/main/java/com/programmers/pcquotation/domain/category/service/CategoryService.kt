@@ -20,6 +20,11 @@ open class CategoryService(
     private val categoryRepository: CategoryRepository
 ) {
 
+    private fun getCategory(id: Long): Category {
+        return categoryRepository.findById(id)
+            .orElseThrow { CategoryNotFoundException(id) }
+    }
+
     @Transactional
     open fun addCategory(request: CategoryCreateRequest): CategoryCreateResponse {
         val category = Category(category = request.category)
@@ -41,9 +46,7 @@ open class CategoryService(
 
     @Transactional
     open fun updateCategory(id: Long, request: CategoryUpdateRequest): CategoryUpdateResponse {
-        val category = categoryRepository.findById(id)
-            .orElseThrow { CategoryNotFoundException(id) }
-
+        val category = getCategory(id)
         category.updateCategory(request.category)
 
         categoryRepository.save(category)
@@ -53,8 +56,7 @@ open class CategoryService(
 
     @Transactional
     open fun deleteCategory(id: Long): CategoryDeleteResponse {
-        val category = categoryRepository.findById(id)
-            .orElseThrow { CategoryNotFoundException(id) }
+        val category = getCategory(id)
 
         categoryRepository.delete(category)
 
