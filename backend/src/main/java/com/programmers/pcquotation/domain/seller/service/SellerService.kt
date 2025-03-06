@@ -5,7 +5,6 @@ import com.programmers.pcquotation.domain.seller.dto.SellerUpdateDto
 import com.programmers.pcquotation.domain.seller.entitiy.Seller
 import com.programmers.pcquotation.domain.seller.repository.SellerRepository
 import lombok.RequiredArgsConstructor
-import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
 import java.util.*
 
@@ -14,7 +13,6 @@ import java.util.*
 @RequiredArgsConstructor
 class SellerService(
     private val sellerRepository: SellerRepository,
-    private val passwordEncoder: PasswordEncoder
 ) {
 
 
@@ -27,13 +25,13 @@ class SellerService(
         return seller
     }
 
-    fun modify(seller: Seller, customerUpdateDto: SellerUpdateDto): Seller {
-        if (seller.password == customerUpdateDto.password) {
-            if (customerUpdateDto.userName!!.isNotEmpty()) seller.username = customerUpdateDto.userName
-            if (customerUpdateDto.companyName!!.isNotEmpty()) seller.companyName = customerUpdateDto.companyName
-            if (customerUpdateDto.newPassword!!.isNotEmpty()) {
-                if (customerUpdateDto.newPassword == customerUpdateDto.confirmNewPassword) seller.password =
-                    customerUpdateDto.newPassword
+    fun modify(seller: Seller, sellerUpdateDto: SellerUpdateDto): Seller {
+        if (seller.password == sellerUpdateDto.password) {
+            if (sellerUpdateDto.userName!!.isNotEmpty()) seller.username = sellerUpdateDto.userName
+            if (sellerUpdateDto.companyName!!.isNotEmpty()) seller.companyName = sellerUpdateDto.companyName
+            if (sellerUpdateDto.newPassword!!.isNotEmpty()) {
+                if (sellerUpdateDto.newPassword == sellerUpdateDto.confirmNewPassword) seller.password =
+                    sellerUpdateDto.newPassword
                 else throw NoSuchElementException("비밀번호가 일치하지않습니다.")
             }
         }
@@ -41,11 +39,11 @@ class SellerService(
         return seller
     }
 
-    fun findById(id: Long): Optional<Member<*>> {
+    fun findById(id: Long): Optional<Member> {
         return sellerRepository.findById(id).map { seller: Seller? -> seller }
     }
 
-    fun findByApiKey(apiKey: String): Optional<Member<*>> {
+    fun findByApiKey(apiKey: String): Optional<Member> {
         return sellerRepository.findByApiKey(apiKey).map { seller: Seller? -> seller }
     }
 

@@ -8,7 +8,7 @@ import org.springframework.security.core.GrantedAuthority
 import org.springframework.security.core.authority.SimpleGrantedAuthority
 
 @Entity
-class Customer : Member<Any?> {
+class Customer : Member{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     override var id: Long? = null
@@ -26,19 +26,17 @@ class Customer : Member<Any?> {
     @Column(unique = true)
     override var apiKey: String? = null
 
-    override var authorities: Collection<GrantedAuthority>? = listOf("ROLE_CUSTOMER").stream()
-        .map { role: String? -> SimpleGrantedAuthority(role) }
-        .toList()
+    override var authorities: Collection<GrantedAuthority>? =
+        listOf("ROLE_CUSTOMER").stream().map { role: String? -> SimpleGrantedAuthority(role) }.toList()
 
     @OneToMany(mappedBy = "customer", cascade = [CascadeType.ALL], orphanRemoval = true)
     var comments: MutableList<Comment> = mutableListOf()
 
     constructor(
-        username: String,
-        password: String
+        username: String, password: String
     ) {
         this.username = username
-        this.password =password
+        this.password = password
     }
 
     constructor(

@@ -12,9 +12,9 @@ import java.security.Principal
 @RequiredArgsConstructor
 @RestController
 @RequestMapping(("/customer"))
-class CustomerController (
+class CustomerController(
     private val customerService: CustomerService
-){
+) {
 
     @GetMapping
     @Transactional(readOnly = true)
@@ -27,6 +27,7 @@ class CustomerController (
             customer.id,
             customer.username,
             customer.customerName,
-            customer.email)
+            customer.email
+        )
     }
 }

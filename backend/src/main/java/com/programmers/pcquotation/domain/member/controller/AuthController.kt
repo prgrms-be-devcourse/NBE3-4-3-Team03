@@ -16,14 +16,14 @@ import org.springframework.web.bind.annotation.*
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/api/auth")
-class AuthController (
+class AuthController(
     private val authService: AuthService
-){
+) {
 
     @PostMapping("/signup/customer")
     fun signup(@RequestBody customerSignupRequest: CustomerSignupRequest): ResponseEntity<CustomerSignupResponse> {
         val signupResponse = authService.processSignup(customerSignupRequest)
-            return ResponseEntity(signupResponse, HttpStatus.CREATED)
+        return ResponseEntity(signupResponse, HttpStatus.CREATED)
     }
 
     @PostMapping("/signup/seller")

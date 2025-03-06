@@ -5,7 +5,7 @@ import lombok.AllArgsConstructor
 import lombok.Getter
 
 
-data class CustomerSignupRequest (
+data class CustomerSignupRequest(
     var username: String?,
     var password: String?,
     var confirmPassword: String?,
@@ -14,8 +14,7 @@ data class CustomerSignupRequest (
     var verificationQuestion: String?,
     var verificationAnswer: String?,
 
-)
-{
+    ) {
 
     fun toCustomer(): Customer {
         return Customer(

@@ -2,17 +2,11 @@ package com.programmers.pcquotation.domain.admin.entitiy
 
 import com.programmers.pcquotation.domain.member.entitiy.Member
 import jakarta.persistence.*
-import lombok.*
 import org.springframework.security.core.GrantedAuthority
 import org.springframework.security.core.authority.SimpleGrantedAuthority
 
 @Entity
-@Getter
-@Setter
-@Builder
-@NoArgsConstructor
-@AllArgsConstructor
-class Admin : Member<Any?> {
+class Admin : Member {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     override // AUTO_INCREMENT
@@ -27,11 +21,11 @@ class Admin : Member<Any?> {
     @Column(unique = true)
     override var apiKey: String? = null
 
-    override var authorities: Collection<GrantedAuthority>?
-         = listOf("ROLE_ADMIN").stream()
-            .map { role: String? -> SimpleGrantedAuthority(role) }
-            .toList()
-    constructor(username:String,password:String){
+    override var authorities: Collection<GrantedAuthority>? = listOf("ROLE_ADMIN").stream()
+        .map { role: String? -> SimpleGrantedAuthority(role) }
+        .toList()
+
+    constructor(username: String, password: String) {
         this.username = username
         this.password = password
     }

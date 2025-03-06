@@ -9,23 +9,23 @@ import java.util.*
 
 @Service
 @RequiredArgsConstructor
-class AdminService (
+class AdminService(
     private val adminRepository: AdminRepository
-){
+) {
 
     fun findAdminByUsername(username: String): Optional<Admin> {
         return adminRepository.findByUsername(username)
     }
 
-    fun findById(id: Long): Optional<Member<*>> {
-        return adminRepository.findById(id).map { admin: Member<*> -> admin }
+    fun findById(id: Long): Optional<Member> {
+        return adminRepository.findById(id).map { admin: Member -> admin }
     }
 
     fun create(admin: Admin) {
         adminRepository.save(admin)
     }
 
-    fun findByApiKey(apiKey: String): Optional<Member<*>> {
-        return adminRepository.findByApiKey(apiKey).map { admin: Member<*> -> admin }
+    fun findByApiKey(apiKey: String): Optional<Member> {
+        return adminRepository.findByApiKey(apiKey).map { admin: Member -> admin }
     }
 }

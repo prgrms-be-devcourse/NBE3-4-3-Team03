@@ -9,10 +9,9 @@ import java.util.*
 
 @RequiredArgsConstructor
 @Service
-class CustomerService (
+class CustomerService(
     private val customerRepository: CustomerRepository
-){
-
+) {
 
     fun createCustomer(customer: Customer) {
         customerRepository.save(customer)
@@ -28,11 +27,11 @@ class CustomerService (
         return customerRepository.getCustomerByEmail(email)
     }
 
-    fun findByApiKey(apiKey: String): Optional<Member<*>> {
-        return customerRepository.findByApiKey(apiKey).map { customer: Member<*>? -> customer }
+    fun findByApiKey(apiKey: String): Optional<Member> {
+        return customerRepository.findByApiKey(apiKey).map { customer: Member? -> customer }
     }
 
-    fun findById(id: Long): Optional<Member<*>> {
-        return customerRepository.findById(id).map { customer: Member<*>? -> customer }
+    fun findById(id: Long): Optional<Member> {
+        return customerRepository.findById(id).map { customer: Member? -> customer }
     }
 }

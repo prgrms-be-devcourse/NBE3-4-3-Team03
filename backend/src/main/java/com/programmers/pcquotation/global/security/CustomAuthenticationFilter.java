@@ -59,8 +59,8 @@ public class CustomAuthenticationFilter extends OncePerRequestFilter {
 
 	}
 
-	private Optional<Member<?>> refreshAccessTokenByApiKey(String apiKey, UserType userType) {
-		Optional<Member<?>> opMemberByApiKey = authService.findByApiKey(apiKey, userType);
+	private Optional<Member> refreshAccessTokenByApiKey(String apiKey, UserType userType) {
+		Optional<Member> opMemberByApiKey = authService.findByApiKey(apiKey, userType);
 
 		if (opMemberByApiKey.isEmpty()) {
 			return Optional.empty();
@@ -88,7 +88,7 @@ public class CustomAuthenticationFilter extends OncePerRequestFilter {
 		String accessToken = authTokens.accessToken;
 		UserType userType = authTokens.userType;
 
-		Optional<Member<?>> member = authService.getMemberFromAccessToken(accessToken, userType);
+		Optional<Member> member = authService.getMemberFromAccessToken(accessToken, userType);
 		if (member.isEmpty())
 			member = refreshAccessTokenByApiKey(apiKey, userType);
 		if (member.isPresent())

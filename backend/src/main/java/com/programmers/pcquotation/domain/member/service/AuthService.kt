@@ -23,7 +23,6 @@ import org.springframework.beans.factory.annotation.Value
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
 import java.util.*
-import java.util.Optional.*
 
 @RequiredArgsConstructor
 @Service
@@ -124,7 +123,7 @@ class AuthService(
                 Seller,
                 "로그인 성공"
             )
-        }?:throw  Exception()
+        } ?: throw Exception()
     }
 
     fun processLoginAdmin(loginRequest: LoginRequest): LoginResponse {
@@ -158,7 +157,7 @@ class AuthService(
             return AuthRequest(userType)
         }
 
-    fun getMemberFromAccessToken(accessToken: String, userType: UserType): Optional<Member<*>> {
+    fun getMemberFromAccessToken(accessToken: String, userType: UserType): Optional<Member> {
         val payload = this.payload(accessToken) ?: return Optional.empty()
 
         val id = payload["id"] as Long
@@ -166,17 +165,20 @@ class AuthService(
             Seller -> {
                 sellerService.findById(id)
             }
+
             Customer -> {
                 customerService.findById(id)
             }
+
             Admin -> {
                 adminService.findById(id)
             }
+
             Nothing -> Optional.empty()
         }
     }
 
-    fun getAccessToken(member: Member<*>): String {
+    fun getAccessToken(member: Member): String {
         val id = member.id
         val username = member.username
         return Jwt.toString(
@@ -186,7 +188,7 @@ class AuthService(
         )
     }
 
-    fun findByApiKey(apiKey: String, userType: UserType): Optional<Member<*>> {
+    fun findByApiKey(apiKey: String, userType: UserType): Optional<Member> {
         return when (userType) {
             Customer -> {
                 customerService.findByApiKey(apiKey)

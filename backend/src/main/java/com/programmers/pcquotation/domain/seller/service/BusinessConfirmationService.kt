@@ -37,7 +37,7 @@ class BusinessConfirmationService(
 
     fun bSttValueCheck(bSttValue: String, status: OpenApiStatus): Boolean {
         val value = status.value
-        return value  == bSttValue
+        return value == bSttValue
     }
 
     @Throws(JSONException::class)

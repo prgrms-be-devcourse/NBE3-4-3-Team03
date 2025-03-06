@@ -4,7 +4,7 @@ import lombok.Builder
 import lombok.Getter
 
 
-data class CustomerInfoResponse (
+data class CustomerInfoResponse(
     var id: Long?,
     var username: String?,
     var customerName: String?,
