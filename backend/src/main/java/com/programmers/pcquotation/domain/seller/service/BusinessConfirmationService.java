@@ -32,7 +32,7 @@ public class BusinessConfirmationService {
 			HttpURLConnection conn = connect(apiUrl + encodedKey);
 			send(conn, jsonData);
 			String bSttValue = receive(conn);
-			return bSttValueCheck(bSttValue, run);
+			return bSttValueCheck(bSttValue, OpenApiStatus.RUN);
 		} catch (JSONException | IOException e) {
 			throw new RuntimeException(e);
 		}
