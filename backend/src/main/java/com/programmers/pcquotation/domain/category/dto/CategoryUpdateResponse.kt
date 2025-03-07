@@ -1,7 +1,6 @@
 package com.programmers.pcquotation.domain.category.dto;
 
-public record CategoryUpdateResponse(
-	Long id,
-	String message
-) {
-}
+data class CategoryUpdateResponse(
+	val id: Long,
+	val message: String
+)

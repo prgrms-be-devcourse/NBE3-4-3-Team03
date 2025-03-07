@@ -9,6 +9,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.Optional;
 
 import org.springframework.http.MediaType;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 
@@ -18,7 +19,7 @@ import com.programmers.pcquotation.domain.customer.entity.Customer;
 import com.programmers.pcquotation.domain.customer.service.CustomerService;
 import com.programmers.pcquotation.domain.seller.entitiy.Seller;
 import com.programmers.pcquotation.domain.seller.service.SellerService;
-
+@ActiveProfiles("test")
 public class util {
 	public static Seller registerSeller(String username, String password, MockMvc mvc, SellerService sellerService) throws Exception {
 		ResultActions resultActions = mvc
@@ -92,7 +93,7 @@ public class util {
 			)
 			.andDo(print())
 			.andExpect(status().isCreated())
-			.andExpect(jsonPath("$.message").value("회원가입 성공"));;
+			.andExpect(jsonPath("$.message").value("회원가입 성공"));
 		Optional<Customer> customer = customerService.findCustomerByUsername(username);
 		assertNotNull(customer.get());
 		return customer.get();

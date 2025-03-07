@@ -13,10 +13,13 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.programmers.pcquotation.domain.chat.service.ChatRoomService;
+import com.programmers.pcquotation.domain.chat.service.ChatService;
 import com.programmers.pcquotation.domain.estimate.dto.EstimateCreateRequest;
-import com.programmers.pcquotation.domain.estimate.dto.EstimateSellerResDto;
+import com.programmers.pcquotation.domain.estimate.dto.EstimateForSellerResponse;
 import com.programmers.pcquotation.domain.estimate.dto.EstimateUpdateReqDto;
-import com.programmers.pcquotation.domain.estimate.dto.ReceivedQuoteDTO;
+import com.programmers.pcquotation.domain.estimate.dto.EstimateForCustomerResponse;
+import com.programmers.pcquotation.domain.estimate.entity.Estimate;
 import com.programmers.pcquotation.domain.estimate.service.EstimateService;
 
 import lombok.AllArgsConstructor;
@@ -25,10 +28,13 @@ import lombok.AllArgsConstructor;
 @AllArgsConstructor
 public class EstimateController {
 	private final EstimateService estimateService;
+	private final ChatService chatService;
+	private final ChatRoomService chatRoomService;
 
 	@PostMapping("/api/estimate")
 	public ResponseEntity<String> createEstimate(@RequestBody EstimateCreateRequest request, Principal principal) {
-		estimateService.createEstimate(request, principal.getName());
+		Estimate estimate = estimateService.createEstimate(request, principal.getName());
+		chatRoomService.createChatRoom(estimate);
 		return ResponseEntity.ok().body("");
 	}
 
@@ -40,19 +46,21 @@ public class EstimateController {
 
 	@DeleteMapping("/api/estimate/{id}")
 	public ResponseEntity<String> deleteEstimate(@PathVariable Integer id) {
+		chatService.deleteChat(id);
+		chatRoomService.deleteChatRoom(id);
 		estimateService.deleteEstimate(id);
 		return ResponseEntity.ok().body("");
 	}
 
 	@GetMapping("/api/estimate/{id}")
-	public ResponseEntity<List<ReceivedQuoteDTO>> getEstimateByRequest(@PathVariable Integer id) {
-		List<ReceivedQuoteDTO> estimateByRequest = estimateService.getEstimateByRequest(id);
+	public ResponseEntity<List<EstimateForCustomerResponse>> getEstimateByRequest(@PathVariable Integer id) {
+		List<EstimateForCustomerResponse> estimateByRequest = estimateService.getEstimateByRequest(id);
 		return new ResponseEntity<>(estimateByRequest, HttpStatus.OK);
 	}
 
 	@GetMapping("/api/estimate/seller")
-	public ResponseEntity<List<EstimateSellerResDto>> getEstimateByRequest(Principal principal) {
-		List<EstimateSellerResDto> estimateBySeller = estimateService.getEstimateBySeller(principal.getName());
+	public ResponseEntity<List<EstimateForSellerResponse>> getEstimateByRequest(Principal principal) {
+		List<EstimateForSellerResponse> estimateBySeller = estimateService.getEstimateBySeller(principal.getName());
 		return new ResponseEntity<>(estimateBySeller, HttpStatus.OK);
 	}
 

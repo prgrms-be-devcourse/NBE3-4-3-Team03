@@ -153,10 +153,10 @@ export default function CreateEstimate() {
     // 견적 데이터 구성
     const estimateSubmitData = {
       estimateRequestId: parseInt(requestId),
-      item: Object.values(estimateData)
+      items: Object.values(estimateData)
         .filter(item => item !== null)
         .map(item => ({
-          item: item.id,
+          itemId: item.id,
           price: item.price || 0
         }))
     };

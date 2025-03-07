@@ -6,10 +6,10 @@ import lombok.Getter;
 @AllArgsConstructor
 @Getter
 public enum OpenApiStatus {
-	run("계속사업자"),
-	Suspension("휴업자"),
-	Closure("폐업자"),
-	None("");
-	private final String value;
+	RUN("계속사업자"),
+	SUSPENSION("휴업자"),
+	CLOSURE("폐업자"),
+	NONE("");
+	public final String value;
 
 }

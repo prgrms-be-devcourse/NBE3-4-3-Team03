@@ -1,13 +1,8 @@
-package com.programmers.pcquotation.domain.customer.dto;
+package com.programmers.pcquotation.domain.customer.dto
 
-import lombok.Builder;
-import lombok.Getter;
-
-@Builder
-@Getter
-public class CustomerInfoResponse {
-    private Long id;
-    private String username;
-    private String customerName;
-    private String email;
-}
+data class CustomerInfoResponse(
+    var id: Long?,
+    var username: String?,
+    var customerName: String?,
+    var email: String?
+)

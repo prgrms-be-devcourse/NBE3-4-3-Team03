@@ -1,4 +1,3 @@
-package com.programmers.pcquotation.domain.customer.exception;
+package com.programmers.pcquotation.domain.customer.exception
 
-public class CustomerAlreadyExistException extends RuntimeException {
-}
+class CustomerAlreadyExistException : RuntimeException()

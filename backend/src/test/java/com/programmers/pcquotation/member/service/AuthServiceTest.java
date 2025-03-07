@@ -16,6 +16,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
 import java.util.Optional;
@@ -23,7 +24,7 @@ import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
-
+@ActiveProfiles("test")
 @SpringBootTest
 public class AuthServiceTest {
     @Autowired
@@ -115,10 +116,9 @@ public class AuthServiceTest {
                 "1234"
         );
 
-        Customer customer = Customer.builder()
-                .username("user1")
-                .password("1111")
-                .build();
+        Customer customer = new Customer(
+                "user1",
+                "1111");
 
         when(customerRepository.getCustomerByUsername("user1")).thenReturn(Optional.of(customer));
 

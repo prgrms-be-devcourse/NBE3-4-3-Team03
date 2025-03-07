@@ -1,30 +1,27 @@
-package com.programmers.pcquotation.domain.customer.dto;
+package com.programmers.pcquotation.domain.customer.dto
 
-import com.programmers.pcquotation.domain.customer.entity.Customer;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import com.programmers.pcquotation.domain.customer.entity.Customer
 
-@AllArgsConstructor
-@NoArgsConstructor
-@Getter
-public class CustomerSignupRequest {
-    private String username;
-    private String password;
-    private String confirmPassword;
-    private String customerName;
-    private String email;
-    private String verificationQuestion;
-    private String verificationAnswer;
 
-    public Customer toCustomer() {
-        return Customer.builder()
-                .username(username)
-                .password(password)
-                .customerName(customerName)
-                .email(email)
-                .verificationQuestion(verificationQuestion)
-                .verificationAnswer(verificationAnswer)
-                .build();
+data class CustomerSignupRequest(
+    var username: String = "",
+    var password: String = "",
+    var confirmPassword: String = "",
+    var customerName: String = "",
+    var email: String = "",
+    var verificationQuestion: String = "",
+    var verificationAnswer: String = "",
+
+    ) {
+
+    fun toCustomer(): Customer {
+        return Customer(
+            username,
+            password,
+            customerName,
+            email,
+            verificationQuestion,
+            verificationAnswer
+        )
     }
 }

@@ -1,8 +1,5 @@
 package com.programmers.pcquotation.domain.item.service;
 
-import java.util.List;
-import java.util.stream.Collectors;
-
 import org.springframework.stereotype.Service;
 
 import com.programmers.pcquotation.domain.category.entity.Category;
@@ -18,105 +15,85 @@ import com.programmers.pcquotation.domain.item.exception.ItemNotFoundException;
 import com.programmers.pcquotation.domain.item.repository.ItemRepository;
 
 import jakarta.transaction.Transactional;
-import lombok.RequiredArgsConstructor;
-
-;
 
 @Service
-@RequiredArgsConstructor
-public class ItemService {
+class ItemService(
+    private val itemRepository: ItemRepository,
+    private val imageService: ImageService,
+    private val categoryRepository: CategoryRepository
+) {
 
-	private final ItemRepository itemRepository;
-	private final ImageService imageService;
-	private final CategoryRepository categoryRepository;
+    @Transactional
+    fun addItem(request: ItemCreateRequest): ItemCreateResponse {
+        val category: Category = categoryRepository.findById(request.categoryId)
+            .orElseThrow { IllegalArgumentException("유효하지 않은 카테고리 ID입니다.") }
 
-	//부품 생성
-	@Transactional
-	public ItemCreateResponse addItem(final ItemCreateRequest request) {
+        val filename = imageService.storeImage(request.image)
 
-		Category category = categoryRepository.findById(request.categoryId())
-			.orElseThrow(() -> new IllegalArgumentException("유효하지 않은 카테고리 ID입니다."));
+        val item = Item(
+            name = request.name,
+            imgFilename = filename,
+            category = category
+        )
 
-		String filename = imageService.storeImage(request.image());
+        val savedItem = itemRepository.save(item)
 
-		Item item = Item.builder()
-			.category(category)
-			.name(request.name())
-			.imgFilename(filename)
-			.build();
+        val id = savedItem.id ?: throw IllegalStateException("부품 생성 후 ID가 null입니다.")
+        return ItemCreateResponse(id, "부품 생성 완료")
+    }
 
-		Item savedItem = itemRepository.save(item);
 
-		return new ItemCreateResponse(savedItem.getId(), "부품 생성 완료");
-	}
+    @Transactional
+    fun getItemList(): List<ItemInfoResponse> {
+        return itemRepository.findAll().map { toItemInfoResponse(it) }
+    }
 
-	//모든 부품 조회
-	@Transactional
-	public List<ItemInfoResponse> getItemList() {
-		List<Item> items = itemRepository.findAll();
-		return items.stream()
-			.map(item -> new ItemInfoResponse(
-				item.getId(),
-				item.getName(),                     // 부품 이름 (name)
-				item.getCategory().getId(),         // 카테고리 ID
-				item.getCategory().getCategory(),   // 카테고리 이름 (categoryName)
-				item.getImgFilename()               // 이미지 파일명
-			))
-			.collect(Collectors.toList());
-	}
+    @Transactional
+    fun getItemsByCategory(categoryId: Long): List<ItemInfoResponse> {
+        return itemRepository.findByCategoryId(categoryId).map { toItemInfoResponse(it) }
+    }
 
-	//특정 카테고리의 아이템만 조회
-	@Transactional
-	public List<ItemInfoResponse> getItemsByCategory(Long categoryId) {
-		List<Item> items = itemRepository.findByCategoryId(categoryId); // JPA에서 categoryId로 조회
-		return items.stream()
-			.map(item -> new ItemInfoResponse(
-				item.getId(),
-				item.getName(),
-				item.getCategory().getId(),
-				item.getCategory().getCategory(),
-				item.getImgFilename()
-			))
-			.collect(Collectors.toList());
-	}
 
-	//부품 수정
-	@Transactional
-	public ItemUpdateResponse updateItem(Long id, ItemUpdateRequest request) {
-		Item item = itemRepository.findById(id)
-			.orElseThrow(() -> new ItemNotFoundException(id));
+    @Transactional
+    fun updateItem(id: Long, request: ItemUpdateRequest): ItemUpdateResponse {
+        val item: Item = itemRepository.findById(id)
+            .orElseThrow { ItemNotFoundException(id) }
 
-		Category category = categoryRepository.findById(request.categoryId())
-			.orElseThrow(() -> new IllegalArgumentException("유효하지 않은 카테고리 ID입니다."));
+        val category: Category = categoryRepository.findById(request.categoryId)
+            .orElseThrow { IllegalArgumentException("유효하지 않은 카테고리 ID입니다.") }
 
-		String imgFilename = request.imgFilename();
+        val imgFilename = request.imgFilename.takeIf { !it.isNullOrEmpty() } ?: item.imgFilename
 
-		// imgFilename이 null이거나 비어있다면 기존의 filename을 사용
-		if (imgFilename == null || imgFilename.isEmpty()) {
-			imgFilename = item.getImgFilename(); // 기존 이미지 파일 이름을 가져옴
-		}
+        item.updateItem(
+            request.name,
+            imgFilename,
+            category
+        )
 
-		item.updateItem(
-			request.name(),
-			imgFilename,
-			category
-		);
+        return ItemUpdateResponse(id, "부품 수정 완료")
+    }
 
-		return new ItemUpdateResponse(id, "부품 수정 완료");
-	}
+    @Transactional
+    fun deleteItem(id: Long): ItemDeleteResponse {
+        val item: Item = itemRepository.findById(id)
+            .orElseThrow { ItemNotFoundException(id) }
 
-	//부품 삭제
-	@Transactional
-	public ItemDeleteResponse deleteItem(Long id) {
-		Item item = itemRepository.findById(id)
-			.orElseThrow(() -> new ItemNotFoundException(id));
+        itemRepository.delete(item)
 
-		itemRepository.delete(item);
+        return ItemDeleteResponse(id, "부품 삭제 완료")
+    }
 
-		return new ItemDeleteResponse(id, "부품 삭제 완료");
-	}
+    fun findByName(name: String): Item? {
+        return itemRepository.findByName(name).orElse(null)
+    }
 
-	public Item findByName(String name){
-		return itemRepository.findByName(name).orElse(null);
-	}
+    private fun toItemInfoResponse(item: Item): ItemInfoResponse {
+        return ItemInfoResponse(
+            id = item.id!!,
+            name = item.name,
+            categoryId = item.category.id,
+            categoryName = item.category.category,
+            filename = item.imgFilename
+        )
+    }
 }
