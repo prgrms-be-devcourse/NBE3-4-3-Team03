@@ -19,10 +19,10 @@ class EstimateService(
     private val estimateRepository: EstimateRepository,
     private val estimateRequestService: EstimateRequestService,
     private val sellerService: SellerService,
-    private val itemRepository: ItemRepository,
+    private val itemRepository: ItemRepository
 ) {
     @Transactional
-    fun createEstimate(request: EstimateCreateRequest, sellerName: String):Estimate {
+    fun createEstimate(request: EstimateCreateRequest, sellerName: String): Estimate {
         val estimateRequest = estimateRequestService.getEstimateRequestById(request.estimateRequestId)
             .orElseThrow { NoSuchElementException("존재하지 않는 견적 요청입니다.") }
 
@@ -41,13 +41,16 @@ class EstimateService(
         return estimateRepository.save(estimate)
     }
 
-    fun getEstimatesForCustomer(id: Int): List<EstimateForCustomerResponse> {
-        val list = estimateRepository.getAllByEstimateRequestId(id)
+    fun getEstimatesByEstimateRequest(estimateRequestId: Int): List<EstimateResponse> {
+        val estimates = estimateRepository.getAllByEstimateRequestId(estimateRequestId)
 
-        return list.map { estimate ->
+        return estimates.map { estimate ->
             with(estimate) {
-                EstimateForCustomerResponse(
-                    id = estimate.id, //요청 id가 들어가서 변경함
+                EstimateResponse(
+                    id = estimate.id,
+                    purpose = estimateRequest.purpose,
+                    budget = estimateRequest.budget,
+                    customerName = estimateRequest.customer.customerName,
                     companyName = seller.companyName,
                     createdDate = createDate,
                     totalPrice = totalPrice,
@@ -63,19 +66,20 @@ class EstimateService(
         }
     }
 
-    fun getEstimatesForSeller(username: String): List<EstimateForSellerResponse> {
+    fun getEstimatesBySeller(username: String): List<EstimateResponse> {
         val seller = sellerService.findByUserName(username)
             .orElseThrow { NoSuchElementException("존재하지 않는 판매자입니다.") }
 
-        val list = estimateRepository.getAllBySeller(seller).toList()
+        val estimates = estimateRepository.getAllBySeller(seller)
 
-        return list.map { estimate ->
+        return estimates.map { estimate ->
             with(estimate) {
-                EstimateForSellerResponse(
+                EstimateResponse(
                     id = id,
                     purpose = estimateRequest.purpose,
                     budget = estimateRequest.budget,
                     customerName = estimateRequest.customer.customerName,
+                    companyName = seller.companyName,
                     createdDate = estimateRequest.createDate,
                     totalPrice = totalPrice,
                     items = estimateComponents.stream()

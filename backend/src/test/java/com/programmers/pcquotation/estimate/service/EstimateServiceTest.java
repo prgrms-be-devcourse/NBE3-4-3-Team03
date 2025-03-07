@@ -172,22 +172,22 @@ public class EstimateServiceTest {
     public void getEstimateByEstimateRequest_Success() {
         when(estimateRepository.getAllByEstimateRequestId(1)).thenReturn(List.of(sampleEstimate));
 
-        assertEquals(1, estimateService.getEstimatesForCustomer(1).size());
+        assertEquals(1, estimateService.getEstimatesByEstimateRequest(1).size());
     }
 
     @Test
-    public void getEstimatesForSeller_Success() {
+    public void getEstimatesBySeller_Success() {
         when(sellerService.findByUserName("seller1")).thenReturn(Optional.of(sampleSeller));
         when(estimateRepository.getAllBySeller(sampleSeller)).thenReturn(List.of(sampleEstimate));
 
-        assertEquals(1, estimateService.getEstimatesForSeller("seller1").size());
+        assertEquals(1, estimateService.getEstimatesBySeller("seller1").size());
     }
 
     @Test
-    public void getEstimatesForSeller_SellerNotFound() {
+    public void getEstimatesBySeller_SellerNotFound() {
         when(sellerService.findByUserName("seller1")).thenReturn(Optional.empty());
 
-        assertThrows(NoSuchElementException.class, () -> estimateService.getEstimatesForSeller("seller1"));
+        assertThrows(NoSuchElementException.class, () -> estimateService.getEstimatesBySeller("seller1"));
     }
 
     @Test

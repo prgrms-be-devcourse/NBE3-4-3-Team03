@@ -1,9 +1,6 @@
 package com.programmers.pcquotation.domain.estimate.controller
 
-import com.programmers.pcquotation.domain.estimate.dto.EstimateCreateRequest
-import com.programmers.pcquotation.domain.estimate.dto.EstimateForCustomerResponse
-import com.programmers.pcquotation.domain.estimate.dto.EstimateForSellerResponse
-import com.programmers.pcquotation.domain.estimate.dto.EstimateUpdateReqDto
+import com.programmers.pcquotation.domain.estimate.dto.*
 import com.programmers.pcquotation.domain.estimate.service.EstimateService
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
@@ -39,16 +36,16 @@ class EstimateController(
     @GetMapping("/{id}/customer")
     fun getEstimatesForCustomer(
         @PathVariable("id") id: Int
-    ): ResponseEntity<List<EstimateForCustomerResponse>> {
-        val estimates = estimateService.getEstimatesForCustomer(id)
+    ): ResponseEntity<List<EstimateResponse>> {
+        val estimates = estimateService.getEstimatesByEstimateRequest(id)
         return ResponseEntity(estimates, HttpStatus.OK)
     }
 
     @GetMapping("/seller")
     fun getEstimatesForSeller(
         principal: Principal
-    ): ResponseEntity<List<EstimateForSellerResponse>> {
-        val estimates = estimateService.getEstimatesForSeller(principal.name)
+    ): ResponseEntity<List<EstimateResponse>> {
+        val estimates = estimateService.getEstimatesBySeller(principal.name)
         return ResponseEntity(estimates, HttpStatus.OK)
     }
 }
