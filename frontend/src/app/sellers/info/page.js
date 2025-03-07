@@ -499,7 +499,7 @@ const fetchComments = async (estimateId) => {
                                     <button
                                         className="px-3 py-1 rounded-lg border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
                                         onClick={() => {
-                                          router.push(`/estimate/update?estimateId=${quote.id}&requestId=${quote.estimateRequestId}&customerName=${quote.customer}&budget=${quote.budget}&purpose=${quote.purpose}&createDate=${quote.date}`);
+                                          router.push(`/estimate/update?estimateId=${quote.id}&requestId=${quote.estimateRequestId}&customerName=${quote.customerName}&budget=${quote.budget}&purpose=${quote.purpose}&createDate=${quote.createdDate}`);
                                         }}
                                     >
                                       수정

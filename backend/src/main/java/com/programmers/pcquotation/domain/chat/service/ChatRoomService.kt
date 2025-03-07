@@ -12,6 +12,7 @@ class ChatRoomService(private val chatRoomRepository: ChatRoomRepository) {
         val chatRoom = ChatRoom(estimate)
         chatRoomRepository.save(chatRoom)
     }
+
     fun deleteChatRoom(estimate: Estimate){
         chatRoomRepository.deleteByEstimate(estimate);
     }

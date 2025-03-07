@@ -8,4 +8,5 @@ import org.springframework.stereotype.Repository
 
 interface ChatRepository : JpaRepository<Chat, Long>{
     fun findByChatRoom(chatRoom: ChatRoom): MutableList<Chat>
+    fun deleteByChatRoom(chatRoom: ChatRoom)
 }

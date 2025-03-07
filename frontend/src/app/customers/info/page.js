@@ -8,13 +8,14 @@ import { Client } from '@stomp/stompjs';
  *
  * @param {{id:number}} quote
  * @param {({id:number})=>{}} onConfirm
- * @param {({id:number})=>{}} onComment
+ * @param {({id:number})=>{}} onChat
  * @param {({id:number})=>{}} onSelectQuote
  * @returns
  */
-const QuoteComponent = ({quote,onConfirm,onComment,onSelectQuote, onDelete, onEdit})=>{
+const QuoteComponent = ({quote,onConfirm,onChat,onSelectQuote, onDelete, onEdit})=>{
   const [selected,setSelected] = useState(false)
   const [receivedQuotes,setReceivedQuotes] = useState([])
+
   // 받은 견적 목록 조회
   useEffect(() => {
     if (!selected)return;
@@ -115,7 +116,7 @@ const QuoteComponent = ({quote,onConfirm,onComment,onSelectQuote, onDelete, onEd
                         </button>
                         <button
                             className="text-sm text-purple-600 hover:text-purple-500"
-                            onClick={()=>onComment(receivedQuote)}
+                            onClick={()=>onChat(receivedQuote)}
                         >
                           문의하기
                         </button>
@@ -133,8 +134,6 @@ export default function MyPage() {
   const router = useRouter();
   const [activeTab, setActiveTab] = useState('profile');
   const [selectedQuote, setSelectedQuote] = useState(null);
-  const [selectedQuoteForComment, setSelectedQuoteForComment] = useState(null);
-  const [commentText, setCommentText] = useState('');
   const [confirmQuote, setConfirmQuote] = useState(null);
   const [requestedQuotes, setRequestedQuotes] = useState([]);
   const [deliveryAddress, setDeliveryAddress] = useState('');
@@ -145,8 +144,7 @@ export default function MyPage() {
     customerName: '',
     email: ''
   });
-  const [comments, setComments] = useState([]);
-  
+
   // 채팅 관련 상태 추가
   const [stompClient, setStompClient] = useState(null);
   const [chatMessages, setChatMessages] = useState([]);
@@ -173,7 +171,7 @@ export default function MyPage() {
    *
    * @param {{id:number}} quoteId
    */
-  const onComment =(quote)=>{
+  const onChat =(quote)=>{
     handleOpenChat(quote);
   }
 
@@ -276,109 +274,7 @@ export default function MyPage() {
         }
     };
 
-  // 댓글 모달이 열릴 때 댓글 조회
-  useEffect(() => {
-    if (selectedQuoteForComment?.id) {
-      fetchComments(selectedQuoteForComment.id);
-    }
-  }, [selectedQuoteForComment]);
 
-  // 댓글 조회 함수
-  const fetchComments = async (estimateId) => {
-    try {
-      const response = await fetch(`http://localhost:8080/api/estimates/comments/${estimateId}`, {
-        credentials: 'include'
-      });
-
-      if (!response.ok) {
-        const errorData = await response.json().catch(() => null);
-        console.error('서버 응답:', errorData);
-        setComments([]);
-        return;
-      }
-
-      const data = await response.json();
-      console.log('받은 댓글 데이터:', data);
-      
-      const commentsWithType = data.map(comment => ({
-        ...comment,
-        type: comment.type || 'CUSTOMER'
-      }));
-      
-      setComments(commentsWithType);
-    } catch (error) {
-      console.error('댓글 불러오기 실패:', error);
-      setComments([]);
-    }
-  };
-
-  // 댓글 전송 함수
-  const handleSendComment = async () => {
-    if (!commentText.trim()) {
-      alert('댓글 내용을 입력해주세요.');
-      return;
-    }
-
-    try {
-      if (!selectedQuoteForComment?.id) {
-        console.error('견적 ID 누락:', selectedQuoteForComment);
-        throw new Error('견적 정보가 없습니다.');
-      }
-
-      const newComment = {
-        estimateId: parseInt(selectedQuoteForComment.id),
-        customerId: parseInt(customerInfo.id),
-        content: commentText,
-        createDate: new Date().toISOString(),
-        type: 'CUSTOMER'
-      };
-
-      console.log('전송할 댓글 데이터:', newComment);
-
-      const response = await fetch('http://localhost:8080/api/estimates/comments', {
-        method: 'POST',
-        headers: { 
-          'Content-Type': 'application/json'
-        },
-        credentials: 'include',
-        body: JSON.stringify(newComment),
-      });
-
-      if (!response.ok) {
-        const errorData = await response.json();
-        console.error('서버 응답 상세:', errorData);
-        throw new Error(errorData.message || '댓글 전송에 실패했습니다.');
-      }
-
-      const result = await response.json();
-      console.log('댓글 전송 성공:', result);
-
-      setCommentText('');
-      await fetchComments(selectedQuoteForComment.id);
-    } catch (error) {
-      console.error('댓글 전송 실패:', error);
-      alert(error.message);
-    }
-  };
-
-  // 댓글 입력 핸들러
-  const handleCommentChange = (e) => {
-    setCommentText(e.target.value);
-  };
-
-  // Enter 키 입력 처리
-  const onKeyPress = (e) => {
-    if (e.key === 'Enter' && !e.shiftKey) {
-      e.preventDefault();
-      handleSendComment();
-    }
-  };
-
-  // 견적 목록에서 댓글 버튼 클릭 시 호출되는 함수
-  const handleCommentClick = (quote) => {
-    console.log('댓글 버튼 클릭됨:', quote);
-    setSelectedQuoteForComment(quote);
-  };
 
   // 날짜 포맷팅 함수 추가
   const formatDate = (dateString) => {
@@ -468,7 +364,7 @@ export default function MyPage() {
     }
     
     try {
-      const destination = `/pub/chat.${selectedQuoteForComment.id}`;
+      const destination = `/pub/chat.${selectedQuote.id}`;
       const body = JSON.stringify({
         username: customerInfo.customerName || '구매자',
         content: chatInput
@@ -494,7 +390,7 @@ export default function MyPage() {
 
   // 문의하기 버튼 클릭 시 호출
   const handleOpenChat = async (quote) => {
-    setSelectedQuoteForComment(quote);
+    setSelectedQuote(quote);
     setChatMessages([]); // 채팅 메시지 초기화
     
     try {
@@ -551,7 +447,7 @@ export default function MyPage() {
     if (stompClient) {
       stompClient.deactivate();
     }
-    setSelectedQuoteForComment(null);
+    setSelectedQuote(null);
     setChatMessages([]);
   };
 
@@ -663,7 +559,7 @@ export default function MyPage() {
             <div>
               <div className="space-y-8">
                 {requestedQuotes.map(quote => (
-                    <QuoteComponent key={quote.id} quote={quote} onConfirm={onConfirm} onComment={onComment} onSelectQuote={onSelcectQuote}onDelete={handleDelete} onEdit={() => setEditQuote(quote)}/>             ))}
+                    <QuoteComponent key={quote.id} quote={quote} onConfirm={onConfirm} onChat={onChat} onSelectQuote={onSelcectQuote}onDelete={handleDelete} onEdit={() => setEditQuote(quote)}/>             ))}
               </div>
               <Link href="/estimateRequest">
                 <button
@@ -762,7 +658,7 @@ export default function MyPage() {
             </div>
         )}
 
-        {selectedQuoteForComment && (
+        {selectedQuote && (
             <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
               <div className="bg-white dark:bg-gray-800 rounded-lg p-6 max-w-2xl w-full max-h-[90vh] overflow-y-auto">
                 <div className="flex justify-between items-center mb-6">
@@ -781,7 +677,7 @@ export default function MyPage() {
                     <p className="text-sm">연결 상태: {chatConnectionStatus === '연결됨' ? '연결됨 ✅' : chatConnectionStatus}</p>
                     {chatConnectionStatus !== '연결됨' && (
                       <button 
-                        onClick={() => connectToChat(selectedQuoteForComment.id)}
+                        onClick={() => connectToChat(selectedQuote.id)}
                         className="px-2 py-1 rounded text-xs bg-blue-500 dark:bg-blue-600 text-white"
                       >
                         재연결
