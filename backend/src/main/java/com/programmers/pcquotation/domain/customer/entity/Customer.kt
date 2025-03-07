@@ -16,7 +16,7 @@ class Customer : Member{
     @Column(unique = true)
     override var username: String? = null
     override var password: String? = null
-    var customerName: String? = null
+    var customerName: String = ""
 
     @Column(unique = true)
     var email: String? = null
@@ -42,7 +42,7 @@ class Customer : Member{
     constructor(
         username: String?,
         password: String?,
-        customerName: String?,
+        customerName: String,
         email: String?,
         verificationQuestion: String?,
         verificationAnswer: String?
@@ -53,6 +53,27 @@ class Customer : Member{
         this.email = email
         this.verificationQuestion = verificationQuestion
         this.verificationAnswer = verificationAnswer
+    }
+
+    constructor(
+        id:Long?,
+        username: String?,
+        password: String?,
+        customerName: String,
+        email: String?,
+        verificationQuestion: String?,
+        verificationAnswer: String?,
+        apiKey: String?
+    ) {
+        this.id = id
+        this.username = username
+        this.password = password
+        this.customerName = customerName
+        this.email = email
+        this.verificationQuestion = verificationQuestion
+        this.verificationAnswer = verificationAnswer
+        this.apiKey = apiKey
+
     }
 
 }

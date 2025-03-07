@@ -59,8 +59,7 @@ public class EstimateServiceTest {
             "customer1@test.com",
             "좋아하는 음식은?",
             "밥",
-            "api-key",
-            List.of()
+            "api-key"
     );
 
     private final Seller sampleSeller = new Seller(

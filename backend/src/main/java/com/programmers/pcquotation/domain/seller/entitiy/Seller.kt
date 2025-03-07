@@ -18,7 +18,7 @@ class Seller : Member {
     override var password: String? = null
 
     @Column(length = 20)
-    var companyName: String? = null
+    var companyName: String = ""
 
     @Column(length = 100, unique = true)
     var email: String? = null
