@@ -35,8 +35,6 @@ class Item(
 
 ) {
 
-    constructor() : this(null, "", "", Category(), mutableListOf())
-
     fun updateItem(name: String, imgFilename: String, category: Category) {
         this.name = name
         this.imgFilename = imgFilename
