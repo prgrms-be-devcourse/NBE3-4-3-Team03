@@ -4,82 +4,59 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
-import java.io.IOException;
+
 import java.io.InputStream;
 import java.net.URL;
 import java.net.URLConnection;
 
 import org.springframework.web.multipart.MultipartFile;
 
-public class CustomMultipartFile implements MultipartFile {
-	private final byte[] content;
-	private final String fileName;
-	private final String contentType;
+import kotlin.jvm.JvmStatic;
 
-	public CustomMultipartFile(byte[] content, String fileName, String contentType) {
-		this.content = content;
-		this.fileName = fileName;
-		this.contentType = contentType;
-	}
+class CustomMultipartFile(
+	private val content: ByteArray,
+	private val fileName: String,
+	private val contentType: String
+) : MultipartFile {
 
-	@Override
-	public String getName() {
-		return fileName;
-	}
+	override fun getName(): String = fileName
 
-	@Override
-	public String getOriginalFilename() {
-		return fileName;
-	}
+	override fun getOriginalFilename(): String = fileName
 
-	@Override
-	public String getContentType() {
-		return contentType;
-	}
+	override fun getContentType(): String = contentType
 
-	@Override
-	public boolean isEmpty() {
-		return content.length == 0;
-	}
+	override fun isEmpty(): Boolean = content.isEmpty()
 
-	@Override
-	public long getSize() {
-		return content.length;
-	}
+	override fun getSize(): Long = content.size.toLong()
 
-	@Override
-	public byte[] getBytes() {
-		return content;
-	}
+	override fun getBytes(): ByteArray = content
 
-	@Override
-	public InputStream getInputStream() {
-		return new ByteArrayInputStream(content);
-	}
+	override fun getInputStream(): InputStream = ByteArrayInputStream(content)
 
-	@Override
-	public void transferTo(File dest) throws IOException {
-		try (FileOutputStream fos = new FileOutputStream(dest)) {
-			fos.write(content);
+	override fun transferTo(dest: File) {
+		FileOutputStream(dest).use { fos ->
+			fos.write(content)
 		}
 	}
 
-	public static MultipartFile fromUrl(String imageUrl) throws IOException {
-		URL url = new URL(imageUrl);
-		URLConnection connection = url.openConnection();
-		String contentType = connection.getContentType();
-		String fileName = imageUrl.substring(imageUrl.lastIndexOf("/") + 1);
+	companion object {
+		@JvmStatic
+		fun fromUrl(imageUrl: String): MultipartFile {
+			val url = URL(imageUrl)
+			val connection: URLConnection = url.openConnection()
+			val contentType = connection.contentType
+			val fileName = imageUrl.substring(imageUrl.lastIndexOf("/") + 1)
 
-		try (InputStream inputStream = connection.getInputStream();
-			 ByteArrayOutputStream buffer = new ByteArrayOutputStream()) {
-
-			byte[] data = new byte[1024];
-			int bytesRead;
-			while ((bytesRead = inputStream.read(data, 0, 1024)) != -1) {
-				buffer.write(data, 0, bytesRead);
+			return url.openStream().use { inputStream ->
+				ByteArrayOutputStream().use { buffer ->
+				val data = ByteArray(1024)
+				var bytesRead: Int
+				while (inputStream.read(data).also { bytesRead = it } != -1) {
+					buffer.write(data, 0, bytesRead)
+				}
+				CustomMultipartFile(buffer.toByteArray(), fileName, contentType)
 			}
-
-			return new CustomMultipartFile(buffer.toByteArray(), fileName, contentType);
+			}
 		}
 	}
 }

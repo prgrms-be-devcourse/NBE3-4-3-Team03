@@ -3,9 +3,11 @@ package com.programmers.pcquotation.domain.customer.dto;
 import com.programmers.pcquotation.domain.customer.entity.Customer;
 
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 
 @AllArgsConstructor
+@Builder
 @Getter
 public class CustomerSignupRequest {
     private String username;
