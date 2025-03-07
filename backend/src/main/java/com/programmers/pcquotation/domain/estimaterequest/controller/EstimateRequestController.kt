@@ -57,8 +57,8 @@ class EstimateRequestController(
                 list = estimateRequestService.getAllEstimateRequest()
             }
 
-            UserType.Admin -> TODO()
-            UserType.Nothing -> TODO()
+            UserType.Admin -> emptyList<EstimateRequestResDto>()
+            UserType.Nothing -> emptyList<EstimateRequestResDto>()
         }
         return ResponseEntity(list, HttpStatus.OK)
     }
