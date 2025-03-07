@@ -30,7 +30,6 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 @Slf4j
 @Profile("!test")
-
 public class InitData {
 	private final AdminService adminService;
 	private final CustomerService customerService;
@@ -45,42 +44,36 @@ public class InitData {
 	@Bean
 	public ApplicationRunner baseInitDataApplicationRunner() {
 		return args -> {
-			self.insertAdmin();
-			self.insertCustomer();
-			self.insertSeller();
-			self.insertCPU();
-			self.insertGPU();
-			self.insertRAM();
-
+				self.insertAdmin();
+				self.insertCustomer();
+				self.insertSeller();
+				self.insertCPU();
+				self.insertGPU();
+				self.insertRAM();
 		};
 	}
 
 	public void insertAdmin() {
 		if (adminService.findAdminByUsername("admin").isEmpty()) {
-			Admin admin = Admin
-				.builder()
-				.username("admin")
-				.password(passwordEncoder.encode("password"))
-				.build();
+			Admin admin = new Admin(
+				"admin",
+				passwordEncoder.encode("password"));
 			admin.setApiKey(UUID.randomUUID().toString());
 			adminService.create(admin);
 		}
 	}
 
 	public void insertSeller() {
-		if (sellerService.findSellerByUsername("seller0001").isPresent())
-			return;
-		SellerSignupRequest sellerSignupRequest = SellerSignupRequest
-			.builder()
-			.username("seller0001")
-			.email("seller0001@gmail.com")
-			.password("seller")
-			.confirmPassword("seller")
-			.companyName("쿠팡주")
-			.isVerified(true)
-			.verificationAnswer("사과는")
-			.verificationAnswer("빨간색")
-			.build();
+		if(sellerService.findSellerByUsername("seller0001").isPresent()) return;
+		SellerSignupRequest sellerSignupRequest = new SellerSignupRequest(
+			"seller0001",
+			"seller0001@gmail.com",
+			"seller",
+			"seller",
+			"쿠팡주",
+			true,
+			"사과는",
+			"빨간색");
 		authService.processSignup(sellerSignupRequest);
 	}
 

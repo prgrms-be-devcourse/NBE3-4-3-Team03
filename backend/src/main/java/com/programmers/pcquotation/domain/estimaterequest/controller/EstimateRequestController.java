@@ -56,11 +56,11 @@ public class EstimateRequestController {
 		List<EstimateRequestResDto> list = null;
 
 		switch (userType) {
-			case Customer -> {
+			case CUSTOMER -> {
 				Customer customer = estimateRequestService.findCustomer(principal.getName());
 				list = estimateRequestService.getEstimateRequestByCustomerId(customer);
 			}
-			case Seller -> {
+			case SELLER -> {
 				list = estimateRequestService.getAllEstimateRequest();
 			}
 		}
