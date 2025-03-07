@@ -1,7 +1,6 @@
 package com.programmers.pcquotation.domain.category.dto;
 
-public record CategoryDeleteResponse(
-	Long id,
-	String message
-) {
-}
+data class CategoryDeleteResponse(
+	val id: Long,
+	val message: String
+)

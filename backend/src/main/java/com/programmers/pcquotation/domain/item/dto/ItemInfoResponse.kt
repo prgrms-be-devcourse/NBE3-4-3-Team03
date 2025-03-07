@@ -1,24 +1,20 @@
 package com.programmers.pcquotation.domain.item.dto;
 
 import jakarta.validation.constraints.NotBlank;
-import lombok.Builder;
-import lombok.NonNull;
 
-@Builder
-public record ItemInfoResponse(
-	@NonNull
-	Long id,
+data class ItemInfoResponse(
+    @field:NotBlank
+    val id: Long,
 
-	@NotBlank
-	String name,
+    @field:NotBlank
+    val name: String,
 
-	@NonNull
-	Long categoryId,
+    @field:NotBlank
+    val categoryId: Long,
 
-	@NotBlank
-	String categoryName,
+    @field:NotBlank
+    val categoryName: String,
 
-	@NotBlank
-	String filename
-) {
-}
+    @field:NotBlank
+    val filename: String
+)

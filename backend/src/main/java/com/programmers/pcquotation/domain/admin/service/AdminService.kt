@@ -1,31 +1,29 @@
-package com.programmers.pcquotation.domain.admin.service;
+package com.programmers.pcquotation.domain.admin.service
 
-import java.util.Optional;
-
-import org.springframework.stereotype.Service;
-
-import com.programmers.pcquotation.domain.admin.entitiy.Admin;
-import com.programmers.pcquotation.domain.admin.repository.AdminRepository;
-import com.programmers.pcquotation.domain.member.entitiy.Member;
-import com.programmers.pcquotation.domain.seller.entitiy.Seller;
-
-import lombok.RequiredArgsConstructor;
+import com.programmers.pcquotation.domain.admin.entitiy.Admin
+import com.programmers.pcquotation.domain.admin.repository.AdminRepository
+import com.programmers.pcquotation.domain.member.entitiy.Member
+import org.springframework.stereotype.Service
+import java.util.*
 
 @Service
-@RequiredArgsConstructor
-public class AdminService {
-	private final AdminRepository adminRepository;
-	public Optional<Admin> findAdminByUsername(String username) {
-		return adminRepository.findByUsername(username);
-	}
-	public Optional<Member> findById(Long id) {
-		return adminRepository.findById(id).map(admin -> admin);
-	}
+class AdminService(
+    private val adminRepository: AdminRepository
+) {
 
-	public void create(Admin admin){
-		adminRepository.save(admin);
-	}
-	public Optional<Member> findByApiKey(String apiKey) {
-		return adminRepository.findByApiKey(apiKey).map(admin-> admin);
-	}
+    fun findAdminByUsername(username: String): Optional<Admin> {
+        return adminRepository.findByUsername(username)
+    }
+
+    fun findById(id: Long): Optional<Member> {
+        return adminRepository.findById(id).map { admin: Member -> admin }
+    }
+
+    fun create(admin: Admin) {
+        adminRepository.save(admin)
+    }
+
+    fun findByApiKey(apiKey: String): Optional<Member> {
+        return adminRepository.findByApiKey(apiKey).map { admin: Member -> admin }
+    }
 }

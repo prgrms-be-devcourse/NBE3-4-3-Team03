@@ -1,16 +1,12 @@
-package com.programmers.pcquotation.domain.admin.repository;
+package com.programmers.pcquotation.domain.admin.repository
 
-import java.util.Optional;
-
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.stereotype.Repository;
-
-import com.programmers.pcquotation.domain.admin.entitiy.Admin;
-import com.programmers.pcquotation.domain.seller.entitiy.Seller;
+import com.programmers.pcquotation.domain.admin.entitiy.Admin
+import org.springframework.data.jpa.repository.JpaRepository
+import org.springframework.stereotype.Repository
+import java.util.*
 
 @Repository
-public interface AdminRepository extends JpaRepository<Admin, Long> {
-	Optional<Admin> findByUsername(String username);
-	Optional<Admin> findByApiKey(String apiKey);
-
+interface AdminRepository : JpaRepository<Admin, Long> {
+    fun findByUsername(username: String): Optional<Admin>
+    fun findByApiKey(apiKey: String): Optional<Admin>
 }

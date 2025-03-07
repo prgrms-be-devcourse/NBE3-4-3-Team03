@@ -1,10 +1,6 @@
-package com.programmers.pcquotation.domain.member.dto;
+package com.programmers.pcquotation.domain.member.dto
 
-import lombok.Builder;
-import lombok.Getter;
 
-@Builder
-@Getter
-public class AuthRequest {
-	String userType;
-}
+data class AuthRequest(
+    var userType: String
+)

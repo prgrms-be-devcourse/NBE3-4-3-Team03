@@ -1,222 +1,230 @@
-package com.programmers.pcquotation.domain.member.service;
+package com.programmers.pcquotation.domain.member.service
 
-import com.programmers.pcquotation.domain.admin.entitiy.Admin;
-import com.programmers.pcquotation.domain.admin.service.AdminService;
-import com.programmers.pcquotation.domain.customer.dto.CustomerSignupRequest;
-import com.programmers.pcquotation.domain.customer.dto.CustomerSignupResponse;
-import com.programmers.pcquotation.domain.customer.entity.Customer;
-import com.programmers.pcquotation.domain.customer.exception.CustomerAlreadyExistException;
-import com.programmers.pcquotation.domain.customer.exception.IncorrectLoginAttemptException;
-import com.programmers.pcquotation.domain.customer.exception.PasswordMismatchException;
-import com.programmers.pcquotation.domain.customer.service.CustomerService;
-import com.programmers.pcquotation.domain.member.dto.AuthRequest;
-import com.programmers.pcquotation.domain.member.dto.LoginRequest;
-import com.programmers.pcquotation.domain.member.dto.LoginResponse;
-import com.programmers.pcquotation.domain.member.entitiy.Member;
-import com.programmers.pcquotation.domain.seller.dto.SellerSignupRequest;
-import com.programmers.pcquotation.domain.seller.dto.SellerSignupResponse;
-import com.programmers.pcquotation.domain.seller.entitiy.Seller;
-import com.programmers.pcquotation.domain.seller.service.SellerService;
-import com.programmers.pcquotation.global.enums.UserType;
-import com.programmers.pcquotation.global.jwt.Jwt;
-import com.programmers.pcquotation.global.rq.Rq;
-import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.stereotype.Service;
+import com.programmers.pcquotation.domain.admin.service.AdminService
+import com.programmers.pcquotation.domain.customer.dto.CustomerSignupRequest
+import com.programmers.pcquotation.domain.customer.dto.CustomerSignupResponse
+import com.programmers.pcquotation.domain.customer.entity.Customer
+import com.programmers.pcquotation.domain.customer.exception.CustomerAlreadyExistException
+import com.programmers.pcquotation.domain.customer.exception.IncorrectLoginAttemptException
+import com.programmers.pcquotation.domain.customer.exception.PasswordMismatchException
+import com.programmers.pcquotation.domain.customer.service.CustomerService
+import com.programmers.pcquotation.domain.member.dto.AuthRequest
+import com.programmers.pcquotation.domain.member.dto.LoginRequest
+import com.programmers.pcquotation.domain.member.dto.LoginResponse
+import com.programmers.pcquotation.domain.member.entitiy.Member
+import com.programmers.pcquotation.domain.seller.dto.SellerSignupRequest
+import com.programmers.pcquotation.domain.seller.dto.SellerSignupResponse
+import com.programmers.pcquotation.domain.seller.entitiy.Seller
+import com.programmers.pcquotation.domain.seller.service.SellerService
+import com.programmers.pcquotation.global.enums.UserType
+import com.programmers.pcquotation.global.enums.UserType.*
+import com.programmers.pcquotation.global.jwt.Jwt
+import com.programmers.pcquotation.global.rq.Rq
 
-import java.util.Map;
-import java.util.Optional;
-import java.util.UUID;
+import org.springframework.beans.factory.annotation.Value
+import org.springframework.security.crypto.password.PasswordEncoder
+import org.springframework.stereotype.Service
+import java.util.*
 
-@RequiredArgsConstructor
 @Service
-public class AuthService {
-	@Value("${jwt.secretKey}")
-	private String jwtSecretKey;
-
-	@Value("${jwt.accessToken.expirationSeconds}")
-	private long accessTokenExpirationSeconds;
-
-	private final CustomerService customerService;
-	private final SellerService sellerService;
-	private final AdminService adminService;
-	private final PasswordEncoder passwordEncoder;
-	private final Rq rq;
-
-	public CustomerSignupResponse processSignup(CustomerSignupRequest customerSignupRequest) {
-		if (!customerSignupRequest.getPassword().equals(customerSignupRequest.getConfirmPassword())) {
-			throw new PasswordMismatchException();
-		}
-
-		if (customerService.findCustomerByUsername(customerSignupRequest.getUsername()).isPresent()) {
-			throw new CustomerAlreadyExistException();
-		}
-
-		if (customerService.findCustomerByEmail(customerSignupRequest.getEmail()).isPresent()) {
-			throw new CustomerAlreadyExistException();
-		}
-
-		Customer customer = customerSignupRequest.toCustomer();
-		customer.setApiKey(UUID.randomUUID().toString());
-		customer.setPassword(passwordEncoder.encode(customer.getPassword()));
-		customerService.createCustomer(customer);
-
-		return new CustomerSignupResponse(customer, "회원가입 성공");
-	}
-
-	public SellerSignupResponse processSignup(SellerSignupRequest sellerSignupRequest) {
-		if (!sellerSignupRequest.getPassword().equals(sellerSignupRequest.getConfirmPassword())) {
-			throw new PasswordMismatchException();
-		}
-
-		if (sellerService.findSellerByUsername(sellerSignupRequest.getUsername()).isPresent()) {
-			throw new CustomerAlreadyExistException();
-		}
-
-		if (sellerService.findSellerByEmail(sellerSignupRequest.getEmail()).isPresent()) {
-			throw new CustomerAlreadyExistException();
-		}
-
-		Seller seller = sellerSignupRequest.toSeller();
-		seller.setApiKey(UUID.randomUUID().toString());
-		seller.setPassword(passwordEncoder.encode(seller.getPassword()));
-		sellerService.createSeller(seller);
-
-		return new SellerSignupResponse(seller, "회원가입 성공");
-	}
+class AuthService(
+    @Value("\${jwt.secretKey}")
+    private val jwtSecretKey: String,
+    @Value("\${jwt.accessToken.expirationSeconds}")
+    private val accessTokenExpirationSeconds: Long,
+    private val customerService: CustomerService,
+    private val sellerService: SellerService,
+    private val adminService: AdminService,
+    private val passwordEncoder: PasswordEncoder,
+    private val rq: Rq
+) {
 
 
-	public LoginResponse processLoginCustomer(LoginRequest customerLoginRequest) {
-		String username = customerLoginRequest.getUsername();
-		Customer customer = customerService.findCustomerByUsername(username)
-			.orElseThrow(IncorrectLoginAttemptException::new);
+    fun processSignup(customerSignupRequest: CustomerSignupRequest): CustomerSignupResponse {
+        if (customerSignupRequest.password != customerSignupRequest.confirmPassword) {
+            throw PasswordMismatchException()
+        }
 
-		if (!passwordEncoder.matches(customerLoginRequest.getPassword(), customer.getPassword())) {
-			throw new IncorrectLoginAttemptException();
-		}
+        if (customerService.findCustomerByUsername(customerSignupRequest.username).isPresent) {
+            throw CustomerAlreadyExistException()
+        }
 
-		String accessToken = this.getAccessToken(customer);
-		rq.setCookie("accessToken", accessToken);
-		rq.setCookie("apiKey", customer.getApiKey());
-		rq.setCookie("userType", UserType.Customer.toString());
-		return LoginResponse.builder()
-			.apiKey(customer.getApiKey())
-			.accessToken(accessToken)
-			.userType(UserType.Customer)
-			.message("로그인 성공")
-			.build();
-	}
+        if (customerService.findCustomerByEmail(customerSignupRequest.email).isPresent) {
+            throw CustomerAlreadyExistException()
+        }
 
-	public LoginResponse processLoginSeller(LoginRequest loginRequest) {
-		String username = loginRequest.getUsername();
-		Seller seller = sellerService.findByUserName(username)
-			.orElseThrow(IncorrectLoginAttemptException::new);
+        val customer = Customer(
+            customerSignupRequest,
+            UUID.randomUUID().toString(),
+            passwordEncoder.encode(customerSignupRequest.password)
+        )
 
-		if (!passwordEncoder.matches(loginRequest.getPassword(), seller.getPassword())) {
-			throw new IncorrectLoginAttemptException();
-		}
-		String accessToken = this.getAccessToken(seller);
-		rq.setCookie("accessToken", accessToken);
-		rq.setCookie("apiKey", seller.getApiKey());
-		rq.setCookie("userType", UserType.Seller.toString());
+        customerService.createCustomer(customer)
+        return CustomerSignupResponse(customer, "회원가입 성공")
+    }
 
-		return LoginResponse.builder()
-			.apiKey(seller.getApiKey())
-			.accessToken(accessToken)
-			.userType(UserType.Seller)
-			.message("로그인 성공")
-			.build();
-	}
-	public LoginResponse processLoginAdmin(LoginRequest loginRequest) {
-		String username = loginRequest.getUsername();
-		Admin admin = adminService.findAdminByUsername(username)
-			.orElseThrow(IncorrectLoginAttemptException::new);
-		if (!passwordEncoder.matches(loginRequest.getPassword(), admin.getPassword())) {
-			throw new IncorrectLoginAttemptException();
-		}
-		String accessToken = this.getAccessToken(admin);
-		rq.setCookie("accessToken", accessToken);
-		rq.setCookie("apiKey", admin.getApiKey());
-		rq.setCookie("userType", UserType.Admin.toString());
+    fun processSignup(sellerSignupRequest: SellerSignupRequest): SellerSignupResponse {
+        if (sellerSignupRequest.password != sellerSignupRequest.confirmPassword) {
+            throw PasswordMismatchException()
+        }
 
-		return LoginResponse.builder()
-			.apiKey(admin.getApiKey())
-			.accessToken(accessToken)
-			.userType(UserType.Admin)
-			.message("로그인 성공")
-			.build();
-	}
-	public AuthRequest getMemberFromRq(){
-		Member member = rq.getMember();
-		String auth = member.getAuthorities().toString();
-		String userType =  UserType.fromString(auth).toString();
-		return AuthRequest
-				.builder()
-				.userType(userType)
-				.build();
-	}
-	public Member getMemberFromAccessToken(String accessToken,UserType userType) {
-		Map<String, Object> payload = this.payload(accessToken);
+        if (sellerService.findSellerByUsername(sellerSignupRequest.username).isPresent) {
+            throw CustomerAlreadyExistException()
+        }
 
-		if(payload == null) return null;
+        if (sellerService.findSellerByEmail(sellerSignupRequest.email).isPresent) {
+            throw CustomerAlreadyExistException()
+        }
 
-		long id = (long) payload.get("id");
-		switch (userType){
-			case Seller -> {
-				return sellerService.findById(id).orElse(null);
-			}
-			case Customer -> {
-				return customerService.findById(id).orElse(null);
-			}
-			case Admin -> {
-				return adminService.findById(id).orElse(null);
-			}
-		}
-		return null;
-	}
+        val seller = Seller(
+            sellerSignupRequest,
+            UUID.randomUUID().toString(),
+            passwordEncoder.encode(sellerSignupRequest.password)
+        )
+        sellerService.createSeller(seller)
 
-	public String getAccessToken(Member member) {
-		long id = member.getId();
-		String username = member.getUsername();
-		return Jwt.toString(
-			jwtSecretKey,
-			accessTokenExpirationSeconds,
-			Map.of("id", id, "username", username)
-		);
-	}
+        return SellerSignupResponse(seller, "회원가입 성공")
+    }
 
-	public Optional<Member> findByApiKey(String apiKey, UserType userType) {
-		switch (userType){
-			case Customer -> {
-				return customerService.findByApiKey(apiKey);
-			}
-			case Seller -> {
-				return sellerService.findByApiKey(apiKey);
-			}
-			case Admin -> {
-				return adminService.findByApiKey(apiKey);
-			}
-		}
+    fun processLoginCustomer(customerLoginRequest: LoginRequest): LoginResponse? {
+        val username = customerLoginRequest.username
+        val customer = customerService.findCustomerByUsername(username)
+            .orElseThrow { IncorrectLoginAttemptException() }
 
-		return Optional.empty();
-	}
+        if (!passwordEncoder.matches(customerLoginRequest.password, customer.password)) {
+            throw IncorrectLoginAttemptException()
+        }
 
-	Map<String, Object> payload(String accessToken) {
-		Map<String, Object> parsedPayload = Jwt.payload(jwtSecretKey, accessToken);
+        val accessToken = this.getAccessToken(customer)
+        rq.setCookie("accessToken", accessToken)
+        rq.setCookie("apiKey", customer.apiKey)
+        rq.setCookie("userType", CUSTOMER.toString())
+        return customer.apiKey?.let {
+            LoginResponse(
+                it,
+                accessToken,
+                SELLER,
+                "로그인 성공"
+            )
+        }
+    }
 
-		if (parsedPayload == null)
-			return null;
+    fun processLoginSeller(loginRequest: LoginRequest): LoginResponse {
+        val username = loginRequest.username
+        val seller = sellerService.findByUserName(username)
+            .orElseThrow { IncorrectLoginAttemptException() }
 
-		long id = (long)(Integer)parsedPayload.get("id");
-		String username = (String)parsedPayload.get("username");
+        if (!passwordEncoder.matches(loginRequest.password, seller.password)) {
+            throw IncorrectLoginAttemptException()
+        }
+        val accessToken = this.getAccessToken(seller)
+        rq.setCookie("accessToken", accessToken)
+        rq.setCookie("apiKey", seller.apiKey)
+        rq.setCookie("userType", SELLER.toString())
 
-		return Map.of("id", id, "username", username);
-	}
+        return seller.apiKey?.let {
+            LoginResponse(
+                it,
+                accessToken,
+                SELLER,
+                "로그인 성공"
+            )
+        } ?: throw Exception()
+    }
 
-	public void processLogout() {
-		rq.deleteCookie("accessToken");
-		rq.deleteCookie("apiKey");
-		rq.deleteCookie("userType");
-	}
+    fun processLoginAdmin(loginRequest: LoginRequest): LoginResponse {
+        val username = loginRequest.username
+        val admin = adminService.findAdminByUsername(username)
+            .orElseThrow { IncorrectLoginAttemptException() }
+        if (!passwordEncoder.matches(loginRequest.password, admin.password)) {
+            throw IncorrectLoginAttemptException()
+        }
+        val accessToken = this.getAccessToken(admin)
+        rq.setCookie("accessToken", accessToken)
+        rq.setCookie("apiKey", admin.apiKey)
+        rq.setCookie("userType", ADMIN.toString())
+
+
+        return admin.apiKey?.let {
+            LoginResponse(
+                it,
+                accessToken,
+                ADMIN,
+                "로그인 성공"
+            )
+        } ?: throw Exception()
+    }
+
+    val memberFromRq: AuthRequest
+        get() {
+            val member = rq.member
+            val auth = member.toString()
+            val userType = fromString(auth).toString()
+            return AuthRequest(userType)
+        }
+
+    fun getMemberFromAccessToken(accessToken: String, userType: UserType): Optional<Member> {
+        val payload = this.payload(accessToken) ?: return Optional.empty()
+
+        val id = payload["id"] as Long
+        return when (userType) {
+            SELLER -> {
+                sellerService.findById(id)
+            }
+
+            CUSTOMER -> {
+                customerService.findById(id)
+            }
+
+            ADMIN -> {
+                adminService.findById(id)
+            }
+
+            NOTHING -> Optional.empty()
+        }
+    }
+
+    fun getAccessToken(member: Member): String {
+        val id = member.id
+        val username = member.username
+        return Jwt.toString(
+            jwtSecretKey,
+            accessTokenExpirationSeconds,
+            java.util.Map.of<String, Any?>("id", id, "username", username)
+        )
+    }
+
+    fun findByApiKey(apiKey: String, userType: UserType): Optional<Member> {
+        return when (userType) {
+            CUSTOMER -> {
+                customerService.findByApiKey(apiKey)
+            }
+
+            SELLER -> {
+                sellerService.findByApiKey(apiKey)
+            }
+
+            ADMIN -> {
+                adminService.findByApiKey(apiKey)
+            }
+
+            NOTHING -> Optional.empty()
+        }
+
+    }
+
+    private fun payload(accessToken: String): Map<String, Any>? {
+        val parsedPayload = Jwt.payload(jwtSecretKey, accessToken) ?: return null
+
+        val id = (parsedPayload["id"] as Int?)!!.toLong()
+        val username = parsedPayload["username"] as String?
+
+        return java.util.Map.of<String, Any>("id", id, "username", username)
+    }
+
+    fun processLogout() {
+        rq.deleteCookie("accessToken")
+        rq.deleteCookie("apiKey")
+        rq.deleteCookie("userType")
+    }
 }

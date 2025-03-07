@@ -218,7 +218,13 @@ export default function CreateEstimate() {
               </div>
               <div>
                 <p className="text-sm text-gray-500 dark:text-gray-400">요청일</p>
-                <p className="dark:text-white">{requestInfo.createDate}</p>
+                <p className="dark:text-white">{requestInfo.createDate ? new Date(requestInfo.createDate).toLocaleString('ko-KR', { 
+                  year: 'numeric', 
+                  month: '2-digit', 
+                  day: '2-digit', 
+                  hour: '2-digit', 
+                  minute: '2-digit' 
+                }) : ''}</p>
               </div>
               {requestInfo.description && (
                 <div className="col-span-2">

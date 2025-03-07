@@ -1,4 +1,3 @@
-package com.programmers.pcquotation.domain.customer.exception;
+package com.programmers.pcquotation.domain.customer.exception
 
-public class PasswordMismatchException extends RuntimeException {
-}
+class PasswordMismatchException : RuntimeException()

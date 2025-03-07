@@ -1,67 +1,32 @@
-package com.programmers.pcquotation.domain.admin.entitiy;
+package com.programmers.pcquotation.domain.admin.entitiy
 
-import static jakarta.persistence.GenerationType.*;
-
-import java.util.Collection;
-import java.util.List;
-
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-
-import com.programmers.pcquotation.domain.member.entitiy.Member;
-
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Id;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import com.programmers.pcquotation.domain.member.entitiy.Member
+import jakarta.persistence.*
+import org.springframework.security.core.GrantedAuthority
+import org.springframework.security.core.authority.SimpleGrantedAuthority
 
 @Entity
-@Getter
-@Setter
-@Builder
-@NoArgsConstructor
-@AllArgsConstructor
-public class Admin implements Member {
-	@Id
-	@GeneratedValue(strategy = IDENTITY) // AUTO_INCREMENT
-	private Long id;
-	@Column(length = 20, unique = true)
-	private String username;
-	@Column(length = 255)
-	private String password;
-	@Column(unique = true)
-	private String apiKey;
+class Admin : Member {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    override // AUTO_INCREMENT
+    var id: Long? = null
 
-	public Collection<? extends GrantedAuthority> getAuthorities() {
-		return List.of("ROLE_ADMIN")
-			.stream()
-			.map(SimpleGrantedAuthority::new)
-			.toList();
-	}
+    @Column(length = 20, unique = true)
+    override var username: String? = null
 
-	@Override
-	public long getId() {
-		return id;
-	}
+    @Column(length = 255)
+    override var password: String? = null
 
-	@Override
-	public String getUsername() {
-		return username;
-	}
+    @Column(unique = true)
+    override var apiKey: String? = null
 
-	@Override
-	public String getApiKey() {
-		return apiKey;
-	}
+    override var authorities: Collection<GrantedAuthority>? = listOf("ROLE_ADMIN").stream()
+        .map { role: String? -> SimpleGrantedAuthority(role) }
+        .toList()
 
-	@Override
-	public String getPassword() {
-		return password;
-	}
-
+    constructor(username: String, password: String) {
+        this.username = username
+        this.password = password
+    }
 }

@@ -5,62 +5,83 @@ import { ResponseCookie } from "next/dist/compiled/@edge-runtime/cookies";
 import { ReadonlyRequestCookies } from "next/dist/server/web/spec-extension/adapters/request-cookies";
 
 export async function middleware(req) {
-  const cookieStore = await cookies();
+  const cookieStore = req.cookies;
   const apiKey = cookieStore.get("apiKey")?.value;
   const accessToken = cookieStore.get("accessToken")?.value;
   const userType = cookieStore.get("userType")?.value;
-  const authorization = "Bearer " + apiKey +" " + accessToken +" " +userType;
+  const authorization = "Bearer " + apiKey + " " + accessToken + " " + userType;
 
-
-
-
-  const { isLogin, isAccessTokenExpired, accessTokenPayload } =
-    parseAccessToken(accessToken);
-
-  if (isLogin && isAccessTokenExpired) {
-    await refreshTokens(cookieStore);
+  // 토큰이 없는 경우 기본 처리
+  if (!accessToken) {
+    // 보호된 경로에 접근하려는 경우 리다이렉트
+    if (isProtectedRouteAdmin(req.nextUrl.pathname)) {
+      return createUnauthorizedResponse("/admin/login");
+    }
+    if (isProtectedRouteSeller(req.nextUrl.pathname) || isProtectedRouteCustomer(req.nextUrl.pathname)) {
+      return createUnauthorizedResponse("/");
+    }
+    return NextResponse.next();
   }
 
+  const { isLogin, isAccessTokenExpired, accessTokenPayload } = parseAccessToken(accessToken);
 
+  // 토큰이 만료된 경우 갱신 시도
+  if (isLogin && isAccessTokenExpired) {
+    try {
+      await refreshTokens(cookieStore);
+    } catch (error) {
+      console.error("토큰 갱신 실패:", error);
+      // 토큰 갱신 실패 시 로그인 페이지로 리다이렉트
+      return createUnauthorizedResponse("/");
+    }
+  }
+
+  try {
+    // 사용자 정보 확인
     const response = await fetch("http://localhost:8080/api/auth", {
-        method: "GET",
-        headers: {
-            "Authorization" : authorization
-        }
+      method: "GET",
+      headers: {
+        "Authorization": authorization
+      }
     });
 
+    if (!response.ok) {
+      // API 응답이 실패한 경우 로그인 페이지로 리다이렉트
+      return createUnauthorizedResponse("/");
+    }
 
     const respData = await response.json();
     const isAdmin = respData?.userType === 'Admin';
-    const isSeller = respData?.userType  === 'Seller';
+    const isSeller = respData?.userType === 'Seller';
     const isCustomer = respData?.userType === 'Customer';
 
-    if(req.nextUrl.pathname === "/" || req.nextUrl.pathname === "/admin/login"){
-        if(isSeller) return createUnauthorizedResponse("/sellers/info");
-        else if(isCustomer) return createUnauthorizedResponse("/customers/info");
-        else if(isAdmin) return createUnauthorizedResponse("/admin/management");
+    // 이미 로그인한 사용자가 로그인/회원가입 페이지에 접근하는 경우 리다이렉트
+    if (req.nextUrl.pathname === "/" || req.nextUrl.pathname === "/admin/login") {
+      if (isSeller) return createUnauthorizedResponse("/sellers/info");
+      else if (isCustomer) return createUnauthorizedResponse("/customers/info");
+      else if (isAdmin) return createUnauthorizedResponse("/admin/management");
     }
-     if(isProtectedRouteAdmin(req.nextUrl.pathname)){
-         if (!isAdmin) {
-           return createUnauthorizedResponse("/admin/login");
-         }
-     }
-    else if(isProtectedRouteSeller(req.nextUrl.pathname)){
-        if (!isAdmin && !isSeller) {
-          return createUnauthorizedResponse("/");
-        }
-    }
-    else if(isProtectedRouteCustomer(req.nextUrl.pathname)){
-        if (!isAdmin && !isCustomer) {
-          return createUnauthorizedResponse("/");
-        }
-    }
-    return NextResponse.next({
-    headers: {
-      cookie: cookieStore.toString(),
-    },
-  });
 
+    // 권한에 따른 접근 제어
+    if (isProtectedRouteAdmin(req.nextUrl.pathname)) {
+      if (!isAdmin) {
+        return createUnauthorizedResponse("/admin/login");
+      }
+    } else if (isProtectedRouteSeller(req.nextUrl.pathname)) {
+      if (!isAdmin && !isSeller) {
+        return createUnauthorizedResponse("/");
+      }
+    } else if (isProtectedRouteCustomer(req.nextUrl.pathname)) {
+      if (!isAdmin && !isCustomer) {
+        return createUnauthorizedResponse("/");
+      }
+    }
+
+    return NextResponse.next();
+  } catch (error) {
+    console.error("인증 처리 중 오류:", error);
+    return createUnauthorizedResponse("/");
+  }
 }
 
 function parseAccessToken(accessToken) {
@@ -86,34 +107,39 @@ function parseAccessToken(accessToken) {
   return { isLogin, isAccessTokenExpired, accessTokenPayload };
 }
 
-async function refreshTokens(cookieStore,authorization) {
+async function refreshTokens(cookieStore) {
+  const apiKey = cookieStore.get("apiKey")?.value;
+  const accessToken = cookieStore.get("accessToken")?.value;
+  const userType = cookieStore.get("userType")?.value;
+  const authorization = "Bearer " + apiKey + " " + accessToken + " " + userType;
+
+  try {
     const meResponse = await fetch("http://localhost:8080/api/auth", {
-        method: "GET",
-        headers: {
-            "Authorization":  authorization
-        }
+      method: "GET",
+      headers: {
+        "Authorization": authorization
+      }
     });
 
-  try{
-    const setCookieHeader = meResponse.response.headers.get("Set-Cookie");
-  }
-  catch(error){
-    console.log(error);
-    return null;
-  }
-  if (setCookieHeader) {
-    const cookies = setCookieHeader.split(",");
+    const setCookieHeader = meResponse.headers.get("Set-Cookie");
+    
+    if (setCookieHeader) {
+      const cookies = setCookieHeader.split(",");
 
-    for (const cookieStr of cookies) {
-      const cookieData = parseCookie(cookieStr);
+      for (const cookieStr of cookies) {
+        const cookieData = parseCookie(cookieStr);
 
-      if (cookieData) {
-        const { name, value, options } = cookieData;
-        if (name !== "accessToken" && name !== "apiKey" && name !== "userType") return null;
+        if (cookieData) {
+          const { name, value, options } = cookieData;
+          if (name !== "accessToken" && name !== "apiKey" && name !== "userType") continue;
 
-        cookieStore.set(name, value, options);
+          cookieStore.set(name, value, options);
+        }
       }
     }
+  } catch(error) {
+    console.log("토큰 갱신 중 오류:", error);
+    return null;
   }
 }
 
@@ -133,16 +159,16 @@ function parseCookie(cookieStr) {
       else if (keyLower === "max-age") options.maxAge = parseInt(val);
       else if (keyLower === "expires")
         options.expires = new Date(val).getTime();
-      else if (keyLower === "samesite"){
+      else if (keyLower === "samesite") {
+        const sameSiteValue = val.toLowerCase();
         if (sameSiteValue === "lax" || sameSiteValue === "strict" || sameSiteValue === "none") {
-            options.sameSite = val.toLowerCase();
-
+          options.sameSite = sameSiteValue;
+        }
       }
     }
   }
 
   return { name, value, options };
-}
 }
 
 function isProtectedRouteAdmin(pathname) {

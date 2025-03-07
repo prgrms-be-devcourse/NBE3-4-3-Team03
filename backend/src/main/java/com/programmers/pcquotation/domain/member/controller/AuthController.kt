@@ -1,69 +1,62 @@
-package com.programmers.pcquotation.domain.member.controller;
+package com.programmers.pcquotation.domain.member.controller
 
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import com.programmers.pcquotation.domain.customer.dto.CustomerSignupRequest
+import com.programmers.pcquotation.domain.customer.dto.CustomerSignupResponse
+import com.programmers.pcquotation.domain.member.dto.AuthRequest
+import com.programmers.pcquotation.domain.member.dto.LoginRequest
+import com.programmers.pcquotation.domain.member.dto.LoginResponse
+import com.programmers.pcquotation.domain.member.service.AuthService
+import com.programmers.pcquotation.domain.seller.dto.SellerSignupRequest
+import com.programmers.pcquotation.domain.seller.dto.SellerSignupResponse
+import org.springframework.http.HttpStatus
+import org.springframework.http.ResponseEntity
+import org.springframework.web.bind.annotation.*
 
-import com.programmers.pcquotation.domain.customer.dto.CustomerSignupRequest;
-import com.programmers.pcquotation.domain.customer.dto.CustomerSignupResponse;
-import com.programmers.pcquotation.domain.member.dto.AuthRequest;
-import com.programmers.pcquotation.domain.member.entitiy.Member;
-import com.programmers.pcquotation.domain.member.service.AuthService;
-import com.programmers.pcquotation.domain.member.dto.LoginRequest;
-import com.programmers.pcquotation.domain.member.dto.LoginResponse;
-import com.programmers.pcquotation.domain.seller.dto.SellerSignupRequest;
-import com.programmers.pcquotation.domain.seller.dto.SellerSignupResponse;
-
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-
-@RequiredArgsConstructor
 @RestController
 @RequestMapping("/api/auth")
-public class AuthController {
-    private final AuthService authService;
+class AuthController(
+    private val authService: AuthService
+) {
 
     @PostMapping("/signup/customer")
-    public ResponseEntity<CustomerSignupResponse> signup(@RequestBody CustomerSignupRequest customerSignupRequest) {
-        CustomerSignupResponse signupResponse = authService.processSignup(customerSignupRequest);
-        return new ResponseEntity<>(signupResponse, HttpStatus.CREATED);
+    fun signup(@RequestBody customerSignupRequest: CustomerSignupRequest): ResponseEntity<CustomerSignupResponse> {
+        val signupResponse = authService.processSignup(customerSignupRequest)
+        return ResponseEntity(signupResponse, HttpStatus.CREATED)
     }
 
-	@PostMapping("/signup/seller")
-	public ResponseEntity<SellerSignupResponse> signup(@RequestBody SellerSignupRequest sellerSignupRequest) {
-		SellerSignupResponse signupResponse = authService.processSignup(sellerSignupRequest);
-		return new ResponseEntity<>(signupResponse, HttpStatus.CREATED);
-	}
+    @PostMapping("/signup/seller")
+    fun signup(@RequestBody sellerSignupRequest: SellerSignupRequest): ResponseEntity<SellerSignupResponse> {
+        val signupResponse = authService.processSignup(sellerSignupRequest)
+        return ResponseEntity(signupResponse, HttpStatus.CREATED)
+    }
 
-	@PostMapping("/login/customer")
-	public ResponseEntity<LoginResponse> loginCustomer(@RequestBody LoginRequest customerLoginRequest) {
-        LoginResponse loginResponse = authService.processLoginCustomer(customerLoginRequest);
-		return new ResponseEntity<>(loginResponse, HttpStatus.OK);
-	}
+    @PostMapping("/login/customer")
+    fun loginCustomer(@RequestBody customerLoginRequest: LoginRequest): ResponseEntity<LoginResponse> {
+        val loginResponse = authService.processLoginCustomer(customerLoginRequest)
+        return ResponseEntity(loginResponse, HttpStatus.OK)
+    }
 
-	@PostMapping("/login/seller")
-	public ResponseEntity<LoginResponse> loginSeller(@RequestBody LoginRequest loginRequest) {
-		LoginResponse loginResponse = authService.processLoginSeller(loginRequest);
-		return new ResponseEntity<>(loginResponse, HttpStatus.OK);
-	}
-	@PostMapping("/login/admin")
-	public ResponseEntity<LoginResponse> loginAdmin(@RequestBody LoginRequest loginRequest) {
-		LoginResponse loginResponse = authService.processLoginAdmin(loginRequest);
-		return new ResponseEntity<>(loginResponse, HttpStatus.OK);
-	}
-	@GetMapping
-	public ResponseEntity<AuthRequest> CheckAuthentication(){
-		AuthRequest authRequest = authService.getMemberFromRq();
-		return new ResponseEntity<>(authRequest, HttpStatus.OK);
-	}
+    @PostMapping("/login/seller")
+    fun loginSeller(@RequestBody loginRequest: LoginRequest): ResponseEntity<LoginResponse> {
+        val loginResponse = authService.processLoginSeller(loginRequest)
+        return ResponseEntity(loginResponse, HttpStatus.OK)
+    }
 
-	@PostMapping("/logout")
-	public ResponseEntity<Void> logout() {
-		authService.processLogout();
-		return new ResponseEntity<>(HttpStatus.OK);
-	}
+    @PostMapping("/login/admin")
+    fun loginAdmin(@RequestBody loginRequest: LoginRequest): ResponseEntity<LoginResponse> {
+        val loginResponse = authService.processLoginAdmin(loginRequest)
+        return ResponseEntity(loginResponse, HttpStatus.OK)
+    }
+
+    @GetMapping
+    fun CheckAuthentication(): ResponseEntity<AuthRequest> {
+        val authRequest = authService.memberFromRq
+        return ResponseEntity(authRequest, HttpStatus.OK)
+    }
+
+    @PostMapping("/logout")
+    fun logout(): ResponseEntity<Void> {
+        authService.processLogout()
+        return ResponseEntity(HttpStatus.OK)
+    }
 }
