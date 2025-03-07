@@ -15,17 +15,16 @@ import com.programmers.pcquotation.domain.item.exception.ItemNotFoundException;
 import com.programmers.pcquotation.domain.item.repository.ItemRepository;
 
 import jakarta.transaction.Transactional;
-import org.springframework.beans.factory.annotation.Autowired
 
 @Service
-open class ItemService(
+class ItemService(
     private val itemRepository: ItemRepository,
     private val imageService: ImageService,
     private val categoryRepository: CategoryRepository
 ) {
 
     @Transactional
-    open fun addItem(request: ItemCreateRequest): ItemCreateResponse {
+    fun addItem(request: ItemCreateRequest): ItemCreateResponse {
         val category: Category = categoryRepository.findById(request.categoryId)
             .orElseThrow { IllegalArgumentException("유효하지 않은 카테고리 ID입니다.") }
 
@@ -45,7 +44,7 @@ open class ItemService(
 
 
     @Transactional
-    open fun getItemList(): kotlin.collections.List<ItemInfoResponse> {
+    fun getItemList(): List<ItemInfoResponse> {
         return itemRepository.findAll().map { item ->
             ItemInfoResponse(
                 id = item.id!!,
@@ -59,7 +58,7 @@ open class ItemService(
 
 
     @Transactional
-    open fun getItemsByCategory(categoryId: Long): kotlin.collections.List<ItemInfoResponse> {
+    fun getItemsByCategory(categoryId: Long): List<ItemInfoResponse> {
         return itemRepository.findByCategoryId(categoryId).map { item ->
             ItemInfoResponse(
                 item.id!!,
@@ -72,7 +71,7 @@ open class ItemService(
     }
 
     @Transactional
-    open fun updateItem(id: Long, request: ItemUpdateRequest): ItemUpdateResponse {
+    fun updateItem(id: Long, request: ItemUpdateRequest): ItemUpdateResponse {
         val item: Item = itemRepository.findById(id)
             .orElseThrow { ItemNotFoundException(id) }
 
@@ -95,7 +94,7 @@ open class ItemService(
     }
 
     @Transactional
-    open fun deleteItem(id: Long): ItemDeleteResponse {
+    fun deleteItem(id: Long): ItemDeleteResponse {
         val item: Item = itemRepository.findById(id)
             .orElseThrow { ItemNotFoundException(id) }
 

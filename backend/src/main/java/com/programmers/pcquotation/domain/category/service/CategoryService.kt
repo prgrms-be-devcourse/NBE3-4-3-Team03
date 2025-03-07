@@ -16,7 +16,7 @@ import com.programmers.pcquotation.domain.category.repository.CategoryRepository
 import jakarta.transaction.Transactional;
 
 @Service
-open class CategoryService(
+class CategoryService(
     private val categoryRepository: CategoryRepository
 ) {
 
@@ -26,7 +26,7 @@ open class CategoryService(
     }
 
     @Transactional
-    open fun addCategory(request: CategoryCreateRequest): CategoryCreateResponse {
+    fun addCategory(request: CategoryCreateRequest): CategoryCreateResponse {
         val category = Category(category = request.category)
 
         val savedCategory = categoryRepository.save(category)
@@ -34,7 +34,7 @@ open class CategoryService(
         return CategoryCreateResponse(savedCategory.id, "카테고리 생성 완료")
     }
 
-    open fun getCategoryList(): kotlin.collections.List<CategoryInfoResponse> {
+    fun getCategoryList(): List<CategoryInfoResponse> {
         return categoryRepository.findAll()
             .map { category ->
                 CategoryInfoResponse(
@@ -45,7 +45,7 @@ open class CategoryService(
     }
 
     @Transactional
-    open fun updateCategory(id: Long, request: CategoryUpdateRequest): CategoryUpdateResponse {
+    fun updateCategory(id: Long, request: CategoryUpdateRequest): CategoryUpdateResponse {
         val category = getCategory(id)
         category.updateCategory(request.category)
 
@@ -55,7 +55,7 @@ open class CategoryService(
     }
 
     @Transactional
-    open fun deleteCategory(id: Long): CategoryDeleteResponse {
+    fun deleteCategory(id: Long): CategoryDeleteResponse {
         val category = getCategory(id)
 
         categoryRepository.delete(category)
