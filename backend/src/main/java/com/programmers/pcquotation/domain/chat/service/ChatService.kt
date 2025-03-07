@@ -4,6 +4,7 @@ import com.programmers.pcquotation.domain.chat.dto.ChatMemoryRes
 import com.programmers.pcquotation.domain.chat.entity.Chat
 import com.programmers.pcquotation.domain.chat.entity.ChatRoom
 import com.programmers.pcquotation.domain.chat.repository.ChatRoomRepository
+import com.programmers.pcquotation.domain.estimate.entity.Estimate
 import com.programmers.pcquotation.domain.estimate.repository.EstimateRepository
 import org.springframework.stereotype.Service
 import com.programmers.pcquotation.domain.chat.repository.ChatRepository as ChatRepository
@@ -38,6 +39,11 @@ class ChatService(private val chatRepository: ChatRepository,
         } catch (e: Exception) {
             return mutableListOf()
         }
+    }
+
+    fun deleteChat(estimateId: Int) {
+        val estimate = estimateRepository.getEstimateById(estimateId)
+        chatRepository.deleteByChatRoom(chatRoomRepository.findFirstByEstimate(estimate).get())
     }
 
 

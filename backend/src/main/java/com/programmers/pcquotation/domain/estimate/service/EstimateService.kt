@@ -20,8 +20,6 @@ class EstimateService(
     private val estimateRequestService: EstimateRequestService,
     private val sellerService: SellerService,
     private val itemRepository: ItemRepository,
-    private val chatRoomRepository: ChatRoomRepository,
-    private val chatRepository: ChatRepository
 ) {
     @Transactional
     fun createEstimate(request: EstimateCreateRequest, sellerName: String):Estimate {
@@ -95,10 +93,6 @@ class EstimateService(
     fun deleteEstimate(id: Int) {
         val estimate = estimateRepository.findById(id)
             .orElseThrow { NoSuchElementException("존재하지 않는 견적서입니다.") }
-
-        // 개선 필요
-        chatRepository.deleteByChatRoom(chatRoomRepository.findFirstByEstimate(estimate).get())
-        chatRoomRepository.deleteByEstimate(estimate)
 
         estimate.deleteEstimateComponents()
         estimateRepository.delete(estimate)

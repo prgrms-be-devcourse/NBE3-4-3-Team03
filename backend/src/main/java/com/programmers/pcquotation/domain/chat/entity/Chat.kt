@@ -7,7 +7,7 @@ import java.time.LocalDateTime
 
 @Entity
 class Chat(
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(cascade = [CascadeType.REMOVE], fetch = FetchType.LAZY)
     @JoinColumn(name = "room_id")
     val chatRoom: ChatRoom?,
 

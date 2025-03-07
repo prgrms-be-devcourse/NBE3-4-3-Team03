@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.programmers.pcquotation.domain.chat.service.ChatRoomService;
+import com.programmers.pcquotation.domain.chat.service.ChatService;
 import com.programmers.pcquotation.domain.estimate.dto.EstimateCreateRequest;
 import com.programmers.pcquotation.domain.estimate.dto.EstimateForSellerResponse;
 import com.programmers.pcquotation.domain.estimate.dto.EstimateUpdateReqDto;
@@ -27,6 +28,7 @@ import lombok.AllArgsConstructor;
 @AllArgsConstructor
 public class EstimateController {
 	private final EstimateService estimateService;
+	private final ChatService chatService;
 	private final ChatRoomService chatRoomService;
 
 	@PostMapping("/api/estimate")
@@ -44,6 +46,8 @@ public class EstimateController {
 
 	@DeleteMapping("/api/estimate/{id}")
 	public ResponseEntity<String> deleteEstimate(@PathVariable Integer id) {
+		chatService.deleteChat(id);
+		chatRoomService.deleteChatRoom(id);
 		estimateService.deleteEstimate(id);
 		return ResponseEntity.ok().body("");
 	}
