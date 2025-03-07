@@ -101,11 +101,11 @@ public class AuthService {
 		String accessToken = this.getAccessToken(customer);
 		rq.setCookie("accessToken", accessToken);
 		rq.setCookie("apiKey", customer.getApiKey());
-		rq.setCookie("userType", UserType.Customer.toString());
+		rq.setCookie("userType", UserType.CUSTOMER.toString());
 		return LoginResponse.builder()
 			.apiKey(customer.getApiKey())
 			.accessToken(accessToken)
-			.userType(UserType.Seller)
+			.userType(UserType.SELLER)
 			.message("로그인 성공")
 			.build();
 	}
@@ -121,12 +121,12 @@ public class AuthService {
 		String accessToken = this.getAccessToken(seller);
 		rq.setCookie("accessToken", accessToken);
 		rq.setCookie("apiKey", seller.getApiKey());
-		rq.setCookie("userType", UserType.Seller.toString());
+		rq.setCookie("userType", UserType.SELLER.toString());
 
 		return LoginResponse.builder()
 			.apiKey(seller.getApiKey())
 			.accessToken(accessToken)
-			.userType(UserType.Seller)
+			.userType(UserType.SELLER)
 			.message("로그인 성공")
 			.build();
 	}
@@ -140,12 +140,12 @@ public class AuthService {
 		String accessToken = this.getAccessToken(admin);
 		rq.setCookie("accessToken", accessToken);
 		rq.setCookie("apiKey", admin.getApiKey());
-		rq.setCookie("userType", UserType.Admin.toString());
+		rq.setCookie("userType", UserType.ADMIN.toString());
 
 		return LoginResponse.builder()
 			.apiKey(admin.getApiKey())
 			.accessToken(accessToken)
-			.userType(UserType.Admin)
+			.userType(UserType.ADMIN)
 			.message("로그인 성공")
 			.build();
 	}
@@ -165,13 +165,13 @@ public class AuthService {
 
 		long id = (long) payload.get("id");
 		switch (userType){
-			case Seller -> {
+			case SELLER -> {
 				return sellerService.findById(id).orElse(null);
 			}
-			case Customer -> {
+			case CUSTOMER -> {
 				return customerService.findById(id).orElse(null);
 			}
-			case Admin -> {
+			case ADMIN -> {
 				return adminService.findById(id).orElse(null);
 			}
 		}
@@ -190,13 +190,13 @@ public class AuthService {
 
 	public Optional<Member> findByApiKey(String apiKey, UserType userType) {
 		switch (userType){
-			case Customer -> {
+			case CUSTOMER -> {
 				return customerService.findByApiKey(apiKey);
 			}
-			case Seller -> {
+			case SELLER -> {
 				return sellerService.findByApiKey(apiKey);
 			}
-			case Admin -> {
+			case ADMIN -> {
 				return adminService.findByApiKey(apiKey);
 			}
 		}
