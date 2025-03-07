@@ -1,14 +1,12 @@
 package com.programmers.pcquotation.domain.estimate.service
 
-import com.programmers.pcquotation.domain.chat.repository.ChatRepository
-import com.programmers.pcquotation.domain.chat.repository.ChatRoomRepository
-import com.programmers.pcquotation.domain.chat.service.ChatService
 import com.programmers.pcquotation.domain.estimate.dto.*
 import com.programmers.pcquotation.domain.estimate.entity.Estimate
 import com.programmers.pcquotation.domain.estimate.entity.EstimateComponent
 import com.programmers.pcquotation.domain.estimate.repository.EstimateRepository
 import com.programmers.pcquotation.domain.estimaterequest.service.EstimateRequestService
 import com.programmers.pcquotation.domain.item.repository.ItemRepository
+import com.programmers.pcquotation.domain.seller.entitiy.Seller
 import com.programmers.pcquotation.domain.seller.service.SellerService
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -61,7 +59,7 @@ class EstimateService(
 
     fun getEstimatesBySeller(id: Int): List<EstimateResponse> {
         val seller = sellerService.findById(id.toLong())
-            .orElseThrow { NoSuchElementException("존재하지 않는 판매자입니다.") }
+            .orElseThrow { NoSuchElementException("존재하지 않는 판매자입니다.") } as Seller
 
         val estimates = estimateRepository.getAllBySeller(seller)
 
