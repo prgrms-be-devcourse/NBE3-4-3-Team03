@@ -22,7 +22,7 @@ const QuoteComponent = ({quote,onConfirm,onChat,onSelectQuote, onDelete, onEdit}
     if (receivedQuotes.length>0)return;
     const fetchReceivedQuotes = async () => {
       try {
-        const response = await fetch(`http://localhost:8080/api/estimate/${quote.id}/customer`, {
+        const response = await fetch(`http://localhost:8080/api/estimate/estimate-request/${quote.id}`, {
           credentials: 'include'
         });
         if (!response.ok) {

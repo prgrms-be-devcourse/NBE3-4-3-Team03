@@ -4,6 +4,7 @@ import com.programmers.pcquotation.domain.estimate.dto.*
 import com.programmers.pcquotation.domain.estimate.service.EstimateService
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
+import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.web.bind.annotation.*
 import java.security.Principal
 
@@ -33,19 +34,20 @@ class EstimateController(
         return ResponseEntity.ok().body("");
     }
 
-    @GetMapping("/{id}/customer")
-    fun getEstimatesForCustomer(
+    @GetMapping("/estimate-request/{id}")
+    fun getEstimatesByEstimateRequest(
         @PathVariable("id") id: Int
     ): ResponseEntity<List<EstimateResponse>> {
         val estimates = estimateService.getEstimatesByEstimateRequest(id)
         return ResponseEntity(estimates, HttpStatus.OK)
     }
 
-    @GetMapping("/seller")
-    fun getEstimatesForSeller(
-        principal: Principal
+    @PreAuthorize("hasRole('SELLER')")
+    @GetMapping("/seller/{id}")
+    fun getEstimatesBySeller(
+        @PathVariable("id") id: Int
     ): ResponseEntity<List<EstimateResponse>> {
-        val estimates = estimateService.getEstimatesBySeller(principal.name)
+        val estimates = estimateService.getEstimatesBySeller(id)
         return ResponseEntity(estimates, HttpStatus.OK)
     }
 }

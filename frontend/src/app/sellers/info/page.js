@@ -74,7 +74,7 @@ export default function MyPage() {
           console.log('요청받은 견적 데이터:', data);
           setRequestedQuotes(data);
         } else if (activeTab === 'written') {
-          const response = await fetch(`http://localhost:8080/api/estimate/seller`, {
+          const response = await fetch(`http://localhost:8080/api/estimate/seller/${sellerInfo.id}`, {
             credentials: 'include'
           });
           if (!response.ok) throw new Error('작성한 견적 데이터를 불러오는데 실패했습니다');
