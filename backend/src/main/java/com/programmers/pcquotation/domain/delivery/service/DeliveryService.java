@@ -35,12 +35,10 @@ public class DeliveryService {
     }
 
     public List<DeliveryDto> findAll() {
-        if (!deliveryRepository.findAll().isEmpty()){
-            return deliveryRepository
-                    .findAll()
-                    .stream()
-                    .map(DeliveryDto::new).toList();
-        }else throw new NullEntityException();
+        return deliveryRepository
+                .findAll()
+                .stream()
+                .map(DeliveryDto::new).toList();
     }
 
     public DeliveryDto findOne(Integer id) {

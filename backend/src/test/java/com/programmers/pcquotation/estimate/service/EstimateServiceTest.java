@@ -1,6 +1,8 @@
 package com.programmers.pcquotation.estimate.service;
 
 import com.programmers.pcquotation.domain.category.entity.Category;
+import com.programmers.pcquotation.domain.chat.entity.ChatRoom;
+import com.programmers.pcquotation.domain.chat.repository.ChatRoomRepository;
 import com.programmers.pcquotation.domain.customer.entity.Customer;
 import com.programmers.pcquotation.domain.estimate.dto.EstimateCreateRequest;
 import com.programmers.pcquotation.domain.estimate.dto.EstimateItemDto;
@@ -17,10 +19,10 @@ import com.programmers.pcquotation.domain.seller.entitiy.Seller;
 import com.programmers.pcquotation.domain.seller.service.SellerService;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -33,30 +35,32 @@ import static org.mockito.Mockito.*;
 @ActiveProfiles("test")
 @SpringBootTest
 public class EstimateServiceTest {
-    @Autowired
+    @InjectMocks
     private EstimateService estimateService;
 
-    @MockitoBean
+    @Mock
     private EstimateRequestService estimateRequestService;
 
-    @MockitoBean
+    @Mock
     private SellerService sellerService;
 
-    @MockitoBean
+    @Mock
     private EstimateRepository estimateRepository;
 
-    @MockitoBean
+    @Mock
     private ItemRepository itemRepository;
 
-    private final EstimateRequest estimateRequest = new EstimateRequest(
-            1,
-            "게임용",
-            1_000_000,
-            "롤",
-            LocalDateTime.of(2025, 3, 4, 12, 0, 0),
-            mock(Customer.class),
-            List.of(),
-            EstimateRequestStatus.Wait
+
+    private final Customer sampleCustomer = new Customer(
+            1L,
+            "customer1",
+            "1234",
+            "홍길동",
+            "customer1@test.com",
+            "좋아하는 음식은?",
+            "밥",
+            "api-key",
+            List.of()
     );
 
     private final Seller sampleSeller = new Seller(
@@ -69,6 +73,17 @@ public class EstimateServiceTest {
             "밥",
             true,
             "api-key"
+    );
+
+    private final EstimateRequest estimateRequest = new EstimateRequest(
+            1,
+            "게임용",
+            1_000_000,
+            "롤",
+            LocalDateTime.of(2025, 3, 4, 12, 0, 0),
+            sampleCustomer,
+            List.of(),
+            EstimateRequestStatus.Wait
     );
 
     private final Item sampleItem1 = new Item(
@@ -103,6 +118,7 @@ public class EstimateServiceTest {
         when(sellerService.findByUserName("seller1")).thenReturn(Optional.of(sampleSeller));
         when(itemRepository.findById(1L)).thenReturn(Optional.of(sampleItem1));
         when(itemRepository.findById(2L)).thenReturn(Optional.of(sampleItem2));
+        when(estimateRepository.save(any(Estimate.class))).thenReturn(sampleEstimate);
 
         EstimateCreateRequest request = new EstimateCreateRequest(
                 1,

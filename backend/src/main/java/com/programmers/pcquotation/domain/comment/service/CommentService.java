@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import com.programmers.pcquotation.domain.estimate.entity.Estimate;
 import org.springframework.stereotype.Service;
 
 import com.programmers.pcquotation.domain.comment.dto.CommentCreateRequest;
@@ -17,7 +18,6 @@ import com.programmers.pcquotation.domain.comment.exception.CommentNotFoundExcep
 import com.programmers.pcquotation.domain.comment.repository.CommentRepository;
 import com.programmers.pcquotation.domain.customer.entity.Customer;
 import com.programmers.pcquotation.domain.customer.repository.CustomerRepository;
-import com.programmers.pcquotation.domain.estimate.entity.Estimate;
 import com.programmers.pcquotation.domain.estimate.repository.EstimateRepository;
 
 import jakarta.transaction.Transactional;
