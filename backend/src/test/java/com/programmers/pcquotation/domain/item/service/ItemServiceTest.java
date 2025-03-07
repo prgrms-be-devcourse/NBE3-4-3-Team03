@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
+import java.util.ArrayList;
 import java.util.Optional;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -25,9 +26,12 @@ import com.programmers.pcquotation.domain.item.dto.ItemUpdateRequest;
 import com.programmers.pcquotation.domain.item.dto.ItemUpdateResponse;
 import com.programmers.pcquotation.domain.item.entity.Item;
 import com.programmers.pcquotation.domain.item.repository.ItemRepository;
+import com.programmers.pcquotation.util.TestCategoryFactory;
+import com.programmers.pcquotation.util.TestItemFactory;
+
 @ActiveProfiles("test")
 class ItemServiceTest {
-	@InjectMocks // ItemService에 Mock 객체 자동 주입
+	@InjectMocks
 	private ItemService itemService;
 
 	@Mock
@@ -52,10 +56,10 @@ class ItemServiceTest {
 	@BeforeEach
 	void setUp() {
 		MockitoAnnotations.openMocks(this);
-		oldCategory = Category.createTestCategory(1L, "기존 카테고리");
-		newCategory = Category.createTestCategory(2L, "새로운 카테고리");
+		oldCategory = TestCategoryFactory.createTestCategory(1L, "기존 카테고리");
+		newCategory = TestCategoryFactory.createTestCategory(2L, "새로운 카테고리");
 
-		item = Item.createTestItem(
+		item = TestItemFactory.createTestItem(
 			1L,
 			"기존 부품 이름",
 			"old-image.jpg",
@@ -66,52 +70,42 @@ class ItemServiceTest {
 	@Test
 	@DisplayName("addItem 데이터 추가, 저장 테스트")
 	void addItemTest() {
-		// Given
+
 		String expectedImagePath = "uploads/img.png";
 		when(imageService.storeImage(any(MultipartFile.class))).thenReturn(expectedImagePath);
 
-		// 카테고리 Mock 객체 생성
 		Category mockCategory = mock(Category.class);
 		when(mockCategory.getId()).thenReturn(2L);
 		when(categoryRepository.findById(2L)).thenReturn(Optional.of(mockCategory));
 
 		ItemCreateRequest request = new ItemCreateRequest(2L, "부품", mockFile);
-		Item item = Item.builder()
-			.category(mockCategory)
-			.name("부품")
-			.imgFilename(expectedImagePath)
-			.build();
-		Item savedItem = Item.builder()
-			.id(2L)
-			.category(mockCategory)
-			.name("부품")
-			.imgFilename(expectedImagePath)
-			.build();
 
-		when(itemRepository.save(any(Item.class))).thenReturn(savedItem);
+		Item itemToSave = new Item(null, "부품", expectedImagePath, mockCategory, new ArrayList<>());
 
-		// When
+		when(itemRepository.save(any(Item.class))).thenAnswer(invocation -> {
+			Item item = invocation.getArgument(0);
+
+			return new Item(1L, item.getName(), item.getImgFilename(), item.getCategory(),
+				item.getEstimateComponents());
+		});
+
 		ItemCreateResponse response = itemService.addItem(request);
 
-		// Then
-		assertThat(response.id()).isEqualTo(2L);
+		assertThat(response.id()).isEqualTo(1L); // Mock에서 반환된 ID 검증
 		assertThat(response.message()).isEqualTo("부품 생성 완료");
 	}
 
 	@Test
 	@DisplayName("부품 조회 테스트")
 	void getItemListTest() {
-		// 테스트용 카테고리 생성
-		Category testCategory = Category.createTestCategory(1L, "GPU");
 
-		// 테스트용 부품 생성
-		Item item = Item.builder()
-			.name("4090")
-			.imgFilename("gpu.jpg")
-			.category(testCategory)
-			.build();
+		Category testCategory = TestCategoryFactory.createTestCategory(1L, "GPU");
 
-		// 검증
+		Item item = new Item();
+		item.setName("4090");
+		item.setImgFilename("gpu.jpg");
+		item.setCategory(testCategory);
+
 		assertNotNull(item);
 		assertEquals("4090", item.getName());
 		assertEquals("gpu.jpg", item.getImgFilename());
@@ -121,16 +115,14 @@ class ItemServiceTest {
 	@Test
 	@DisplayName("부품 수정 테스트")
 	void updateItemTest() {
-		// Given
+
 		ItemUpdateRequest request = new ItemUpdateRequest("새로운 부품 이름", "new-image.jpg", 2L);
 
 		when(itemRepository.findById(1L)).thenReturn(Optional.of(item));
 		when(categoryRepository.findById(2L)).thenReturn(Optional.of(newCategory));
 
-		// When
 		ItemUpdateResponse response = itemService.updateItem(1L, request);
 
-		// Then
 		assertThat(response.id()).isEqualTo(1L);
 		assertThat(response.message()).isEqualTo("부품 수정 완료");
 
@@ -145,20 +137,21 @@ class ItemServiceTest {
 	@Test
 	@DisplayName("부품 삭제 테스트")
 	void deleteItemTest() {
-		// Given
+
 		Long itemId = 1L;
-		Item item = Item.createTestItem(itemId, "부품1", "image.png", null); // 아이템 객체 생성
+		Category mockCategory = new Category();
+		mockCategory.setCategory("부품 카테고리");
+
+		Item item = TestItemFactory.createTestItem(itemId, "부품1", "image.png", mockCategory);
 		when(itemRepository.findById(itemId)).thenReturn(Optional.of(item));
 
-		// When
 		ItemDeleteResponse response = itemService.deleteItem(itemId);
 
-		// Then
 		assertThat(response.id()).isEqualTo(itemId);
 		assertThat(response.message()).isEqualTo("부품 삭제 완료");
 
 		verify(itemRepository, times(1)).findById(itemId);
-		// verify(estimateRepository, times(1)).deleteComponentsByItemId(itemId); // EstimateComponent 삭제 검증
-		verify(itemRepository, times(1)).delete(item); // 아이템 삭제 검증
+
+		verify(itemRepository, times(1)).delete(item);
 	}
 }

@@ -15,6 +15,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.web.multipart.MultipartFile;
+
 @ActiveProfiles("test")
 @ExtendWith(MockitoExtension.class)
 class ImageServiceTest {
