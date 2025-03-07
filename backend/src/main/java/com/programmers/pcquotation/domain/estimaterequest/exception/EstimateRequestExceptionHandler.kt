@@ -7,6 +7,7 @@ import org.springframework.validation.ObjectError
 import org.springframework.web.bind.MethodArgumentNotValidException
 import org.springframework.web.bind.annotation.ControllerAdvice
 import org.springframework.web.bind.annotation.ExceptionHandler
+import java.sql.SQLException
 import java.util.stream.Collectors
 
 @ControllerAdvice
@@ -16,6 +17,12 @@ class EstimateRequestExceptionHandler {
         return ResponseEntity
             .status(HttpStatus.BAD_REQUEST)
             .body("입력한 내용을 다시 확인해주세요")
+    }
+    @ExceptionHandler(SQLException::class)
+    fun handleException(e: SQLException?): ResponseEntity<String> {
+        return ResponseEntity
+            .status(HttpStatus.BAD_REQUEST)
+            .body("실행 할 수 없습니다.")
     }
 
     @ExceptionHandler(MethodArgumentNotValidException::class)

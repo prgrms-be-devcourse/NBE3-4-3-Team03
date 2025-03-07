@@ -1,13 +1,5 @@
 package com.programmers.pcquotation.domain.member.service;
 
-import java.util.Map;
-import java.util.Optional;
-import java.util.UUID;
-
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.stereotype.Service;
-
 import com.programmers.pcquotation.domain.admin.entitiy.Admin;
 import com.programmers.pcquotation.domain.admin.service.AdminService;
 import com.programmers.pcquotation.domain.customer.dto.CustomerSignupRequest;
@@ -18,9 +10,9 @@ import com.programmers.pcquotation.domain.customer.exception.IncorrectLoginAttem
 import com.programmers.pcquotation.domain.customer.exception.PasswordMismatchException;
 import com.programmers.pcquotation.domain.customer.service.CustomerService;
 import com.programmers.pcquotation.domain.member.dto.AuthRequest;
-import com.programmers.pcquotation.domain.member.entitiy.Member;
 import com.programmers.pcquotation.domain.member.dto.LoginRequest;
 import com.programmers.pcquotation.domain.member.dto.LoginResponse;
+import com.programmers.pcquotation.domain.member.entitiy.Member;
 import com.programmers.pcquotation.domain.seller.dto.SellerSignupRequest;
 import com.programmers.pcquotation.domain.seller.dto.SellerSignupResponse;
 import com.programmers.pcquotation.domain.seller.entitiy.Seller;
@@ -28,8 +20,14 @@ import com.programmers.pcquotation.domain.seller.service.SellerService;
 import com.programmers.pcquotation.global.enums.UserType;
 import com.programmers.pcquotation.global.jwt.Jwt;
 import com.programmers.pcquotation.global.rq.Rq;
-
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
+
+import java.util.Map;
+import java.util.Optional;
+import java.util.UUID;
 
 @RequiredArgsConstructor
 @Service
@@ -105,7 +103,7 @@ public class AuthService {
 		return LoginResponse.builder()
 			.apiKey(customer.getApiKey())
 			.accessToken(accessToken)
-			.userType(UserType.Seller)
+			.userType(UserType.Customer)
 			.message("로그인 성공")
 			.build();
 	}

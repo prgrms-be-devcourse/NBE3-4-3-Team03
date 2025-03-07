@@ -19,21 +19,21 @@ class EstimateRequest(
     @Column(length = 200)
     var otherRequest: String,
 
-    @CreatedDate
-    var createDate: LocalDateTime,
-
     @ManyToOne
     var customer: Customer,
-
-    @Enumerated(EnumType.STRING)
-    var status: EstimateRequestStatus // 0: 대기 중, 1: 채택됨
 ) {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     var id: Int = 0
 
+    @CreatedDate
+    var createDate: LocalDateTime = LocalDateTime.now()
+
+    @Enumerated(EnumType.STRING)
+    var status: EstimateRequestStatus = EstimateRequestStatus.Wait // 0: 대기 중, 1: 채택됨
+
     @OneToMany(mappedBy = "estimateRequest", cascade = [CascadeType.REMOVE])
-    var estimate: List<Estimate> = emptyList()
+    var estimate: MutableList<Estimate>? = null
 
     fun updateEstimateRequest(estimateRequestData: EstimateRequestData) {
         this.purpose = estimateRequestData.purpose
@@ -45,6 +45,18 @@ class EstimateRequest(
         this.status = estimateRequestStatus
     }
 
-    constructor() : this( "", 0, "", LocalDateTime.now(), Customer(), EstimateRequestStatus.Wait){
-    }
+    constructor(estimateRequestData: EstimateRequestData, customer: Customer) : this(
+        purpose = estimateRequestData.purpose,
+        budget = estimateRequestData.budget,
+        otherRequest = estimateRequestData.otherRequest,
+        customer = customer
+    )
+
+
+    constructor() : this(
+        purpose = "",
+        budget = 0,
+        otherRequest = "",
+        customer = Customer()
+    )
 }

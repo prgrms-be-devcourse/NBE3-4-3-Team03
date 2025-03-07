@@ -5,18 +5,18 @@ import com.programmers.pcquotation.domain.estimaterequest.entity.EstimateRequest
 import java.time.LocalDateTime
 
 data class EstimateRequestResDto(
-    var id: Int,
-    var customerId: String,
-    var status: EstimateRequestStatus,
-    var createDate: LocalDateTime,
-    var budget: Int,
-    var purpose: String,
-    var otherRequest: String
+     val id: Int,
+     val customerName: String,
+     val status: EstimateRequestStatus,
+     val createDate: LocalDateTime,
+     val budget: Int,
+     val purpose: String,
+     val otherRequest: String
 ) {
     constructor(estimateRequest: EstimateRequest) : this(
         id = estimateRequest.id,
-        customerId = estimateRequest.customer.toString(),
-        status = estimateRequest.status,
+        customerName = estimateRequest.customer.customerName,
+        status = estimateRequest.status?:EstimateRequestStatus.Wait,
         createDate = estimateRequest.createDate,
         budget = estimateRequest.budget,
         purpose = estimateRequest.purpose,

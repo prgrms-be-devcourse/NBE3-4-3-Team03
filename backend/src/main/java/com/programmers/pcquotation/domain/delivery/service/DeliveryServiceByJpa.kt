@@ -3,7 +3,6 @@ package com.programmers.pcquotation.domain.delivery.service
 import com.programmers.pcquotation.domain.delivery.entity.Delivery
 import com.programmers.pcquotation.domain.delivery.entity.DeliveryCreateRequest
 import com.programmers.pcquotation.domain.delivery.entity.DeliveryDto
-import com.programmers.pcquotation.domain.delivery.entity.DeliveryStatus
 import com.programmers.pcquotation.domain.delivery.exception.NullEntityException
 import com.programmers.pcquotation.domain.delivery.repository.DeliveryRepository
 import com.programmers.pcquotation.domain.estimate.repository.EstimateRepository
@@ -20,30 +19,21 @@ open class DeliveryServiceByJpa(
 
     //배달 생성을 통해 채택된 상태로 변경
     override fun create(deliveryCreateRequest:DeliveryCreateRequest, id: Int) {
-        val delivery = Delivery(
-            estimateRepository.getEstimateById(id),
-            DeliveryStatus.ORDER_COMPLETED,
-            deliveryCreateRequest.address
-        )
+        val estimate = estimateRepository.getEstimateById(id)
+        val delivery = Delivery(estimate, deliveryCreateRequest.address)
         deliveryRepository.save(delivery)
     }
 
     override fun findAll(): List<DeliveryDto> {
-        if (deliveryRepository.findAll().isNotEmpty()) {
-            return deliveryRepository
-                .findAll()
-                .stream()
-                .map { delivery: Delivery -> DeliveryDto(delivery) }
-                .toList()
-        } else throw NullEntityException()
+        return deliveryRepository
+            .findAll()
+            .map { delivery: Delivery -> DeliveryDto(delivery) }
     }
 
     override fun findByDeliveryId(id: Int): DeliveryDto {
         return deliveryRepository
             .findById(id)
-            .stream()
             .map { delivery: Delivery -> DeliveryDto(delivery) }
-            .findAny()
             .orElseThrow { NullEntityException() }
     }
 

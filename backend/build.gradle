@@ -3,6 +3,9 @@ plugins {
     id 'org.springframework.boot' version '3.4.2'
     id 'io.spring.dependency-management' version '1.1.7'
     id 'org.jetbrains.kotlin.jvm' version '2.1.10'
+
+    id 'org.jetbrains.kotlin.plugin.lombok' version '2.1.10'
+    id 'io.freefair.lombok' version '8.10'
 }
 
 group = 'com.programmers'
@@ -43,6 +46,7 @@ dependencies {
     runtimeOnly 'io.jsonwebtoken:jjwt-impl:0.12.6'
     runtimeOnly 'io.jsonwebtoken:jjwt-jackson:0.12.6'
     implementation "org.jetbrains.kotlin:kotlin-stdlib"
+    implementation "org.jetbrains.kotlin:kotlin-reflect"
 
 
 }

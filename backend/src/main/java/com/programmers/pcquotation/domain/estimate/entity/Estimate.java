@@ -1,26 +1,19 @@
 package com.programmers.pcquotation.domain.estimate.entity;
 
+import com.programmers.pcquotation.domain.comment.emtity.Comment;
+import com.programmers.pcquotation.domain.estimaterequest.entity.EstimateRequest;
+import com.programmers.pcquotation.domain.seller.entitiy.Seller;
+import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
+import lombok.*;
+
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.programmers.pcquotation.domain.comment.emtity.Comment;
-import com.programmers.pcquotation.domain.estimaterequest.entity.EstimateRequest;
-import com.programmers.pcquotation.domain.seller.entitiy.Seller;
-
-import jakarta.persistence.CascadeType;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToMany;
-import jakarta.validation.constraints.NotNull;
-import lombok.*;
-
 @Entity
 @Getter
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@NoArgsConstructor
 @AllArgsConstructor
 public class Estimate {
 	@Id
