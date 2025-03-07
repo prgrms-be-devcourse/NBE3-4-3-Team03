@@ -27,7 +27,7 @@ class BusinessConfirmationService(
             val conn = connect(apiUrl + encodedKey)
             send(conn, jsonData)
             val bSttValue = receive(conn)
-            return bSttValueCheck(bSttValue, OpenApiStatus.run)
+            return bSttValueCheck(bSttValue, OpenApiStatus.RUN)
         } catch (e: JSONException) {
             throw RuntimeException(e)
         } catch (e: IOException) {

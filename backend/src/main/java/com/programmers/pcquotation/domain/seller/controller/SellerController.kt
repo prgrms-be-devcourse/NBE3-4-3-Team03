@@ -5,13 +5,11 @@ import com.programmers.pcquotation.domain.seller.dto.SellerUpdateDto
 import com.programmers.pcquotation.domain.seller.service.BusinessConfirmationService
 import com.programmers.pcquotation.domain.seller.service.SellerService
 import jakarta.validation.Valid
-import lombok.RequiredArgsConstructor
 import org.springframework.transaction.annotation.Transactional
 import org.springframework.web.bind.annotation.*
 import java.security.Principal
 
 @RestController
-@RequiredArgsConstructor
 @RequestMapping("/seller")
 class SellerController(
     private val sellerService: SellerService,

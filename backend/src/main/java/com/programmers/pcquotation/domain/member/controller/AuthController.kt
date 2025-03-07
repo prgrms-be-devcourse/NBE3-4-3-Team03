@@ -8,12 +8,10 @@ import com.programmers.pcquotation.domain.member.dto.LoginResponse
 import com.programmers.pcquotation.domain.member.service.AuthService
 import com.programmers.pcquotation.domain.seller.dto.SellerSignupRequest
 import com.programmers.pcquotation.domain.seller.dto.SellerSignupResponse
-import lombok.RequiredArgsConstructor
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 
-@RequiredArgsConstructor
 @RestController
 @RequestMapping("/api/auth")
 class AuthController(

@@ -4,13 +4,11 @@ import com.programmers.pcquotation.domain.member.entitiy.Member
 import com.programmers.pcquotation.domain.seller.dto.SellerUpdateDto
 import com.programmers.pcquotation.domain.seller.entitiy.Seller
 import com.programmers.pcquotation.domain.seller.repository.SellerRepository
-import lombok.RequiredArgsConstructor
 import org.springframework.stereotype.Service
 import java.util.*
 
 
 @Service
-@RequiredArgsConstructor
 class SellerService(
     private val sellerRepository: SellerRepository,
 ) {
@@ -27,9 +25,9 @@ class SellerService(
 
     fun modify(seller: Seller, sellerUpdateDto: SellerUpdateDto): Seller {
         if (seller.password == sellerUpdateDto.password) {
-            if (sellerUpdateDto.userName!!.isNotEmpty()) seller.username = sellerUpdateDto.userName
-            if (sellerUpdateDto.companyName!!.isNotEmpty()) seller.companyName = sellerUpdateDto.companyName
-            if (sellerUpdateDto.newPassword!!.isNotEmpty()) {
+            if (sellerUpdateDto.userName.isNotEmpty()) seller.username = sellerUpdateDto.userName
+            if (sellerUpdateDto.companyName.isNotEmpty()) seller.companyName = sellerUpdateDto.companyName
+            if (sellerUpdateDto.newPassword.isNotEmpty()) {
                 if (sellerUpdateDto.newPassword == sellerUpdateDto.confirmNewPassword) seller.password =
                     sellerUpdateDto.newPassword
                 else throw NoSuchElementException("비밀번호가 일치하지않습니다.")

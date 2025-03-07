@@ -3,11 +3,10 @@ package com.programmers.pcquotation.domain.customer.service
 import com.programmers.pcquotation.domain.customer.entity.Customer
 import com.programmers.pcquotation.domain.customer.repository.CustomerRepository
 import com.programmers.pcquotation.domain.member.entitiy.Member
-import lombok.RequiredArgsConstructor
 import org.springframework.stereotype.Service
 import java.util.*
 
-@RequiredArgsConstructor
+
 @Service
 class CustomerService(
     private val customerRepository: CustomerRepository

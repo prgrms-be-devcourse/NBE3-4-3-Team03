@@ -2,14 +2,12 @@ package com.programmers.pcquotation.domain.customer.controller
 
 import com.programmers.pcquotation.domain.customer.dto.CustomerInfoResponse
 import com.programmers.pcquotation.domain.customer.service.CustomerService
-import lombok.RequiredArgsConstructor
 import org.springframework.transaction.annotation.Transactional
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 import java.security.Principal
 
-@RequiredArgsConstructor
 @RestController
 @RequestMapping(("/customer"))
 class CustomerController(

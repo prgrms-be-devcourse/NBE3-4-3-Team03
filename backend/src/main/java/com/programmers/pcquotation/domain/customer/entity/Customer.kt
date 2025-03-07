@@ -1,7 +1,9 @@
 package com.programmers.pcquotation.domain.customer.entity
 
 import com.programmers.pcquotation.domain.comment.emtity.Comment
+import com.programmers.pcquotation.domain.customer.dto.CustomerSignupRequest
 import com.programmers.pcquotation.domain.member.entitiy.Member
+import com.programmers.pcquotation.domain.seller.dto.SellerSignupRequest
 import jakarta.persistence.*
 import lombok.*
 import org.springframework.security.core.GrantedAuthority
@@ -37,6 +39,15 @@ class Customer : Member{
     ) {
         this.username = username
         this.password = password
+    }
+    constructor(customerSignupRequest: CustomerSignupRequest, apiKey: String, encodingPassword: String) {
+        this.username =  customerSignupRequest.username
+        this.password = encodingPassword
+        this.customerName = customerSignupRequest.customerName
+        this.email = customerSignupRequest.email
+        this.verificationQuestion = customerSignupRequest.verificationQuestion
+        this.verificationAnswer = customerSignupRequest.verificationAnswer
+        this.apiKey = apiKey
     }
 
     constructor(

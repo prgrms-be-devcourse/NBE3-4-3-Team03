@@ -3,6 +3,7 @@ package com.programmers.pcquotation.domain.member.service
 import com.programmers.pcquotation.domain.admin.service.AdminService
 import com.programmers.pcquotation.domain.customer.dto.CustomerSignupRequest
 import com.programmers.pcquotation.domain.customer.dto.CustomerSignupResponse
+import com.programmers.pcquotation.domain.customer.entity.Customer
 import com.programmers.pcquotation.domain.customer.exception.CustomerAlreadyExistException
 import com.programmers.pcquotation.domain.customer.exception.IncorrectLoginAttemptException
 import com.programmers.pcquotation.domain.customer.exception.PasswordMismatchException
@@ -13,18 +14,18 @@ import com.programmers.pcquotation.domain.member.dto.LoginResponse
 import com.programmers.pcquotation.domain.member.entitiy.Member
 import com.programmers.pcquotation.domain.seller.dto.SellerSignupRequest
 import com.programmers.pcquotation.domain.seller.dto.SellerSignupResponse
+import com.programmers.pcquotation.domain.seller.entitiy.Seller
 import com.programmers.pcquotation.domain.seller.service.SellerService
 import com.programmers.pcquotation.global.enums.UserType
 import com.programmers.pcquotation.global.enums.UserType.*
 import com.programmers.pcquotation.global.jwt.Jwt
 import com.programmers.pcquotation.global.rq.Rq
-import lombok.RequiredArgsConstructor
+
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
 import java.util.*
 
-@RequiredArgsConstructor
 @Service
 class AuthService(
     @Value("\${jwt.secretKey}")
@@ -52,9 +53,12 @@ class AuthService(
             throw CustomerAlreadyExistException()
         }
 
-        val customer = customerSignupRequest.toCustomer()
-        customer.apiKey = UUID.randomUUID().toString()
-        customer.password = passwordEncoder.encode(customer.password)
+        val customer = Customer(
+            customerSignupRequest,
+            UUID.randomUUID().toString(),
+            passwordEncoder.encode(customerSignupRequest.password)
+        )
+
         customerService.createCustomer(customer)
         return CustomerSignupResponse(customer, "회원가입 성공")
     }
@@ -72,9 +76,11 @@ class AuthService(
             throw CustomerAlreadyExistException()
         }
 
-        val seller = sellerSignupRequest.toSeller()
-        seller.apiKey = UUID.randomUUID().toString()
-        seller.password = passwordEncoder.encode(seller.password)
+        val seller = Seller(
+            sellerSignupRequest,
+            UUID.randomUUID().toString(),
+            passwordEncoder.encode(sellerSignupRequest.password)
+        )
         sellerService.createSeller(seller)
 
         return SellerSignupResponse(seller, "회원가입 성공")
@@ -92,12 +98,12 @@ class AuthService(
         val accessToken = this.getAccessToken(customer)
         rq.setCookie("accessToken", accessToken)
         rq.setCookie("apiKey", customer.apiKey)
-        rq.setCookie("userType", Customer.toString())
+        rq.setCookie("userType", CUSTOMER.toString())
         return customer.apiKey?.let {
             LoginResponse(
                 it,
                 accessToken,
-                Seller,
+                SELLER,
                 "로그인 성공"
             )
         }
@@ -114,13 +120,13 @@ class AuthService(
         val accessToken = this.getAccessToken(seller)
         rq.setCookie("accessToken", accessToken)
         rq.setCookie("apiKey", seller.apiKey)
-        rq.setCookie("userType", Seller.toString())
+        rq.setCookie("userType", SELLER.toString())
 
         return seller.apiKey?.let {
             LoginResponse(
                 it,
                 accessToken,
-                Seller,
+                SELLER,
                 "로그인 성공"
             )
         } ?: throw Exception()
@@ -136,14 +142,14 @@ class AuthService(
         val accessToken = this.getAccessToken(admin)
         rq.setCookie("accessToken", accessToken)
         rq.setCookie("apiKey", admin.apiKey)
-        rq.setCookie("userType", Admin.toString())
+        rq.setCookie("userType", ADMIN.toString())
 
 
         return admin.apiKey?.let {
             LoginResponse(
                 it,
                 accessToken,
-                Admin,
+                ADMIN,
                 "로그인 성공"
             )
         } ?: throw Exception()
@@ -162,19 +168,19 @@ class AuthService(
 
         val id = payload["id"] as Long
         return when (userType) {
-            Seller -> {
+            SELLER -> {
                 sellerService.findById(id)
             }
 
-            Customer -> {
+            CUSTOMER -> {
                 customerService.findById(id)
             }
 
-            Admin -> {
+            ADMIN -> {
                 adminService.findById(id)
             }
 
-            Nothing -> Optional.empty()
+            NOTHING -> Optional.empty()
         }
     }
 
@@ -190,19 +196,19 @@ class AuthService(
 
     fun findByApiKey(apiKey: String, userType: UserType): Optional<Member> {
         return when (userType) {
-            Customer -> {
+            CUSTOMER -> {
                 customerService.findByApiKey(apiKey)
             }
 
-            Seller -> {
+            SELLER -> {
                 sellerService.findByApiKey(apiKey)
             }
 
-            Admin -> {
+            ADMIN -> {
                 adminService.findByApiKey(apiKey)
             }
 
-            Nothing -> Optional.empty()
+            NOTHING -> Optional.empty()
         }
 
     }

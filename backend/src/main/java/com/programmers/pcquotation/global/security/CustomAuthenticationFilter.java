@@ -44,7 +44,7 @@ public class CustomAuthenticationFilter extends OncePerRequestFilter {
 		String accessToken = rq.getCookieValue("accessToken");
 		UserType userType = UserType.fromString(rq.getCookieValue("userType"));
 
-		if (apiKey != null && accessToken != null && userType != UserType.Nothing)
+		if (apiKey != null && accessToken != null && userType != UserType.NOTHING)
 			return new AuthTokens(apiKey, accessToken, userType);
 
 		return null;

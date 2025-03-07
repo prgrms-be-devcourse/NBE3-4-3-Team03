@@ -3,12 +3,10 @@ package com.programmers.pcquotation.domain.admin.service
 import com.programmers.pcquotation.domain.admin.entitiy.Admin
 import com.programmers.pcquotation.domain.admin.repository.AdminRepository
 import com.programmers.pcquotation.domain.member.entitiy.Member
-import lombok.RequiredArgsConstructor
 import org.springframework.stereotype.Service
 import java.util.*
 
 @Service
-@RequiredArgsConstructor
 class AdminService(
     private val adminRepository: AdminRepository
 ) {
