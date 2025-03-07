@@ -27,6 +27,7 @@ import com.programmers.pcquotation.domain.item.dto.ItemUpdateResponse;
 import com.programmers.pcquotation.domain.item.entity.Item;
 import com.programmers.pcquotation.domain.item.repository.ItemRepository;
 import com.programmers.pcquotation.util.TestCategoryFactory;
+import com.programmers.pcquotation.util.TestItemFactory;
 
 @ActiveProfiles("test")
 class ItemServiceTest {
@@ -58,7 +59,7 @@ class ItemServiceTest {
 		oldCategory = TestCategoryFactory.createTestCategory(1L, "기존 카테고리");
 		newCategory = TestCategoryFactory.createTestCategory(2L, "새로운 카테고리");
 
-		item = Item.createTestItem(
+		item = TestItemFactory.createTestItem(
 			1L,
 			"기존 부품 이름",
 			"old-image.jpg",
@@ -141,7 +142,7 @@ class ItemServiceTest {
 		Category mockCategory = new Category();
 		mockCategory.setCategory("부품 카테고리");
 
-		Item item = Item.createTestItem(itemId, "부품1", "image.png", mockCategory);
+		Item item = TestItemFactory.createTestItem(itemId, "부품1", "image.png", mockCategory);
 		when(itemRepository.findById(itemId)).thenReturn(Optional.of(item));
 
 		ItemDeleteResponse response = itemService.deleteItem(itemId);

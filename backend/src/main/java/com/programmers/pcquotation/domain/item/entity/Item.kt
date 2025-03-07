@@ -40,11 +40,4 @@ class Item(
         this.imgFilename = imgFilename
         this.category = category
     }
-
-    companion object {
-        @JvmStatic
-        fun createTestItem(id: Long, name: String, imgFilename: String, category: Category): Item {
-            return Item(id, name, imgFilename, category)
-        }
-    }
 }
