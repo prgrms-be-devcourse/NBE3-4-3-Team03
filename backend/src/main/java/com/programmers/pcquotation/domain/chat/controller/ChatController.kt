@@ -25,7 +25,7 @@ class ChatController(private val chatService: ChatService) {
 
     @GetMapping("/api/chat/{chatRoomId}")
     @ResponseBody
-    fun getChatMemory(@PathVariable("chatRoomId") chatRoomId: Long): MutableList<ChatMemoryRes> {
+    fun getChatMemory(@PathVariable("chatRoomId") chatRoomId: Long): List<ChatMemoryRes> {
         return chatService.getChatMemory(chatRoomId)
     }
 

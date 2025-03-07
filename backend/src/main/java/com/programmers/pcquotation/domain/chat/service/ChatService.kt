@@ -21,7 +21,7 @@ class ChatService(private val chatRepository: ChatRepository,
         return chatRepository.save(chat)
     }
 
-    fun getChatMemory(chatRoomId: Long): MutableList<ChatMemoryRes> {
+    fun getChatMemory(chatRoomId: Long): List<ChatMemoryRes> {
         try {
             val estimate = estimateRepository.getEstimateById(chatRoomId.toInt())
             val chatRoomOptional = chatRoomRepository.findFirstByEstimate(estimate)
