@@ -26,6 +26,7 @@ import com.programmers.pcquotation.domain.item.dto.ItemUpdateRequest;
 import com.programmers.pcquotation.domain.item.dto.ItemUpdateResponse;
 import com.programmers.pcquotation.domain.item.entity.Item;
 import com.programmers.pcquotation.domain.item.repository.ItemRepository;
+import com.programmers.pcquotation.util.TestCategoryFactory;
 
 @ActiveProfiles("test")
 class ItemServiceTest {
@@ -54,8 +55,8 @@ class ItemServiceTest {
 	@BeforeEach
 	void setUp() {
 		MockitoAnnotations.openMocks(this);
-		oldCategory = Category.createTestCategory(1L, "기존 카테고리");
-		newCategory = Category.createTestCategory(2L, "새로운 카테고리");
+		oldCategory = TestCategoryFactory.createTestCategory(1L, "기존 카테고리");
+		newCategory = TestCategoryFactory.createTestCategory(2L, "새로운 카테고리");
 
 		item = Item.createTestItem(
 			1L,
@@ -97,7 +98,7 @@ class ItemServiceTest {
 	@DisplayName("부품 조회 테스트")
 	void getItemListTest() {
 
-		Category testCategory = Category.createTestCategory(1L, "GPU");
+		Category testCategory = TestCategoryFactory.createTestCategory(1L, "GPU");
 
 		Item item = new Item();
 		item.setName("4090");

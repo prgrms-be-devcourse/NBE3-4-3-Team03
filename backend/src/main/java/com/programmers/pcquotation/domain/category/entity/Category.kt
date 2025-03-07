@@ -27,11 +27,4 @@ class Category(
     fun updateCategory(category: String) {
         this.category = category
     }
-
-    companion object {
-        @JvmStatic
-        fun createTestCategory(id: Long, categoryName: String): Category {
-            return Category(id = id, category = categoryName)
-        }
-    }
 }

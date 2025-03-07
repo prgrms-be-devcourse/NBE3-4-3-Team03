@@ -21,6 +21,8 @@ import com.programmers.pcquotation.domain.category.dto.CategoryInfoResponse;
 import com.programmers.pcquotation.domain.category.dto.CategoryUpdateRequest;
 import com.programmers.pcquotation.domain.category.entity.Category;
 import com.programmers.pcquotation.domain.category.repository.CategoryRepository;
+import com.programmers.pcquotation.util.TestCategoryFactory;
+
 @ActiveProfiles("test")
 public class CategoryServiceTest {
 
@@ -79,7 +81,7 @@ public class CategoryServiceTest {
 	void updateCategoryTest() {
 
 		Long categoryId = 1L;
-		Category existingCategory = Category.createTestCategory(categoryId, "기존 카테고리");
+		Category existingCategory = TestCategoryFactory.createTestCategory(categoryId, "기존 카테고리");
 		CategoryUpdateRequest updateRequest = new CategoryUpdateRequest("수정된 카테고리");
 
 		when(categoryRepository.findById(categoryId)).thenReturn(Optional.of(existingCategory));
@@ -94,7 +96,7 @@ public class CategoryServiceTest {
 	void deleteCategoryTest() {
 
 		Long categoryId = 1L;
-		Category existingCategory = Category.createTestCategory(1L, "기존 카테고리");
+		Category existingCategory = TestCategoryFactory.createTestCategory(1L, "기존 카테고리");
 		when(categoryRepository.findById(categoryId)).thenReturn(Optional.of(existingCategory));
 
 		CategoryDeleteResponse response = categoryService.deleteCategory(categoryId);
