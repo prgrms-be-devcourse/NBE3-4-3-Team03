@@ -16,4 +16,3 @@ public interface EstimateRepository extends JpaRepository<Estimate, Integer> {
 
 	Estimate getEstimateById(Integer id);
 }
-

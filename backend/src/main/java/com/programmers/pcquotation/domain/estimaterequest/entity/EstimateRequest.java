@@ -5,11 +5,9 @@ import java.util.List;
 
 import com.programmers.pcquotation.domain.customer.entity.Customer;
 
-import com.programmers.pcquotation.domain.delivery.entity.DeliveryStatus;
 import com.programmers.pcquotation.domain.estimate.entity.Estimate;
 import com.programmers.pcquotation.domain.estimaterequest.dto.EstimateRequestData;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;

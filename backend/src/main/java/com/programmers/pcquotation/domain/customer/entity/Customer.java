@@ -54,7 +54,7 @@ public class Customer implements Member {
 	}
 
 	@Override
-	public long getId() {
+	public Long getId() {
 		return id;
 	}
 
