@@ -10,5 +10,5 @@ data class EstimateResponse(
     val companyName: String,
     val createdDate: LocalDateTime,
     val totalPrice: Int,
-    val items: Map<String, String>
+    val items: List<ItemInfoDto>
 )

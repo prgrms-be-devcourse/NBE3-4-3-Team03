@@ -12,7 +12,6 @@ import com.programmers.pcquotation.domain.item.repository.ItemRepository
 import com.programmers.pcquotation.domain.seller.service.SellerService
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
-import java.util.stream.Collectors
 
 @Service
 class EstimateService(
@@ -54,13 +53,7 @@ class EstimateService(
                     companyName = seller.companyName,
                     createdDate = createDate,
                     totalPrice = totalPrice,
-                    items = estimateComponents.stream()
-                        .collect(
-                            Collectors.toMap(
-                                { estimateComponent -> estimateComponent.item.category.category },
-                                { estimateComponent -> estimateComponent.item.name },
-                                { existingValue: String, newValue: String? -> existingValue })
-                        )
+                    items = getItemInfoFromComponents(estimateComponents)
                 )
             }
         }
@@ -82,12 +75,7 @@ class EstimateService(
                     companyName = seller.companyName,
                     createdDate = estimateRequest.createDate,
                     totalPrice = totalPrice,
-                    items = estimateComponents.stream()
-                        .collect(
-                            Collectors.toMap(
-                                { estimateComponent -> estimateComponent.item.category.category },
-                                { estimateComponent -> estimateComponent.item.name })
-                        )
+                    items = getItemInfoFromComponents(estimateComponents)
                 )
             }
         }
@@ -130,6 +118,14 @@ class EstimateService(
                 price = itemDto.price,
                 estimate = estimate
             )
+        }
+    }
+
+    private fun getItemInfoFromComponents(estimateComponents: List<EstimateComponent>): List<ItemInfoDto> {
+        return estimateComponents.map { estimateComponent ->
+            with(estimateComponent.item) {
+                ItemInfoDto(categoryName = category.category, itemName = name)
+            }
         }
     }
 }

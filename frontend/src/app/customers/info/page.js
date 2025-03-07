@@ -609,19 +609,19 @@ export default function MyPage() {
                       견적 구성 부품
                     </h4>
                     <div className="divide-y dark:divide-gray-700">
-                      {Object.entries(selectedQuote.items).map(([part, name]) => (
-                          <div key={part} className="p-4 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
+                      {selectedQuote.items.map((item) => (
+                          <div key={item.categoryName} className="p-4 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
                             <div className="grid grid-cols-[140px_1fr] gap-4 items-center">
                               <div className="text-gray-600 dark:text-gray-400 font-medium">
-                                {part === 'cpu' ? 'CPU' :
-                                    part === 'motherboard' ? '메인보드' :
-                                        part === 'memory' ? '메모리' :
-                                            part === 'storage' ? '저장장치' :
-                                                part === 'gpu' ? '그래픽카드' :
-                                                    part === 'case' ? '케이스' :
-                                                        part === 'power' ? '파워' : part}
+                                {item.categoryName === 'cpu' ? 'CPU' :
+                                    item.categoryName === 'motherboard' ? '메인보드' :
+                                        item.categoryName === 'memory' ? '메모리' :
+                                            item.categoryName === 'storage' ? '저장장치' :
+                                                item.categoryName === 'gpu' ? '그래픽카드' :
+                                                    item.categoryName === 'case' ? '케이스' :
+                                                        item.categoryName === 'power' ? '파워' : item.categoryName}
                               </div>
-                              <div className="dark:text-white">{name}</div>
+                              <div className="dark:text-white">{item.itemName}</div>
                             </div>
                           </div>
                       ))}
