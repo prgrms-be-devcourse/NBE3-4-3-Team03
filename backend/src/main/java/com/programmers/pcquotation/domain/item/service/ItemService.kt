@@ -45,30 +45,14 @@ class ItemService(
 
     @Transactional
     fun getItemList(): List<ItemInfoResponse> {
-        return itemRepository.findAll().map { item ->
-            ItemInfoResponse(
-                id = item.id!!,
-                name = item.name,
-                categoryId = item.category.id,
-                categoryName = item.category.category,
-                filename = item.imgFilename
-            )
-        }
+        return itemRepository.findAll().map { toItemInfoResponse(it) }
     }
-
 
     @Transactional
     fun getItemsByCategory(categoryId: Long): List<ItemInfoResponse> {
-        return itemRepository.findByCategoryId(categoryId).map { item ->
-            ItemInfoResponse(
-                item.id!!,
-                item.name,
-                item.category.id,
-                item.category.category,
-                item.imgFilename
-            )
-        }
+        return itemRepository.findByCategoryId(categoryId).map { toItemInfoResponse(it) }
     }
+
 
     @Transactional
     fun updateItem(id: Long, request: ItemUpdateRequest): ItemUpdateResponse {
@@ -78,11 +62,7 @@ class ItemService(
         val category: Category = categoryRepository.findById(request.categoryId)
             .orElseThrow { IllegalArgumentException("유효하지 않은 카테고리 ID입니다.") }
 
-        var imgFilename = request.imgFilename
-
-        if (imgFilename.isNullOrEmpty()) {
-            imgFilename = item.imgFilename
-        }
+        val imgFilename = request.imgFilename.takeIf { !it.isNullOrEmpty() } ?: item.imgFilename
 
         item.updateItem(
             request.name,
@@ -107,5 +87,15 @@ class ItemService(
         return itemRepository.findByName(name).orElse(null)
 
 
+    }
+
+    private fun toItemInfoResponse(item: Item): ItemInfoResponse {
+        return ItemInfoResponse(
+            id = item.id!!,
+            name = item.name,
+            categoryId = item.category.id,
+            categoryName = item.category.category,
+            filename = item.imgFilename
+        )
     }
 }
