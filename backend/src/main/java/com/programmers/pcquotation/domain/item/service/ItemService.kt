@@ -85,8 +85,6 @@ class ItemService(
 
     fun findByName(name: String): Item? {
         return itemRepository.findByName(name).orElse(null)
-
-
     }
 
     private fun toItemInfoResponse(item: Item): ItemInfoResponse {
