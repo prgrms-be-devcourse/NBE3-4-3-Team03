@@ -56,6 +56,12 @@ dependencies {
     //소셜로그인 관련
     implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
 
+    // WebSocket
+    implementation 'org.springframework.boot:spring-boot-starter-websocket'
+    implementation 'org.webjars:stomp-websocket:2.3.4'
+    implementation 'org.webjars:sockjs-client:1.5.1'
+
+
 
 }
 

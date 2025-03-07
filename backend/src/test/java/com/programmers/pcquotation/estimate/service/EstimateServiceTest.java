@@ -1,6 +1,8 @@
 package com.programmers.pcquotation.estimate.service;
 
 import com.programmers.pcquotation.domain.category.entity.Category;
+import com.programmers.pcquotation.domain.chat.entity.ChatRoom;
+import com.programmers.pcquotation.domain.chat.repository.ChatRoomRepository;
 import com.programmers.pcquotation.domain.customer.entity.Customer;
 import com.programmers.pcquotation.domain.estimate.dto.EstimateCreateRequest;
 import com.programmers.pcquotation.domain.estimate.dto.EstimateItemDto;
@@ -47,6 +49,7 @@ public class EstimateServiceTest {
 
     @Mock
     private ItemRepository itemRepository;
+
 
     private final Customer sampleCustomer = new Customer(
             1L,
@@ -115,6 +118,7 @@ public class EstimateServiceTest {
         when(sellerService.findByUserName("seller1")).thenReturn(Optional.of(sampleSeller));
         when(itemRepository.findById(1L)).thenReturn(Optional.of(sampleItem1));
         when(itemRepository.findById(2L)).thenReturn(Optional.of(sampleItem2));
+        when(estimateRepository.save(any(Estimate.class))).thenReturn(sampleEstimate);
 
         EstimateCreateRequest request = new EstimateCreateRequest(
                 1,
