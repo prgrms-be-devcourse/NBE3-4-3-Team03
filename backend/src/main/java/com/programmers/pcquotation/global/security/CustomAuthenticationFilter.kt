@@ -50,14 +50,14 @@ constructor(
         }
     }
 
-    private fun refreshAccessToken(member: Member<*>, userType: UserType) {
+    private fun refreshAccessToken(member: Member, userType: UserType) {
         val newAccessToken = authService.getAccessToken(member)
-        rq.setHeader("Authorization", "Bearer ${member.getApiKey()} $newAccessToken $userType")
+        rq.setHeader("Authorization", "Bearer ${member.apiKey} $newAccessToken $userType")
         rq.setCookie("accessToken", newAccessToken)
         rq.setCookie("userType", userType.toString())
     }
 
-    private fun refreshAccessTokenByApiKey(apiKey: String, userType: UserType): Member<*>? {
+    private fun refreshAccessTokenByApiKey(apiKey: String, userType: UserType): Member? {
         return authService.findByApiKey(apiKey, userType).orElse(null)?.also {
             refreshAccessToken(it, userType)
         }
@@ -76,7 +76,9 @@ constructor(
 
         val (apiKey, accessToken, userType) = authTokens
 
-        var member: Member<*>? = authService.getMemberFromAccessToken(accessToken ?: "", userType ?: UserType.NOTHING)
+        var member: Member? = authService.getMemberFromAccessToken(accessToken ?: "", userType ?: UserType.NOTHING)
+            .orElse(null)
+
         if (member == null && apiKey != null && userType != null) {
             member = refreshAccessTokenByApiKey(apiKey, userType)
         }
