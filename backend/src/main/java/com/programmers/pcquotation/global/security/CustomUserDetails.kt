@@ -1,52 +1,27 @@
-package com.programmers.pcquotation.global.security;
+package com.programmers.pcquotation.global.security
 
-import java.util.Collection;
-import java.util.Collections;
+import org.springframework.security.core.GrantedAuthority
+import org.springframework.security.core.userdetails.UserDetails
+import com.programmers.pcquotation.domain.member.entitiy.Member
 
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.userdetails.User;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.stereotype.Service;
+class CustomUserDetails(
+	private val member: Member<*>
+) : UserDetails {
 
-import com.programmers.pcquotation.domain.customer.service.CustomerService;
-import com.programmers.pcquotation.domain.member.entitiy.Member;
-import com.programmers.pcquotation.domain.member.service.AuthService;
-import com.programmers.pcquotation.domain.seller.service.SellerService;
-import com.programmers.pcquotation.global.enums.UserType;
+	val id: Long
+	get() = member.getId() ?: throw IllegalStateException("Id cannot be null")
 
-import lombok.RequiredArgsConstructor;
+	override fun getAuthorities(): Collection<out GrantedAuthority> = member.getAuthorities() ?: throw IllegalStateException("Authorities cannot be null")
 
+	override fun getUsername(): String = member.getUsername() ?: throw IllegalStateException("Username cannot be null")
 
-public class CustomUserDetails implements UserDetails {
-	private final Member member;
+	override fun getPassword(): String = member.getPassword()
 
-	// Constructor
-	public CustomUserDetails(Member member) {
-		this.member = member;
-	}
+	override fun isAccountNonExpired(): Boolean = true
 
-	@Override
-	public Collection<? extends GrantedAuthority> getAuthorities() {
-		return member.getAuthorities();
-	}
+	override fun isAccountNonLocked(): Boolean = true
 
-	public Long getId() {
-		return member.getId();
-	}
+	override fun isCredentialsNonExpired(): Boolean = true
 
-
-
-	@Override
-	public String getUsername() {
-		return member.getUsername();
-	}
-
-	@Override
-	public String getPassword() {
-		return member.getPassword();
-	}
-
+	override fun isEnabled(): Boolean = true
 }
