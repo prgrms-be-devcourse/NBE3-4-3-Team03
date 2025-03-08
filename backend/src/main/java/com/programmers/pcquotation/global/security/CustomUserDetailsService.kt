@@ -14,28 +14,31 @@ import com.programmers.pcquotation.global.enums.UserType;
 
 @Service
 class CustomUserDetailsService(
-	private val customerService: CustomerService,
-	private val sellerService: SellerService,
-	private val adminService: AdminService
+    private val customerService: CustomerService,
+    private val sellerService: SellerService,
+    private val adminService: AdminService
 ) : UserDetailsService {
 
-	fun loadUserByUsername(username: String, userType: UserType): Member<*> {
-		return when (userType) {
-			UserType.CUSTOMER -> customerService.findCustomerByUsername(username)
-				.orElseThrow { throwUserNotFoundException(username) }
-			UserType.SELLER -> sellerService.findByUserName(username)
-				.orElseThrow { throwUserNotFoundException(username) }
-			UserType.ADMIN -> adminService.findAdminByUsername(username)
-				.orElseThrow { throwUserNotFoundException(username) }
-			else -> throw IllegalArgumentException("잘못된 UserType입니다.")
-		}
-	}
+    fun loadUserByUsername(username: String, userType: UserType): Member<*> {
+        return when (userType) {
+            UserType.CUSTOMER -> customerService.findCustomerByUsername(username)
+                .orElseThrow { throwUserNotFoundException(username) }
 
-	private fun throwUserNotFoundException(username: String): UsernameNotFoundException {
-		return UsernameNotFoundException("해당 유저가 존재하지 않습니다. username = $username")
-	}
+            UserType.SELLER -> sellerService.findByUserName(username)
+                .orElseThrow { throwUserNotFoundException(username) }
 
-	override fun loadUserByUsername(username: String): UserDetails {
-		throw UnsupportedOperationException("UserType이 필요합니다.")
-	}
+            UserType.ADMIN -> adminService.findAdminByUsername(username)
+                .orElseThrow { throwUserNotFoundException(username) }
+
+            else -> throw IllegalArgumentException("잘못된 UserType입니다.")
+        }
+    }
+
+    private fun throwUserNotFoundException(username: String): UsernameNotFoundException {
+        return UsernameNotFoundException("해당 유저가 존재하지 않습니다. username = $username")
+    }
+
+    override fun loadUserByUsername(username: String): UserDetails {
+        throw UnsupportedOperationException("UserType이 필요합니다.")
+    }
 }
