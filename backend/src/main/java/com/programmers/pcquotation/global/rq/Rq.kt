@@ -22,64 +22,64 @@ import org.springframework.beans.factory.annotation.Autowired
 @RequestScope
 @Component
 class Rq @Autowired constructor(
-	private val req: HttpServletRequest,
-	private val resp: HttpServletResponse,
-	private val authService: AuthService,
-	private val sellerService: SellerService,
-	private val customUserDetailsService: CustomUserDetailsService
+    private val req: HttpServletRequest,
+    private val resp: HttpServletResponse,
+    private val authService: AuthService,
+    private val sellerService: SellerService,
+    private val customUserDetailsService: CustomUserDetailsService
 ) {
 
-	fun setLogin(member: Member<*>) {
-		val user = CustomUserDetails(member)
-		val authentication: Authentication = UsernamePasswordAuthenticationToken(
-			user, user.password, user.authorities
-		)
-		SecurityContextHolder.getContext().authentication = authentication
-	}
-
-	fun getMember(): Member<*>? {
-		val authorization = getHeader("Authorization")
-	if (authorization.isEmpty()) throw NullEntityException()
-	val token = authorization.removePrefix("Bearer ")
-	val tokenBits = token.split(" ", limit = 3)
-
-	return (SecurityContextHolder.getContext().authentication?.principal as? UserDetails)?.let {
-		customUserDetailsService.loadUserByUsername(it.username, UserType.valueOf(tokenBits[2]))
-	}
+    fun setLogin(member: Member<*>) {
+        val user = CustomUserDetails(member)
+        val authentication: Authentication = UsernamePasswordAuthenticationToken(
+            user, user.password, user.authorities
+        )
+        SecurityContextHolder.getContext().authentication = authentication
     }
 
-	fun setHeader(name: String, value: String) {
-		resp.setHeader(name, value)
-	}
+    fun getMember(): Member<*>? {
+        val authorization = getHeader("Authorization")
+        if (authorization.isEmpty()) throw NullEntityException()
+        val token = authorization.removePrefix("Bearer ")
+        val tokenBits = token.split(" ", limit = 3)
 
-	fun getHeader(name: String): String {
-		return req.getHeader(name) ?: ""
-	}
-
-	fun setCookie(name: String, value: String) {
-		val cookie = ResponseCookie.from(name, value)
-			.path("/")
-			.domain("localhost")
-			.sameSite("Strict")
-			.secure(true)
-			.httpOnly(true)
-			.build()
-		resp.addHeader("Set-Cookie", cookie.toString())
-	}
-
-	fun getCookieValue(name: String): String? {
-	return req.cookies?.firstOrNull { it.name == name }?.value
+        return (SecurityContextHolder.getContext().authentication?.principal as? UserDetails)?.let {
+            customUserDetailsService.loadUserByUsername(it.username, UserType.valueOf(tokenBits[2]))
+        }
     }
 
-	fun deleteCookie(name: String) {
-		val cookie = ResponseCookie.from(name, null)
-			.path("/")
-			.domain("localhost")
-			.sameSite("Strict")
-			.secure(true)
-			.httpOnly(true)
-			.maxAge(0)
-			.build()
-		resp.addHeader("Set-Cookie", cookie.toString())
-	}
+    fun setHeader(name: String, value: String) {
+        resp.setHeader(name, value)
+    }
+
+    fun getHeader(name: String): String {
+        return req.getHeader(name) ?: ""
+    }
+
+    fun setCookie(name: String, value: String) {
+        val cookie = ResponseCookie.from(name, value)
+            .path("/")
+            .domain("localhost")
+            .sameSite("Strict")
+            .secure(true)
+            .httpOnly(true)
+            .build()
+        resp.addHeader("Set-Cookie", cookie.toString())
+    }
+
+    fun getCookieValue(name: String): String? {
+        return req.cookies?.firstOrNull { it.name == name }?.value
+    }
+
+    fun deleteCookie(name: String) {
+        val cookie = ResponseCookie.from(name, null)
+            .path("/")
+            .domain("localhost")
+            .sameSite("Strict")
+            .secure(true)
+            .httpOnly(true)
+            .maxAge(0)
+            .build()
+        resp.addHeader("Set-Cookie", cookie.toString())
+    }
 }
