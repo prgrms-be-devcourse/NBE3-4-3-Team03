@@ -1,46 +1,36 @@
-package com.programmers.pcquotation.global.jwt;
+package com.programmers.pcquotation.global.jwt
 
-import java.util.Date;
-import java.util.Map;
+import io.jsonwebtoken.Jwts
+import io.jsonwebtoken.security.Keys
 
-import javax.crypto.SecretKey;
+import java.util.*
+import javax.crypto.SecretKey
 
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
+object Jwt {
+fun toString(secret: String, expireSeconds: Long, body: Map<String, Any>): String {
+	val issuedAt = Date()
+	val expiration = Date(issuedAt.time + 1000L * expireSeconds)
 
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.security.Keys;
+	val secretKey: SecretKey = Keys.hmacShaKeyFor(secret.toByteArray())
 
-public class Jwt {
-	public static String toString(String secret, long expireSeconds, Map<String, Object> body) {
-		Date issuedAt = new Date();
-		Date expiration = new Date(issuedAt.getTime() + 1000L * expireSeconds);
-
-		SecretKey secretKey = Keys.hmacShaKeyFor(secret.getBytes());
-
-		String jwt = Jwts.builder()
-			.claims(body)
-			.issuedAt(issuedAt)
-			.expiration(expiration)
-			.signWith(secretKey)
-			.compact();
-
-		return jwt;
-	}
-
-	public static Map<String, Object> payload(String secret, String jwtStr) {
-		SecretKey secretKey = Keys.hmacShaKeyFor(secret.getBytes());
-		try {
-			return (Map<String, Object>) Jwts
-				.parser()
-				.verifyWith(secretKey)
-				.build()
-				.parseClaimsJws(jwtStr)
-				.getPayload();
-		} catch (Exception e) {
-			return null;
-		}
-	}
-
+	return Jwts.builder()
+		.claims(body)
+		.issuedAt(issuedAt)
+		.expiration(expiration)
+		.signWith(secretKey)
+		.compact()
 }
+
+fun payload(secret: String, jwtStr: String): Map<String, Any>? {
+val secretKey: SecretKey = Keys.hmacShaKeyFor(secret.toByteArray())
+	return try {
+	Jwts.parser()
+                .verifyWith(secretKey)
+                .build()
+                .parseClaimsJws(jwtStr)
+                .payload as Map<String, Any>
+        } catch (e: Exception) {
+	null
+	}
+	}
+	}
