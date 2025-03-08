@@ -29,7 +29,7 @@ class Rq @Autowired constructor(
     private val customUserDetailsService: CustomUserDetailsService
 ) {
 
-    fun setLogin(member: Member<*>) {
+    fun setLogin(member: Member) {
         val user = CustomUserDetails(member)
         val authentication: Authentication = UsernamePasswordAuthenticationToken(
             user, user.password, user.authorities
@@ -37,7 +37,7 @@ class Rq @Autowired constructor(
         SecurityContextHolder.getContext().authentication = authentication
     }
 
-    fun getMember(): Member<*>? {
+    fun getMember(): Member? {
         val authorization = getHeader("Authorization") ?: return null
         if (!authorization.startsWith("Bearer ")) throw NullEntityException()
 
