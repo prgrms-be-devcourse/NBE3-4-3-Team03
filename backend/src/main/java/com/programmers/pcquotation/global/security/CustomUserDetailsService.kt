@@ -19,7 +19,7 @@ class CustomUserDetailsService(
     private val adminService: AdminService
 ) : UserDetailsService {
 
-    fun loadUserByUsername(username: String, userType: UserType): Member<*> {
+    fun loadUserByUsername(username: String, userType: UserType): Member {
         return when (userType) {
             UserType.CUSTOMER -> customerService.findCustomerByUsername(username)
                 .orElseThrow { throwUserNotFoundException(username) }
