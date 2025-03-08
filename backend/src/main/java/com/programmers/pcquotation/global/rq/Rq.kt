@@ -38,10 +38,13 @@ class Rq @Autowired constructor(
     }
 
     fun getMember(): Member<*>? {
-        val authorization = getHeader("Authorization")
-        if (authorization.isEmpty()) throw NullEntityException()
+        val authorization = getHeader("Authorization") ?: return null
+        if (!authorization.startsWith("Bearer ")) throw NullEntityException()
+
         val token = authorization.removePrefix("Bearer ")
         val tokenBits = token.split(" ", limit = 3)
+
+        if (tokenBits.size < 3) return null
 
         return (SecurityContextHolder.getContext().authentication?.principal as? UserDetails)?.let {
             customUserDetailsService.loadUserByUsername(it.username, UserType.valueOf(tokenBits[2]))
