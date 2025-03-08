@@ -46,29 +46,41 @@ class InitData(
 
     fun insertAdmin() {
         if (adminService.findAdminByUsername("admin").isEmpty) {
-            val admin = Admin.builder().username("admin").password(passwordEncoder.encode("password"))
-                .apiKey(UUID.randomUUID().toString()).build()
-
-            adminService.create(admin);
+            val admin = Admin(
+                username = "admin",
+                password = passwordEncoder.encode("password"),
+                apiKey = UUID.randomUUID().toString()
+            )
+            adminService.create(admin)
         }
     }
 
     private fun insertSeller() {
-        if (sellerService.findSellerByUsername("seller0001").isPresent()) return
-        val sellerSignupRequest =
-            SellerSignupRequest.builder().username("seller0001").email("seller0001@gmail.com").password("seller")
-                .confirmPassword("seller").companyName("쿠팡주").isVerified(true).verificationAnswer("사과는")
-                .verificationAnswer("빨간색").build()
+        if (sellerService.findSellerByUsername("seller0001").isPresent) return
+        val sellerSignupRequest = SellerSignupRequest(
+            username = "seller0001",
+            email = "seller0001@gmail.com",
+            password = "seller",
+            confirmPassword = "seller",
+            companyName = "쿠팡주",
+            isVerified = true,
+            verificationQuestion = "사과는",
+            verificationAnswer = "빨간색"
+        )
         authService.processSignup(sellerSignupRequest)
     }
 
     private fun insertCustomer() {
-        if (customerService.findCustomerByUsername("customer0001").isPresent()) return
-        val customerSignupRequest =
-            CustomerSignupRequest.builder().username("customer0001").password("customer").confirmPassword("customer")
-                .customerName("김광식주").email("customer0001@gmail.com").verificationQuestion("바나나는")
-                .verificationAnswer("노란색").build()
-
+        if (customerService.findCustomerByUsername("customer0001").isPresent) return
+        val customerSignupRequest = CustomerSignupRequest(
+            username = "customer0001",
+            password = "customer",
+            confirmPassword = "customer",
+            customerName = "김광식주",
+            email = "customer0001@gmail.com",
+            verificationQuestion = "바나나는",
+            verificationAnswer = "노란색"
+        )
         authService.processSignup(customerSignupRequest)
     }
 
