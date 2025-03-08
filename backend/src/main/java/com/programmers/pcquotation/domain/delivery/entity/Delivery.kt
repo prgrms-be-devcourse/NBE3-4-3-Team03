@@ -6,7 +6,7 @@ import jakarta.persistence.*
 
 
 @Entity
-class Delivery(
+class Delivery @JvmOverloads constructor(
     @JsonIgnore
     @OneToOne(fetch = FetchType.LAZY, cascade = [CascadeType.ALL])
     val estimate: Estimate,
@@ -14,8 +14,6 @@ class Delivery(
     @Column(length = 50)
     var address: String
 ){
-    constructor() : this(Estimate(), "")
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     var id:Int = 0

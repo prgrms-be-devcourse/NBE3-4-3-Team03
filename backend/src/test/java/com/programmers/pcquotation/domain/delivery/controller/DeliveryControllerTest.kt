@@ -25,7 +25,7 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers
 @SpringBootTest
 @Transactional
 @AutoConfigureMockMvc
-open class 배송_테스트 {
+class 배송_테스트 {
 
  @MockitoBean
  private lateinit var deliveryService: DeliveryService

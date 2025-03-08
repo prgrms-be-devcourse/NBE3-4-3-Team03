@@ -48,17 +48,17 @@ class EstimateRequestController(
         var list: List<EstimateRequestResDto?>? = null
 
         when (userType) {
-            UserType.Customer -> {
+            UserType.CUSTOMER -> {
                 val customer = estimateRequestService.findCustomer(principal.name)
                 list = estimateRequestService.getEstimateRequestByCustomerId(customer)
             }
 
-            UserType.Seller -> {
+            UserType.SELLER -> {
                 list = estimateRequestService.getAllEstimateRequest()
             }
 
-            UserType.Admin -> emptyList<EstimateRequestResDto>()
-            UserType.Nothing -> emptyList<EstimateRequestResDto>()
+            UserType.ADMIN -> emptyList<EstimateRequestResDto>()
+            UserType.NOTHING -> emptyList<EstimateRequestResDto>()
         }
         return ResponseEntity(list, HttpStatus.OK)
     }

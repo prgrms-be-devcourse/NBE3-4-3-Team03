@@ -1,8 +1,6 @@
 package com.programmers.pcquotation.estimate.service;
 
 import com.programmers.pcquotation.domain.category.entity.Category;
-import com.programmers.pcquotation.domain.chat.entity.ChatRoom;
-import com.programmers.pcquotation.domain.chat.repository.ChatRoomRepository;
 import com.programmers.pcquotation.domain.customer.entity.Customer;
 import com.programmers.pcquotation.domain.estimate.dto.EstimateCreateRequest;
 import com.programmers.pcquotation.domain.estimate.dto.EstimateItemDto;
@@ -11,7 +9,6 @@ import com.programmers.pcquotation.domain.estimate.entity.Estimate;
 import com.programmers.pcquotation.domain.estimate.repository.EstimateRepository;
 import com.programmers.pcquotation.domain.estimate.service.EstimateService;
 import com.programmers.pcquotation.domain.estimaterequest.entity.EstimateRequest;
-import com.programmers.pcquotation.domain.estimaterequest.entity.EstimateRequestStatus;
 import com.programmers.pcquotation.domain.estimaterequest.service.EstimateRequestService;
 import com.programmers.pcquotation.domain.item.entity.Item;
 import com.programmers.pcquotation.domain.item.repository.ItemRepository;
@@ -75,14 +72,10 @@ public class EstimateServiceTest {
     );
 
     private final EstimateRequest estimateRequest = new EstimateRequest(
-            1,
             "게임용",
             1_000_000,
             "롤",
-            LocalDateTime.of(2025, 3, 4, 12, 0, 0),
-            sampleCustomer,
-            List.of(),
-            EstimateRequestStatus.Wait
+            sampleCustomer
     );
 
     private final Item sampleItem1 = new Item(

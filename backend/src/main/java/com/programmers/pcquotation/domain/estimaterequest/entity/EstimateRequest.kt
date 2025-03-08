@@ -9,7 +9,7 @@ import java.time.LocalDateTime
 
 
 @Entity
-class EstimateRequest(
+class EstimateRequest @JvmOverloads constructor(
     @Column(length = 20)
     var purpose: String,
 
@@ -52,11 +52,4 @@ class EstimateRequest(
         customer = customer
     )
 
-
-    constructor() : this(
-        purpose = "",
-        budget = 0,
-        otherRequest = "",
-        customer = Customer()
-    )
 }

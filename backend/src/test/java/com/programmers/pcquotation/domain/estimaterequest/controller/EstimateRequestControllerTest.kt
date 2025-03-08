@@ -2,12 +2,10 @@ package com.programmers.pcquotation.domain.estimaterequest.controller
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.programmers.pcquotation.domain.customer.entity.Customer
-import com.programmers.pcquotation.domain.customer.repository.CustomerRepository
 import com.programmers.pcquotation.domain.estimaterequest.dto.EstimateRequestData
 import com.programmers.pcquotation.domain.estimaterequest.dto.EstimateRequestResDto
 import com.programmers.pcquotation.domain.estimaterequest.entity.EstimateRequest
 import com.programmers.pcquotation.domain.estimaterequest.exception.NullEntityException
-import com.programmers.pcquotation.domain.estimaterequest.repository.EstimateRequestRepository
 import com.programmers.pcquotation.domain.estimaterequest.service.EstimateRequestService
 import jakarta.servlet.http.Cookie
 import jakarta.transaction.Transactional
@@ -28,7 +26,7 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers
 @SpringBootTest
 @Transactional
 @AutoConfigureMockMvc
-open class 견적요청테스트 {
+class 견적요청테스트 {
 
  @MockitoBean
  private lateinit var estimateRequestService: EstimateRequestService
@@ -147,8 +145,7 @@ open class 견적요청테스트 {
  @Test
  @WithMockUser(username = "customer1", roles = ["CUSTOMER"])
  fun 구매자_견적_요청_조회_성공() {
-  val customer = Customer()
-  customer.customerName = "customer1"
+  val customer = Customer("customer1", "1234")
   Mockito.`when`(estimateRequestService.findCustomer("customer1")).thenReturn(customer)
   val customerEstimateRequestList = mutableListOf<EstimateRequestResDto>()
 
@@ -165,7 +162,7 @@ open class 견적요청테스트 {
 
   val resultActions = mvc.perform(
    MockMvcRequestBuilders.get("/estimate/request")
-    .cookie(Cookie("userType", "Customer"))
+    .cookie(Cookie("userType", "CUSTOMER"))
   ).andDo(MockMvcResultHandlers.print())
 
   resultActions
@@ -181,12 +178,10 @@ open class 견적요청테스트 {
  @Test
  @WithMockUser(username = "seller1", roles = ["SELLER"])
  fun 판매자_견적_요청_조회_성공() {
-  val customer1 = Customer()
-  customer1.customerName = "customer1"
+  val customer1 = Customer("customer1", "1234")
   Mockito.`when`(estimateRequestService.findCustomer("customer1")).thenReturn(customer1)
 
-  val customer2 = Customer()
-  customer2.customerName = "customer2"
+  val customer2 = Customer("customer2", "1234")
   Mockito.`when`(estimateRequestService.findCustomer("customer2")).thenReturn(customer2)
 
   val customerEstimateRequestList = mutableListOf<EstimateRequestResDto>()
@@ -210,7 +205,7 @@ open class 견적요청테스트 {
 
   val resultActions = mvc.perform(
    MockMvcRequestBuilders.get("/estimate/request")
-    .cookie(Cookie("userType", "Seller"))
+    .cookie(Cookie("userType", "SELLER"))
   ).andDo(MockMvcResultHandlers.print())
 
   resultActions

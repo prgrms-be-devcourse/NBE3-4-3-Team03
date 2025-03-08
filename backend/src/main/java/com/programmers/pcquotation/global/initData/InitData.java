@@ -1,18 +1,5 @@
 package com.programmers.pcquotation.global.initData;
 
-import static com.programmers.pcquotation.global.initData.CustomMultipartFile.*;
-
-import java.util.UUID;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.ApplicationRunner;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Lazy;
-import org.springframework.context.annotation.Profile;
-import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.web.multipart.MultipartFile;
-
 import com.programmers.pcquotation.domain.admin.entitiy.Admin;
 import com.programmers.pcquotation.domain.admin.service.AdminService;
 import com.programmers.pcquotation.domain.customer.dto.CustomerSignupRequest;
@@ -22,9 +9,20 @@ import com.programmers.pcquotation.domain.item.service.ItemService;
 import com.programmers.pcquotation.domain.member.service.AuthService;
 import com.programmers.pcquotation.domain.seller.dto.SellerSignupRequest;
 import com.programmers.pcquotation.domain.seller.service.SellerService;
-
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.ApplicationRunner;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Lazy;
+import org.springframework.context.annotation.Profile;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.util.UUID;
+
+import static com.programmers.pcquotation.global.initData.CustomMultipartFile.fromUrl;
 
 @Configuration
 @RequiredArgsConstructor
@@ -67,11 +65,11 @@ public class InitData {
 		if(sellerService.findSellerByUsername("seller0001").isPresent()) return;
 		SellerSignupRequest sellerSignupRequest = new SellerSignupRequest(
 			"seller0001",
-			"seller0001@gmail.com",
 			"seller",
 			"seller",
 			"쿠팡주",
-			true,
+				"seller0001@gmail.com",
+				true,
 			"사과는",
 			"빨간색");
 		authService.processSignup(sellerSignupRequest);

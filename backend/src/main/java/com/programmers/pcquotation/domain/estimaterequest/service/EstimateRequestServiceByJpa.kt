@@ -9,6 +9,8 @@ import com.programmers.pcquotation.domain.estimaterequest.exception.NullEntityEx
 import com.programmers.pcquotation.domain.estimaterequest.repository.EstimateRequestRepository
 import jakarta.transaction.Transactional
 import org.springframework.stereotype.Service
+import java.util.*
+import kotlin.NoSuchElementException
 
 @Service
 @Transactional
@@ -22,8 +24,8 @@ open class EstimateRequestServiceByJpa (
         estimateRequestRepository.save(estimateRequest)
     }
 
-    override fun getEstimateRequestById(id: Int): EstimateRequest {
-        return estimateRequestRepository.getEstimateRequestById(id).orElseThrow{NullEntityException()}
+    override fun getEstimateRequestById(id: Int): Optional<EstimateRequest> {
+        return estimateRequestRepository.getEstimateRequestById(id)
     }
 
     override fun findCustomer(name: String): Customer {

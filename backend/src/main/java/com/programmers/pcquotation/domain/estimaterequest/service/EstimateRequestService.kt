@@ -4,11 +4,12 @@ import com.programmers.pcquotation.domain.customer.entity.Customer
 import com.programmers.pcquotation.domain.estimaterequest.dto.EstimateRequestData
 import com.programmers.pcquotation.domain.estimaterequest.dto.EstimateRequestResDto
 import com.programmers.pcquotation.domain.estimaterequest.entity.EstimateRequest
+import java.util.*
 
 interface EstimateRequestService {
     fun createEstimateRequest(estimateRequestData : EstimateRequestData, customer : Customer)
 
-    fun getEstimateRequestById(id: Int): EstimateRequest
+    fun getEstimateRequestById(id: Int): Optional<EstimateRequest>
 
     fun getEstimateRequestByCustomerId(customer: Customer): List<EstimateRequestResDto>
 
