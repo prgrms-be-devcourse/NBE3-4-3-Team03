@@ -1,32 +1,31 @@
-package com.programmers.pcquotation.domain.customer.exception;
+package com.programmers.pcquotation.domain.customer.exception
 
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.ControllerAdvice;
-import org.springframework.web.bind.annotation.ExceptionHandler;
-
-import com.programmers.pcquotation.domain.member.dto.ErrorResponse;
+import com.programmers.pcquotation.domain.member.dto.ErrorResponse
+import org.springframework.http.HttpStatus
+import org.springframework.http.ResponseEntity
+import org.springframework.web.bind.annotation.ControllerAdvice
+import org.springframework.web.bind.annotation.ExceptionHandler
 
 @ControllerAdvice
-public class CustomerExceptionHandler {
-	@ExceptionHandler(PasswordMismatchException.class)
-	public ResponseEntity<ErrorResponse> handlePasswordMismatch(PasswordMismatchException ex) {
-		return ResponseEntity
-			.status(HttpStatus.BAD_REQUEST)
-			.body(new ErrorResponse("Password mismatch"));
-	}
+class CustomerExceptionHandler {
+    @ExceptionHandler(PasswordMismatchException::class)
+    fun handlePasswordMismatch(ex: PasswordMismatchException): ResponseEntity<ErrorResponse> {
+        return ResponseEntity
+            .status(HttpStatus.BAD_REQUEST)
+            .body(ErrorResponse("Password mismatch"))
+    }
 
-	@ExceptionHandler(CustomerAlreadyExistException.class)
-	public ResponseEntity<ErrorResponse> handleCustomerAlreadyExist(CustomerAlreadyExistException ex) {
-		return ResponseEntity
-			.status(HttpStatus.CONFLICT)
-			.body(new ErrorResponse("User already exists"));
-	}
+    @ExceptionHandler(CustomerAlreadyExistException::class)
+    fun handleCustomerAlreadyExist(ex: CustomerAlreadyExistException): ResponseEntity<ErrorResponse> {
+        return ResponseEntity
+            .status(HttpStatus.CONFLICT)
+            .body(ErrorResponse("User already exists"))
+    }
 
-	@ExceptionHandler(IncorrectLoginAttemptException.class)
-	public ResponseEntity<ErrorResponse> handleIncorrectLoginAttempt(IncorrectLoginAttemptException ex) {
-		return ResponseEntity
-				.status(HttpStatus.BAD_REQUEST)
-				.body(new ErrorResponse("Incorrect ID or Password"));
-	}
+    @ExceptionHandler(IncorrectLoginAttemptException::class)
+    fun handleIncorrectLoginAttempt(ex: IncorrectLoginAttemptException): ResponseEntity<ErrorResponse> {
+        return ResponseEntity
+            .status(HttpStatus.BAD_REQUEST)
+            .body(ErrorResponse("Incorrect ID or Password"))
+    }
 }

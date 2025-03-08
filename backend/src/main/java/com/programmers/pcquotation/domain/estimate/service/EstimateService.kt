@@ -1,5 +1,8 @@
 package com.programmers.pcquotation.domain.estimate.service
 
+import com.programmers.pcquotation.domain.chat.repository.ChatRepository
+import com.programmers.pcquotation.domain.chat.repository.ChatRoomRepository
+import com.programmers.pcquotation.domain.chat.service.ChatService
 import com.programmers.pcquotation.domain.estimate.dto.*
 import com.programmers.pcquotation.domain.estimate.entity.Estimate
 import com.programmers.pcquotation.domain.estimate.entity.EstimateComponent
@@ -16,10 +19,10 @@ class EstimateService(
     private val estimateRepository: EstimateRepository,
     private val estimateRequestService: EstimateRequestService,
     private val sellerService: SellerService,
-    private val itemRepository: ItemRepository
+    private val itemRepository: ItemRepository,
 ) {
     @Transactional
-    fun createEstimate(request: EstimateCreateRequest, sellerName: String) {
+    fun createEstimate(request: EstimateCreateRequest, sellerName: String):Estimate {
         val estimateRequest = estimateRequestService.getEstimateRequestById(request.estimateRequestId)
             .orElseThrow { NoSuchElementException("존재하지 않는 견적 요청입니다.") }
 
@@ -35,7 +38,7 @@ class EstimateService(
         val components = mapItemsToEstimateComponents(estimate, request.items)
         estimate.addEstimateComponents(components)
 
-        estimateRepository.save(estimate)
+        return estimateRepository.save(estimate)
     }
 
     fun getEstimateByRequest(id: Int): List<EstimateForCustomerResponse> {
@@ -44,7 +47,7 @@ class EstimateService(
         return list.map { estimate ->
             with(estimate) {
                 EstimateForCustomerResponse(
-                    id = id,
+                    id = estimate.id, //요청 id가 들어가서 변경함
                     companyName = seller.companyName,
                     createdDate = createDate,
                     totalPrice = totalPrice,

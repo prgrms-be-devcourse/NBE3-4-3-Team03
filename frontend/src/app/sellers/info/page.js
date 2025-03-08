@@ -1,15 +1,14 @@
 'use client';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import { useRouter } from "next/navigation";
+import { Client } from '@stomp/stompjs';
 
 export default function MyPage() {
   const router = useRouter();
   const [activeTab, setActiveTab] = useState('profile');
   const [selectedQuote, setSelectedQuote] = useState(null);
-  const [selectedQuoteForComment, setSelectedQuoteForComment] = useState(null);
-  const [commentText, setCommentText] = useState('');
-  const [comments, setComments] = useState([]); // 댓글 상태 정의
+
   const [showConfirmModal, setShowConfirmModal] = useState(false);
   const [requestedQuotes, setRequestedQuotes] = useState([]);
   const [writtenQuotes, setWrittenQuotes] = useState([]);
@@ -22,6 +21,12 @@ export default function MyPage() {
     companyName: '',
     email: ''
   });
+  const [stompClient, setStompClient] = useState(null);
+  const [chatMessages, setChatMessages] = useState([]);
+  const [chatInput, setChatInput] = useState('');
+  const [chatConnectionStatus, setChatConnectionStatus] = useState('대기 중');
+  const [chatError, setChatError] = useState(null);
+  const messagesEndRef = useRef(null);
 
 
 
@@ -54,15 +59,7 @@ export default function MyPage() {
     }
   }, [activeTab]);
 
-  useEffect(() => {
-    if (selectedQuoteForComment) fetchComments(selectedQuoteForComment.id);
-  }, [selectedQuoteForComment]);
 
-  useEffect(() => {
-    if (selectedQuoteForComment?.id) {
-      fetchComments(selectedQuoteForComment.id);
-    }
-  }, [selectedQuoteForComment]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -175,7 +172,7 @@ const fetchComments = async (estimateId) => {
     }
 
     const data = await response.json();
-    console.log('받은 댓글 데이터:', data);
+    
     
     const commentsWithType = data.map(comment => ({
       ...comment,
@@ -189,58 +186,6 @@ const fetchComments = async (estimateId) => {
   }
 };
 
-  // ✅ 댓글 전송 (POST /api/estimates/comments)
-  const handleSendComment = async () => {
-    if (!commentText.trim()) {
-      alert('댓글 내용을 입력해주세요.');
-      return;
-    }
-
-    try {
-      console.log('현재 선택된 견적:', selectedQuoteForComment);
-      console.log('현재 판매자 정보:', sellerInfo);
-
-      if (!selectedQuoteForComment?.id) {
-        console.error('견적 ID 누락:', selectedQuoteForComment);
-        throw new Error('견적 정보가 없습니다.');
-      }
-
-      // CommentCreateRequest DTO 형식에 맞춰 데이터 구성
-      const newComment = {
-        estimateId: parseInt(selectedQuoteForComment.id),
-        customerId: parseInt(sellerInfo.id),
-        content: commentText,
-        createDate: new Date().toISOString(),
-        type: window.location.pathname.includes('/sellers') ? 'SELLER' : 'CUSTOMER'  // type 필드 추가
-      };
-
-      console.log('전송할 댓글 데이터:', newComment);
-
-      const response = await fetch('http://localhost:8080/api/estimates/comments', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        credentials: 'include',
-        body: JSON.stringify(newComment),
-      });
-
-      if (!response.ok) {
-        const errorData = await response.json();
-        console.error('서버 응답 상세:', errorData);
-        throw new Error(errorData.message || '댓글 전송에 실패했습니다.');
-      }
-
-      const result = await response.json();
-      console.log('댓글 전송 성공:', result);
-
-      setCommentText('');
-      await fetchComments(selectedQuoteForComment.id);
-    } catch (error) {
-      console.error('댓글 전송 실패:', error);
-      alert(error.message);
-    }
-  };
 
   // 날짜 포맷팅 함수 추가
   const formatDate = (dateString) => {
@@ -252,6 +197,169 @@ const fetchComments = async (estimateId) => {
       hour: '2-digit',
       minute: '2-digit'
     }).format(date);
+  };
+
+  // 메시지 목록이 업데이트될 때마다 스크롤을 아래로 이동
+  useEffect(() => {
+    if (messagesEndRef.current) {
+      messagesEndRef.current.scrollIntoView({ behavior: 'smooth' });
+    }
+  }, [chatMessages]);
+
+  // 채팅 연결 설정
+  const connectToChat = (estimateId) => {
+    if (stompClient) {
+      stompClient.deactivate();
+    }
+    console.log('채팅 연결 설정 시도:', estimateId);
+
+    setChatConnectionStatus('연결 시도 중...');
+    
+    const client = new Client({
+      brokerURL: 'ws://localhost:8080/chat',
+      connectHeaders: {
+        'accept-version': '1.2',
+      },
+      debug: (str) => {
+        console.log('STOMP 디버그:', str);
+      },
+      reconnectDelay: 5000,
+      heartbeatIncoming: 5000,
+      heartbeatOutgoing: 5000,
+      onConnect: (frame) => {
+        setChatConnectionStatus('연결됨');
+        setChatError(null);
+        
+        // 채팅방 구독 - 견적 ID를 채팅방 ID로 사용
+        client.subscribe(`/sub/chat.${estimateId}`, (message) => {
+          console.log('메시지 수신:', message.body);
+          try {
+            const receivedMessage = JSON.parse(message.body);
+            setChatMessages((prev) => [...prev, receivedMessage]);
+          } catch (error) {
+            console.error('메시지 파싱 오류:', error);
+          }
+        });
+      },
+      onStompError: (frame) => {
+        console.error('STOMP 에러:', frame);
+        setChatError(`STOMP 에러: ${frame.headers?.message || '알 수 없는 오류'}`);
+        setChatConnectionStatus('STOMP 에러');
+      },
+      onWebSocketError: (event) => {
+        console.error('웹소켓 에러:', event);
+        setChatError('웹소켓 연결 실패. 서버가 실행 중인지 확인하세요.');
+        setChatConnectionStatus('웹소켓 에러');
+      },
+      onDisconnect: () => {
+        console.log('웹소켓 연결 종료');
+        setChatConnectionStatus('연결 종료');
+      },
+    });
+
+    setStompClient(client);
+    
+    try {
+      client.activate();
+    } catch (error) {
+      console.error('웹소켓 활성화 오류:', error);
+      setChatError(`연결 오류: ${error.message}`);
+      setChatConnectionStatus('활성화 오류');
+    }
+  };
+
+  // 채팅 메시지 전송
+  const sendChatMessage = () => {
+    if (!chatInput || !stompClient) {
+      return;
+    }
+    
+    try {
+      const destination = `/pub/chat.${selectedQuote.id}`;
+      const body = JSON.stringify({
+        username: sellerInfo.companyName || '판매자',
+        content: chatInput
+      });
+      
+      console.log(`메시지 전송 시도: ${destination}`, body);
+      
+      stompClient.publish({
+        destination: destination,
+        body: body,
+        headers: { 
+          'content-type': 'application/json'
+        }
+      });
+      
+      console.log('메시지 전송 성공:', chatInput);
+      setChatInput('');
+    } catch (error) {
+      console.error('메시지 전송 실패:', error);
+      setChatError(`메시지 전송 실패: ${error.message}`);
+    }
+  };
+
+  // 문의하기 버튼 클릭 시 호출
+  const handleOpenChat = async (quote) => {
+    setSelectedQuote(quote);
+    setChatMessages([]); // 채팅 메시지 초기화
+    
+    try {
+      // 채팅 기록 가져오기
+      const response = await fetch(`http://localhost:8080/api/chat/${quote.id}`, {
+        credentials: 'include'
+      });
+      
+      if (response.ok) {
+        const chatHistory = await response.json();
+        console.log('받은 채팅 기록:', chatHistory);
+        
+        // 백엔드에서 반환하는 형식에 맞게 처리
+        const formattedMessages = [];
+        
+        // 각 메시지 객체를 처리
+        if (Array.isArray(chatHistory)) {
+          for (const item of chatHistory) {
+            try {
+              // ChatMemoryRes 형식으로 변환
+              formattedMessages.push({
+                username: item.sender,
+                content: item.content,
+                sendDate: item.sendDate
+              });
+            } catch (err) {
+              console.error('메시지 변환 중 오류:', err, item);
+            }
+          }
+          
+          console.log('변환된 메시지:', formattedMessages);
+          setChatMessages(formattedMessages);
+        } else {
+          console.log('채팅 기록이 배열이 아닙니다:', chatHistory);
+          // 오류 응답인 경우 빈 메시지 목록 사용
+          setChatMessages([]);
+        }
+      } else {
+        // 오류 응답 처리
+        console.error('채팅 기록을 가져오는데 실패했습니다:', await response.text());
+        setChatMessages([]);
+      }
+    } catch (error) {
+      console.error('채팅 기록 요청 중 오류 발생:', error);
+      setChatMessages([]);
+    }
+    
+    // 채팅 연결 설정
+    connectToChat(quote.id);
+  };
+
+  // 채팅창 닫기
+  const handleCloseChat = () => {
+    if (stompClient) {
+      stompClient.deactivate();
+    }
+    setSelectedQuote(null);
+    setChatMessages([]);
   };
 
   return (
@@ -374,12 +482,10 @@ const fetchComments = async (estimateId) => {
                         <div className="text-center py-8 dark:text-white">작성한 견적이 없습니다.</div>
                     ) : (
                         writtenQuotes.map(quote => {
-                          console.log('현재 견적:', quote);
                           const delivery = deliveryInfo[quote.id]|| {};
                           const requestStatus = delivery.status || 'Wait';
                           const statusStyle = getStatusStyle(requestStatus);
-                          console.log(`견적 ID ${quote.id}의 배송 정보:`, delivery);
-
+                        
                           return (
                               <div key={quote.id} className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-sm">
                                 <div className="flex justify-between items-center mb-4">
@@ -393,7 +499,7 @@ const fetchComments = async (estimateId) => {
                                     <button
                                         className="px-3 py-1 rounded-lg border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
                                         onClick={() => {
-                                          router.push(`/estimate/update?estimateId=${quote.id}&requestId=${quote.estimateRequestId}&customerName=${quote.customer}&budget=${quote.budget}&purpose=${quote.purpose}&createDate=${quote.date}`);
+                                          router.push(`/estimate/update?estimateId=${quote.id}&requestId=${quote.estimateRequestId}&customerName=${quote.customerName}&budget=${quote.budget}&purpose=${quote.purpose}&createDate=${quote.createdDate}`);
                                         }}
                                     >
                                       수정
@@ -423,7 +529,7 @@ const fetchComments = async (estimateId) => {
                                     </button>
                                     <button
                                         className="px-3 py-1 rounded-lg border border-purple-300 dark:border-purple-800 text-purple-600 dark:text-purple-400 hover:bg-purple-50 dark:hover:bg-purple-900/30 transition-colors"
-                                        onClick={() => setSelectedQuoteForComment(quote)}
+                                        onClick={() => handleOpenChat(quote)}
                                     >
                                       문의하기
                                     </button>
@@ -463,158 +569,93 @@ const fetchComments = async (estimateId) => {
             </div>
         )}
 
+
       {selectedQuote && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
           <div className="bg-white dark:bg-gray-800 rounded-lg p-6 max-w-2xl w-full max-h-[90vh] overflow-y-auto">
             <div className="flex justify-between items-center mb-6">
-              <h3 className="text-xl font-semibold dark:text-white">견적 상세정보</h3>
+              <h3 className="text-xl font-semibold dark:text-white">실시간 문의하기</h3>
               <button
-                onClick={() => setSelectedQuote(null)}
+                onClick={handleCloseChat}
                 className="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
               >
                 ✕
               </button>
             </div>
 
-            <div className="space-y-6">
-              <div className="bg-gray-50 dark:bg-gray-700 p-4 rounded-lg">
-                <div className="flex justify-between items-center">
-                  <div>
-                    <span className="font-medium dark:text-white text-lg">{selectedQuote.seller}</span>
-                    <div className="text-sm text-gray-500 dark:text-gray-400 mt-1">견적 받은 날짜: {selectedQuote.date}</div>
-                  </div>
-                  <span className="px-3 py-1 rounded-full text-sm bg-blue-100 text-blue-600 dark:bg-blue-900 dark:text-blue-300">
-                    {selectedQuote.status}
-                  </span>
-                    </div>
-                  </div>
-
-                  <div className="border dark:border-gray-700 rounded-lg overflow-hidden">
-                    <h4 className="font-medium p-4 bg-gray-50 dark:bg-gray-700 dark:text-white border-b dark:border-gray-600">
-                      견적 구성 부품
-                    </h4>
-                    <div className="divide-y dark:divide-gray-700">
-                      {Object.entries(selectedQuote.parts).map(([part, name]) => (
-                          <div key={part} className="p-4 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
-                            <div className="grid grid-cols-[140px_1fr] gap-4 items-center">
-                              <div className="text-gray-600 dark:text-gray-400 font-medium">
-                                {part === 'cpu' ? 'CPU' :
-                                    part === 'motherboard' ? '메인보드' :
-                                        part === 'memory' ? '메모리' :
-                                            part === 'storage' ? '저장장치' :
-                                                part === 'gpu' ? '그래픽카드' :
-                                                    part === 'case' ? '케이스' :
-                                                        part === 'power' ? '파워' : part}
-                              </div>
-                              <div className="dark:text-white">{name}</div>
-                            </div>
-                          </div>
-                      ))}
-                    </div>
-                  </div>
-
-                  <div className="bg-gray-50 dark:bg-gray-700 p-4 rounded-lg">
-                    <div className="flex justify-between items-center mb-4">
-                      <span className="font-medium dark:text-white">총 견적금액</span>
-                      <span className="text-xl font-semibold text-blue-600 dark:text-blue-400">
-                    {selectedQuote.totalPrice}
-                  </span>
-                </div>
-
-                <div className="flex justify-end gap-3 mt-4">
-                  <button
-                    onClick={() => setSelectedQuote(null)}
-                    className="px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+            {/* 연결 상태 표시 */}
+            <div className="mb-4 p-2 rounded bg-gray-100 dark:bg-gray-700">
+              <div className="flex justify-between items-center">
+                <p className="text-sm">연결 상태: {chatConnectionStatus === '연결됨' ? '연결됨 ✅' : chatConnectionStatus}</p>
+                {chatConnectionStatus !== '연결됨' && (
+                  <button 
+                    onClick={() => connectToChat(selectedQuote.id)}
+                    className="px-2 py-1 rounded text-xs bg-blue-500 dark:bg-blue-600 text-white"
                   >
-                    닫기
+                    재연결
                   </button>
-                  <button
-                    className="px-4 py-2 rounded-lg bg-green-600 text-white hover:bg-green-700 transition-colors"
-                    onClick={() => {
-                      setShowConfirmModal(true);
-                    }}
-                  >
-                    견적 채택하기
-                  </button>
-                </div>
+                )}
               </div>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {selectedQuoteForComment && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-          <div className="bg-white dark:bg-gray-800 rounded-lg p-6 max-w-2xl w-full max-h-[90vh] overflow-y-auto">
-            <div className="flex justify-between items-center mb-6">
-              <h3 className="text-xl font-semibold dark:text-white">문의하기</h3>
-              <button
-                onClick={() => setSelectedQuoteForComment(null)}
-                className="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
-              >
-                ✕
-              </button>
+              {chatError && (
+                <p className="text-red-500 mt-1 text-sm">{chatError}</p>
+              )}
             </div>
 
-            {/* 댓글 입력 영역 */}
-            <div className="flex gap-2 mb-6 border-b pb-4 dark:border-gray-700">
+            {/* 채팅 메시지 영역 */}
+            <div className="border dark:border-gray-700 rounded-lg p-4 h-80 overflow-y-auto mb-4">
+              {chatMessages.length === 0 ? (
+                <div className="text-center text-gray-500 dark:text-gray-400 py-4">
+                  아직 메시지가 없습니다. 첫 메시지를 보내보세요!
+                </div>
+              ) : (
+                <div className="space-y-2">
+                  {chatMessages.map((msg, index) => (
+                    <div 
+                      key={index} 
+                      className={`p-3 rounded-lg ${
+                        msg.username === (sellerInfo.companyName || '판매자')
+                          ? 'bg-blue-100 dark:bg-blue-900/30 ml-auto max-w-[60%] text-right'
+                          : 'bg-gray-100 dark:bg-gray-700 mr-auto max-w-[60%]'
+                      }`}
+                    >
+                      <div className="font-semibold mb-1">{msg.username}</div>
+                      <div>{msg.content}</div>
+                      <div className="text-xs text-gray-500 mt-1">{formatDate(msg.sendDate)}</div>
+                    </div>
+                  ))}
+                  <div ref={messagesEndRef} /> {/* 스크롤을 위한 참조 */}
+                </div>
+              )}
+            </div>
+
+            {/* 메시지 입력 영역 */}
+            <div className="flex gap-2">
               <input
                 type="text"
-                value={commentText}
-                onChange={(e) => setCommentText(e.target.value)}
+                value={chatInput}
+                onChange={(e) => setChatInput(e.target.value)}
                 onKeyPress={(e) => {
                   if (e.key === 'Enter' && !e.shiftKey) {
                     e.preventDefault();
-                    handleSendComment();
+                    sendChatMessage();
                   }
                 }}
-                placeholder="문의사항을 입력하세요..."
+                placeholder="메시지를 입력하세요..."
                 className="flex-grow px-4 py-2 border dark:border-gray-600 rounded-lg dark:bg-gray-700 dark:text-white"
+                disabled={chatConnectionStatus !== '연결됨'}
               />
               <button
-                onClick={handleSendComment}
-                className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+                onClick={sendChatMessage}
+                className={`px-4 py-2 rounded-lg ${
+                  chatConnectionStatus !== '연결됨'
+                    ? 'bg-gray-300 text-gray-500 dark:bg-gray-600 dark:text-gray-400'
+                    : 'bg-blue-600 text-white hover:bg-blue-700'
+                }`}
+                disabled={chatConnectionStatus !== '연결됨'}
               >
                 전송
               </button>
             </div>
-
-            {/* 댓글 목록 */}
-            <div className="space-y-2">
-              {[...comments]
-                .sort((a, b) => new Date(a.createDate) - new Date(b.createDate))
-                .map((comment) => (
-                  <div key={comment.id}
-                    className={`border-b dark:border-gray-700 pb-2 ${
-                      comment.type === 'SELLER' 
-                        ? 'bg-blue-50 dark:bg-blue-900/20' 
-                        : 'bg-green-50 dark:bg-green-900/20'
-                    } p-3 rounded-lg`}
-                  >
-                    <div className="flex items-center gap-2 text-sm mb-1">
-                      <span className={`font-semibold px-2 py-1 rounded-full text-white ${
-                        comment.type === 'SELLER' 
-                          ? 'bg-blue-500 dark:bg-blue-600' 
-                          : 'bg-green-500 dark:bg-green-600'
-                      }`}>
-                        {comment.type === 'SELLER' ? '판매자' : '구매자'}
-                      </span>
-                      <span className="text-gray-500 dark:text-gray-400">
-                        {formatDate(comment.createDate)}
-                      </span>
-                    </div>
-                    <div className="pl-2 dark:text-white mt-2">
-                      {comment.content}
-                    </div>
-                  </div>
-                ))}
-            </div>
-
-            {comments.length === 0 && (
-              <div className="text-center text-gray-500 dark:text-gray-400 py-4">
-                아직 댓글이 없습니다.
-              </div>
-            )}
           </div>
         </div>
       )}

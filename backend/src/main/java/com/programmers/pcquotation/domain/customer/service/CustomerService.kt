@@ -1,39 +1,36 @@
-package com.programmers.pcquotation.domain.customer.service;
+package com.programmers.pcquotation.domain.customer.service
 
-import java.util.Optional;
+import com.programmers.pcquotation.domain.customer.entity.Customer
+import com.programmers.pcquotation.domain.customer.repository.CustomerRepository
+import com.programmers.pcquotation.domain.member.entitiy.Member
+import org.springframework.stereotype.Service
+import java.util.*
 
-import org.springframework.stereotype.Service;
 
-import com.programmers.pcquotation.domain.customer.entity.Customer;
-import com.programmers.pcquotation.domain.customer.repository.CustomerRepository;
-import com.programmers.pcquotation.domain.member.entitiy.Member;
-import com.programmers.pcquotation.domain.seller.entitiy.Seller;
-
-import lombok.RequiredArgsConstructor;
-
-@RequiredArgsConstructor
 @Service
-public class CustomerService {
-    private final CustomerRepository customerRepository;
+class CustomerService(
+    private val customerRepository: CustomerRepository
+) {
 
-    public void createCustomer(Customer customer) {
-        customerRepository.save(customer);
+    fun createCustomer(customer: Customer) {
+        customerRepository.save(customer)
     }
 
-    public Optional<Customer> findCustomerByUsername(String username) {
-        return customerRepository.getCustomerByUsername(username);
+    fun findCustomerByUsername(username: String?): Optional<Customer> {
+        username ?: return Optional.empty()
+        return customerRepository.getCustomerByUsername(username)
     }
 
-    public Optional<Customer> findCustomerByEmail(String email) {
-        return customerRepository.getCustomerByEmail(email);
+    fun findCustomerByEmail(email: String?): Optional<Customer> {
+        email ?: return Optional.empty()
+        return customerRepository.getCustomerByEmail(email)
     }
 
-    public Optional<Member> findByApiKey(String apiKey) {
-        return customerRepository.findByApiKey(apiKey).map(customer -> customer);
+    fun findByApiKey(apiKey: String): Optional<Member> {
+        return customerRepository.findByApiKey(apiKey).map { customer: Member? -> customer }
     }
 
-    public Optional<Member> findById(Long id) {
-        return customerRepository.findById(id).map(customer -> customer);
+    fun findById(id: Long): Optional<Member> {
+        return customerRepository.findById(id).map { customer: Member? -> customer }
     }
-
 }

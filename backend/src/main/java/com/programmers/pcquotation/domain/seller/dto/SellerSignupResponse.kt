@@ -1,27 +1,25 @@
-package com.programmers.pcquotation.domain.seller.dto;
+package com.programmers.pcquotation.domain.seller.dto
 
-import com.programmers.pcquotation.domain.customer.entity.Customer;
-import com.programmers.pcquotation.domain.seller.entitiy.Seller;
-
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
+import com.programmers.pcquotation.domain.seller.entitiy.Seller
+import lombok.AllArgsConstructor
+import lombok.Builder
+import lombok.Getter
 
 @Getter
 @AllArgsConstructor
 @Builder
-public class SellerSignupResponse {
-	private final Long id;
-	private final String username;
-	private final String companyName;
-	private final String email;
-	private final String message;
+class SellerSignupResponse {
+    var id: Long?
+    var username: String?
+    var companyName: String?
+    var email: String?
+    var message: String?
 
-	public SellerSignupResponse(Seller seller,String message) {
-		this.id = seller.getId();
-		this.username = seller.getUsername();
-		this.companyName = seller.getCompanyName();
-		this.email = seller.getEmail();
-		this.message = message;
-	}
+    constructor(seller: Seller, message: String) {
+        this.id = seller.id
+        this.username = seller.username
+        this.companyName = seller.companyName
+        this.email = seller.email
+        this.message = message;
+    }
 }
