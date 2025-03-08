@@ -59,10 +59,10 @@ class InitData(
         if (sellerService.findSellerByUsername("seller0001").isPresent) return
         val sellerSignupRequest = SellerSignupRequest(
             username = "seller0001",
-            email = "seller0001@gmail.com",
             password = "seller",
             confirmPassword = "seller",
             companyName = "쿠팡주",
+            email = "seller0001@gmail.com",
             isVerified = true,
             verificationQuestion = "사과는",
             verificationAnswer = "빨간색"
