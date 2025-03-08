@@ -181,7 +181,7 @@ public class AuthService {
 	public String getAccessToken(Member member) {
 		long id = member.getId();
 		String username = member.getUsername();
-		return Jwt.toString(
+		return Jwt.INSTANCE.toString(
 			jwtSecretKey,
 			accessTokenExpirationSeconds,
 			Map.of("id", id, "username", username)
@@ -205,7 +205,7 @@ public class AuthService {
 	}
 
 	Map<String, Object> payload(String accessToken) {
-		Map<String, Object> parsedPayload = Jwt.payload(jwtSecretKey, accessToken);
+		Map<String, Object> parsedPayload = Jwt.INSTANCE.payload(jwtSecretKey, accessToken);
 
 		if (parsedPayload == null)
 			return null;

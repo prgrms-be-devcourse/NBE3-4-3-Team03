@@ -20,7 +20,7 @@ public class AuthTokenService {
 	String getAccessToken(Seller seller) {
 		long id = seller.getId();
 		String username = seller.getUsername();
-		return Jwt.toString(
+		return Jwt.INSTANCE.toString(
 			jwtSecretKey,
 			accessTokenExpirationSeconds,
 			Map.of("id", id, "username", username)
@@ -28,7 +28,7 @@ public class AuthTokenService {
 	}
 
 	Map<String, Object> payload(String accessToken) {
-		Map<String, Object> parsedPayload = Jwt.payload(jwtSecretKey, accessToken);
+		Map<String, Object> parsedPayload = Jwt.INSTANCE.payload(jwtSecretKey, accessToken);
 
 		if(parsedPayload == null) return null;
 
