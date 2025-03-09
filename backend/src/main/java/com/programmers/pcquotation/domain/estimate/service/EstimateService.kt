@@ -5,7 +5,7 @@ import com.programmers.pcquotation.domain.estimate.entity.Estimate
 import com.programmers.pcquotation.domain.estimate.entity.EstimateComponent
 import com.programmers.pcquotation.domain.estimate.repository.EstimateRepository
 import com.programmers.pcquotation.domain.estimaterequest.service.EstimateRequestService
-import com.programmers.pcquotation.domain.item.repository.ItemRepository
+import com.programmers.pcquotation.domain.item.service.ItemService
 import com.programmers.pcquotation.domain.seller.entitiy.Seller
 import com.programmers.pcquotation.domain.seller.service.SellerService
 import org.springframework.stereotype.Service
@@ -16,7 +16,7 @@ class EstimateService(
     private val estimateRepository: EstimateRepository,
     private val estimateRequestService: EstimateRequestService,
     private val sellerService: SellerService,
-    private val itemRepository: ItemRepository
+    private val itemService: ItemService
 ) {
     @Transactional
     fun createEstimate(request: EstimateCreateRequest, sellerName: String): Estimate {
@@ -108,8 +108,7 @@ class EstimateService(
         items: List<EstimateItemDto>
     ): List<EstimateComponent> {
         return items.map { itemDto ->
-            val item = itemRepository.findById(itemDto.itemId)
-                .orElseThrow { NoSuchElementException("존재하지 않는 아이템입니다.") }
+            val item = itemService.findById(itemDto.itemId)
 
             EstimateComponent(
                 item = item,
