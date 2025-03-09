@@ -87,6 +87,11 @@ class ItemService(
         return itemRepository.findByName(name).orElse(null)
     }
 
+    fun findById(id: Long): Item {
+        return itemRepository.findById(id)
+            .orElseThrow { NoSuchElementException("존재하지 않는 아이템입니다.") }
+    }
+
     private fun toItemInfoResponse(item: Item): ItemInfoResponse {
         return ItemInfoResponse(
             id = item.id!!,

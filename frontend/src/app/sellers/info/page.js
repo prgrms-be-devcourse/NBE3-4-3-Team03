@@ -74,7 +74,7 @@ export default function MyPage() {
           console.log('요청받은 견적 데이터:', data);
           setRequestedQuotes(data);
         } else if (activeTab === 'written') {
-          const response = await fetch(`http://localhost:8080/api/estimate/seller`, {
+          const response = await fetch(`http://localhost:8080/api/estimate/seller/${sellerInfo.id}`, {
             credentials: 'include'
           });
           if (!response.ok) throw new Error('작성한 견적 데이터를 불러오는데 실패했습니다');
@@ -552,10 +552,10 @@ const fetchComments = async (estimateId) => {
                                 <div className="border dark:border-gray-700 rounded-lg p-4">
                                   <h4 className="font-medium mb-3 dark:text-white">견적 구성</h4>
                                   <div className="grid grid-cols-2 gap-2 text-sm">
-                                    {Object.entries(quote.items).map(([key, value]) => (
-                                        <div key={key} className="col-span-2 grid grid-cols-2">
-                                          <div className="text-gray-600 dark:text-gray-400">{key}</div>
-                                          <div className="dark:text-white">{value}</div>
+                                    {quote.items.map((item) => (
+                                        <div key={item.categoryName} className="col-span-2 grid grid-cols-2">
+                                          <div className="text-gray-600 dark:text-gray-400">{item.categoryName}</div>
+                                          <div className="dark:text-white">{item.itemName}</div>
                                         </div>
                                     ))}
                                   </div>
