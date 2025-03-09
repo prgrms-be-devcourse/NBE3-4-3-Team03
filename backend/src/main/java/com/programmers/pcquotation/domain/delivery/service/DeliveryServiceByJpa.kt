@@ -12,7 +12,7 @@ import org.springframework.stereotype.Service
 
 @Service
 @Transactional
-open class DeliveryServiceByJpa(
+class DeliveryServiceByJpa(
     private val deliveryRepository: DeliveryRepository,
     private val estimateRepository: EstimateRepository
 ):DeliveryService{
@@ -33,7 +33,7 @@ open class DeliveryServiceByJpa(
     override fun findByDeliveryId(id: Int): DeliveryDto {
         return deliveryRepository
             .findById(id)
-            .map { delivery: Delivery -> DeliveryDto(delivery) }
+            .map { delivery -> DeliveryDto(delivery) }
             .orElseThrow { NullEntityException() }
     }
 

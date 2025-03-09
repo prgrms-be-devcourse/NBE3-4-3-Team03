@@ -20,7 +20,8 @@ class EstimateRequestController(
 
     @PostMapping
     fun createEstimateRequest(
-        @RequestBody estimateRequestData: @Valid EstimateRequestData, principal: Principal
+        @RequestBody estimateRequestData: @Valid EstimateRequestData,
+        principal: Principal
     ): ResponseEntity<String> {
         val customer = estimateRequestService.findCustomer(principal.name)
         estimateRequestService.createEstimateRequest(estimateRequestData, customer)

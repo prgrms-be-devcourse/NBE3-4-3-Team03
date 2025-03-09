@@ -68,8 +68,8 @@ public class InitData {
 			"seller",
 			"seller",
 			"쿠팡주",
-				"seller0001@gmail.com",
-				true,
+			"seller0001@gmail.com",
+			true,
 			"사과는",
 			"빨간색");
 		authService.processSignup(sellerSignupRequest);
