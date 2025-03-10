@@ -64,8 +64,9 @@ dependencies {
     implementation 'org.webjars:stomp-websocket:2.3.4'
     implementation 'org.webjars:sockjs-client:1.5.1'
 
-
-
+    // Jsoup & CSV
+    implementation 'org.jsoup:jsoup:1.15.3'
+    implementation 'com.opencsv:opencsv:5.7.1'
 }
 
 tasks.named('test') {
