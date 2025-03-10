@@ -76,7 +76,7 @@ class EstimateControllerTest {
 		String token  = "Bearer " + util.loginSeller("seller123","zzzzz",mvc,sellerService);
 
 		ResultActions resultActions = mvc.perform(
-			get("/api/estimate/{id}", 1)
+			get("/api/estimate/estimate-request/{id}", 1)
 				.contentType(MediaType.APPLICATION_JSON)
 				.characterEncoding(StandardCharsets.UTF_8)
 				.header("Authorization",  token)
@@ -86,7 +86,7 @@ class EstimateControllerTest {
 		// 응답 상태 코드 확인
 		resultActions
 			.andExpect(handler().handlerType(EstimateController.class))
-			.andExpect(handler().methodName("getEstimateByRequest"))
+			.andExpect(handler().methodName("getEstimatesByEstimateRequest"))
 			.andExpect(status().isOk())
 			// 응답 본문이 배열인지 확인
 			.andExpect(jsonPath("$").isArray())
