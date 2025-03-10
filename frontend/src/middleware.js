@@ -49,11 +49,11 @@ export async function middleware(req) {
       // API 응답이 실패한 경우 로그인 페이지로 리다이렉트
       return createUnauthorizedResponse("/");
     }
-
     const respData = await response.json();
-    const isAdmin = respData?.userType === 'Admin';
-    const isSeller = respData?.userType === 'Seller';
-    const isCustomer = respData?.userType === 'Customer';
+    console.log(respData?.userType);
+    const isAdmin = respData?.userType === 'ADMIN';
+    const isSeller = respData?.userType === 'SELLER';
+    const isCustomer = respData?.userType === 'CUSTOMER';
 
     // 이미 로그인한 사용자가 로그인/회원가입 페이지에 접근하는 경우 리다이렉트
     if (req.nextUrl.pathname === "/" || req.nextUrl.pathname === "/admin/login") {

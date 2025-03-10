@@ -6,10 +6,10 @@ import lombok.Getter;
 @AllArgsConstructor
 @Getter
 public enum UserType {
-	CUSTOMER("customer"),
-	SELLER("seller"),
-	ADMIN("admin"),
-	NOTHING("nothing");
+	CUSTOMER("CUSTOMER"),
+	SELLER("SELLER"),
+	ADMIN("ADMIN"),
+	NOTHING("NOTHING");
 	private final String value;
 	public static UserType fromString(String value) {
 		if (value == null) {
