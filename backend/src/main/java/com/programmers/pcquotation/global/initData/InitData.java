@@ -45,9 +45,9 @@ public class InitData {
 				self.insertAdmin();
 				self.insertCustomer();
 				self.insertSeller();
-				self.insertCPU();
-				self.insertGPU();
-				self.insertRAM();
+				//self.insertCPU();
+				//self.insertGPU();
+				//self.insertRAM();
 		};
 	}
 

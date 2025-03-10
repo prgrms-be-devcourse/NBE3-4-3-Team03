@@ -11,7 +11,7 @@ import com.programmers.pcquotation.domain.estimate.service.EstimateService;
 import com.programmers.pcquotation.domain.estimaterequest.entity.EstimateRequest;
 import com.programmers.pcquotation.domain.estimaterequest.service.EstimateRequestService;
 import com.programmers.pcquotation.domain.item.entity.Item;
-import com.programmers.pcquotation.domain.item.repository.ItemRepository;
+import com.programmers.pcquotation.domain.item.service.ItemService;
 import com.programmers.pcquotation.domain.seller.entitiy.Seller;
 import com.programmers.pcquotation.domain.seller.service.SellerService;
 import org.junit.jupiter.api.Test;
@@ -45,7 +45,7 @@ public class EstimateServiceTest {
     private EstimateRepository estimateRepository;
 
     @Mock
-    private ItemRepository itemRepository;
+    private ItemService itemService;
 
 
     private final Customer sampleCustomer = new Customer(
@@ -108,8 +108,8 @@ public class EstimateServiceTest {
     public void createEstimate_success() {
         when(estimateRequestService.getEstimateRequestById(1)).thenReturn(Optional.of(estimateRequest));
         when(sellerService.findByUserName("seller1")).thenReturn(Optional.of(sampleSeller));
-        when(itemRepository.findById(1L)).thenReturn(Optional.of(sampleItem1));
-        when(itemRepository.findById(2L)).thenReturn(Optional.of(sampleItem2));
+        when(itemService.findById(1L)).thenReturn(sampleItem1);
+        when(itemService.findById(2L)).thenReturn(sampleItem2);
         when(estimateRepository.save(any(Estimate.class))).thenReturn(sampleEstimate);
 
         EstimateCreateRequest request = new EstimateCreateRequest(
@@ -148,7 +148,7 @@ public class EstimateServiceTest {
 
     @Test
     public void createEstimate_sellerNotFound() {
-        when(sellerService.findByUserName("seller1")).thenReturn(Optional.empty());
+        when(sellerService.findById(1L)).thenReturn(Optional.empty());
 
         EstimateCreateRequest request = new EstimateCreateRequest(
                 1,
@@ -163,24 +163,24 @@ public class EstimateServiceTest {
 
     @Test
     public void getEstimateByEstimateRequest_Success() {
-        when(estimateRepository.getAllByEstimateRequest_Id(1)).thenReturn(List.of(sampleEstimate));
+        when(estimateRepository.getAllByEstimateRequestId(1)).thenReturn(List.of(sampleEstimate));
 
-        assertEquals(1, estimateService.getEstimateByRequest(1).size());
+        assertEquals(1, estimateService.getEstimatesByEstimateRequest(1).size());
     }
 
     @Test
-    public void getEstimateBySeller_Success() {
-        when(sellerService.findByUserName("seller1")).thenReturn(Optional.of(sampleSeller));
+    public void getEstimatesBySeller_Success() {
+        when(sellerService.findById(1L)).thenReturn(Optional.of(sampleSeller));
         when(estimateRepository.getAllBySeller(sampleSeller)).thenReturn(List.of(sampleEstimate));
 
-        assertEquals(1, estimateService.getEstimateBySeller("seller1").size());
+        assertEquals(1, estimateService.getEstimatesBySeller(1).size());
     }
 
     @Test
-    public void getEstimateBySeller_SellerNotFound() {
-        when(sellerService.findByUserName("seller1")).thenReturn(Optional.empty());
+    public void getEstimatesBySeller_SellerNotFound() {
+        when(sellerService.findById(1L)).thenReturn(Optional.empty());
 
-        assertThrows(NoSuchElementException.class, () -> estimateService.getEstimateBySeller("seller1"));
+        assertThrows(NoSuchElementException.class, () -> estimateService.getEstimatesBySeller(1));
     }
 
     @Test
@@ -202,7 +202,7 @@ public class EstimateServiceTest {
     @Test
     public void updateEstimate_Success() {
         when(estimateRepository.getEstimateById(1)).thenReturn(sampleEstimate);
-        when(itemRepository.findById(1L)).thenReturn(Optional.of(sampleItem1));
+        when(itemService.findById(1L)).thenReturn(sampleItem1);
 
         EstimateUpdateReqDto request = new EstimateUpdateReqDto(
                 1,

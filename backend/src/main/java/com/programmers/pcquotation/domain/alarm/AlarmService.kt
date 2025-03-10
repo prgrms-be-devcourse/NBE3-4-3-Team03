@@ -6,7 +6,6 @@ import com.programmers.pcquotation.domain.estimate.entity.Estimate
 import com.programmers.pcquotation.domain.estimate.repository.EstimateRepository
 import com.programmers.pcquotation.domain.seller.entitiy.Seller
 import com.programmers.pcquotation.domain.seller.repository.SellerRepository
-import lombok.RequiredArgsConstructor
 import org.springframework.stereotype.Service
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter
 import java.io.IOException
@@ -15,7 +14,6 @@ import java.util.function.Function
 import java.util.stream.Collectors
 
 @Service
-@RequiredArgsConstructor
 class AlarmService(
 	private val estimateRepository: EstimateRepository,
 	private val customerRepository: CustomerRepository,

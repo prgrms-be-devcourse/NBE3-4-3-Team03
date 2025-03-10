@@ -1,18 +1,13 @@
-package com.programmers.pcquotation.domain.estimate.repository;
+package com.programmers.pcquotation.domain.estimate.repository
 
-import java.util.List;
+import com.programmers.pcquotation.domain.estimate.entity.Estimate
+import com.programmers.pcquotation.domain.seller.entitiy.Seller
+import org.springframework.data.jpa.repository.JpaRepository
 
-import org.springframework.data.jpa.repository.JpaRepository;
+interface EstimateRepository : JpaRepository<Estimate, Int> {
+    fun getAllByEstimateRequestId(estimateRequestId: Int): List<Estimate>
 
-import com.programmers.pcquotation.domain.estimate.entity.Estimate;
-import com.programmers.pcquotation.domain.seller.entitiy.Seller;
+    fun getAllBySeller(seller: Seller): List<Estimate>
 
-import jakarta.validation.constraints.NotNull;
-
-public interface EstimateRepository extends JpaRepository<Estimate, Integer> {
-	List<Estimate> getAllByEstimateRequest_Id(Integer estimateRequestId);
-
-	List<Estimate> getAllBySeller(@NotNull Seller seller);
-
-	Estimate getEstimateById(Integer id);
+    fun getEstimateById(id: Int): Estimate
 }

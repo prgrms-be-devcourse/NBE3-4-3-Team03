@@ -98,7 +98,7 @@ class AuthService(
         val accessToken = this.getAccessToken(customer)
         rq.setCookie("accessToken", accessToken)
         rq.setCookie("apiKey", customer.apiKey)
-        rq.setCookie("userType", CUSTOMER.toString())
+        rq.setCookie("userType", CUSTOMER.value)
         return customer.apiKey?.let {
             LoginResponse(
                 it,
@@ -120,7 +120,7 @@ class AuthService(
         val accessToken = this.getAccessToken(seller)
         rq.setCookie("accessToken", accessToken)
         rq.setCookie("apiKey", seller.apiKey)
-        rq.setCookie("userType", SELLER.toString())
+        rq.setCookie("userType", SELLER.value)
 
         return seller.apiKey?.let {
             LoginResponse(
@@ -142,7 +142,7 @@ class AuthService(
         val accessToken = this.getAccessToken(admin)
         rq.setCookie("accessToken", accessToken)
         rq.setCookie("apiKey", admin.apiKey)
-        rq.setCookie("userType", ADMIN.toString())
+        rq.setCookie("userType", ADMIN.value)
 
 
         return admin.apiKey?.let {
@@ -158,8 +158,8 @@ class AuthService(
     val memberFromRq: AuthRequest
         get() {
             val member = rq.member
-            val auth = member.toString()
-            val userType = fromString(auth).toString()
+            val auth = member.authorities
+            val userType = UserType.fromString(auth.toString()).toString()
             return AuthRequest(userType)
         }
 
