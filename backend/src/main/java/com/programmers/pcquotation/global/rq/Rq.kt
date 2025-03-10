@@ -46,8 +46,9 @@ class Rq @Autowired constructor(
 
         if (tokenBits.size < 3) return null
 
+        val userType = UserType.fromString(tokenBits[2])
         return (SecurityContextHolder.getContext().authentication?.principal as? UserDetails)?.let {
-            customUserDetailsService.loadUserByUsername(it.username, UserType.valueOf(tokenBits[2]))
+            customUserDetailsService.loadUserByUsername(it.username, userType)
         }
     }
 
