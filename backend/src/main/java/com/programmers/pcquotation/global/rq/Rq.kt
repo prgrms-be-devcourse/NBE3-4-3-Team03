@@ -9,8 +9,6 @@ import org.springframework.stereotype.Component
 import org.springframework.web.context.annotation.RequestScope
 import com.programmers.pcquotation.domain.estimaterequest.exception.NullEntityException
 import com.programmers.pcquotation.domain.member.entitiy.Member
-import com.programmers.pcquotation.domain.member.service.AuthService
-import com.programmers.pcquotation.domain.seller.service.SellerService
 import com.programmers.pcquotation.global.enums.UserType
 import com.programmers.pcquotation.global.security.CustomUserDetails
 import com.programmers.pcquotation.global.security.CustomUserDetailsService
@@ -24,8 +22,6 @@ import org.springframework.beans.factory.annotation.Autowired
 class Rq @Autowired constructor(
     private val req: HttpServletRequest,
     private val resp: HttpServletResponse,
-    private val authService: AuthService,
-    private val sellerService: SellerService,
     private val customUserDetailsService: CustomUserDetailsService
 ) {
 
