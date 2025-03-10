@@ -12,4 +12,5 @@ interface CustomerRepository : JpaRepository<Customer, Long> {
     fun getCustomerByEmail(email: String): Optional<Customer>
 
     fun findByApiKey(apiKey: String): Optional<Customer>
+	fun existsByUsername(username: String): Boolean
 }

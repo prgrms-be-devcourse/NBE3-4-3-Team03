@@ -1,5 +1,6 @@
 package com.programmers.pcquotation.domain.estimaterequest.controller
 
+import com.programmers.pcquotation.domain.alarm.AlarmService
 import com.programmers.pcquotation.domain.estimaterequest.dto.EstimateRequestData
 import com.programmers.pcquotation.domain.estimaterequest.dto.EstimateRequestResDto
 import com.programmers.pcquotation.domain.estimaterequest.service.EstimateRequestService
@@ -15,6 +16,7 @@ import java.security.Principal
 @RequestMapping("/estimate/request")
 class EstimateRequestController(
     private val estimateRequestService: EstimateRequestService,
+    private val alarmService: AlarmService,
     private val rq: Rq
 ) {
 
@@ -25,6 +27,7 @@ class EstimateRequestController(
     ): ResponseEntity<String> {
         val customer = estimateRequestService.findCustomer(principal.name)
         estimateRequestService.createEstimateRequest(estimateRequestData, customer)
+        alarmService.createEstimateRequestAlarmToAllSeller()
         return ResponseEntity.status(HttpStatus.CREATED).body("견적 요청이 생성되었습니다")
     }
 

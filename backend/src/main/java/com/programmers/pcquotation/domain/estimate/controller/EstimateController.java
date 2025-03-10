@@ -3,6 +3,7 @@ package com.programmers.pcquotation.domain.estimate.controller;
 import java.security.Principal;
 import java.util.List;
 
+import com.programmers.pcquotation.domain.alarm.AlarmService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -30,11 +31,13 @@ public class EstimateController {
 	private final EstimateService estimateService;
 	private final ChatService chatService;
 	private final ChatRoomService chatRoomService;
+	private final AlarmService alarmService;
 
 	@PostMapping("/api/estimate")
 	public ResponseEntity<String> createEstimate(@RequestBody EstimateCreateRequest request, Principal principal) {
 		Estimate estimate = estimateService.createEstimate(request, principal.getName());
 		chatRoomService.createChatRoom(estimate);
+		alarmService.createEstimateAlarmToCustomer(estimate);
 		return ResponseEntity.ok().body("");
 	}
 

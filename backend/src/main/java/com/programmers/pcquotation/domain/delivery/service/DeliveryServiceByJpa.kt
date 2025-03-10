@@ -18,8 +18,8 @@ class DeliveryServiceByJpa(
 ):DeliveryService{
 
     //배달 생성을 통해 채택된 상태로 변경
-    override fun create(deliveryCreateRequest:DeliveryCreateRequest, id: Int) {
-        val estimate = estimateRepository.getEstimateById(id)
+    override fun create(deliveryCreateRequest:DeliveryCreateRequest, estimateId: Int) {
+        val estimate = estimateRepository.getEstimateById(estimateId)
         val delivery = Delivery(estimate, deliveryCreateRequest.address)
         deliveryRepository.save(delivery)
     }
