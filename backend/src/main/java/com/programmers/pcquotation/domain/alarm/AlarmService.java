@@ -8,6 +8,7 @@ import com.programmers.pcquotation.domain.estimaterequest.entity.EstimateRequest
 import com.programmers.pcquotation.domain.seller.entitiy.Seller;
 import com.programmers.pcquotation.domain.seller.repository.SellerRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
@@ -20,8 +21,11 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 public class AlarmService {
+	@Autowired
 	private final EstimateRepository estimateRepository;
+	@Autowired
 	private final CustomerRepository customerRepository;
+	@Autowired
 	private final SellerRepository sellerRepository;
 	private final Map<String, SseEmitter> customerSseEmitterMap = new ConcurrentHashMap<>(
 			customerRepository.findAll().stream().collect(
