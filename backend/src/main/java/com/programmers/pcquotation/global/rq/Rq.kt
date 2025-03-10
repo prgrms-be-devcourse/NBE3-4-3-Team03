@@ -33,18 +33,37 @@ class Rq @Autowired constructor(
         SecurityContextHolder.getContext().authentication = authentication
     }
 
-    fun getMember(): Member? {
-        val authorization = getHeader("Authorization") ?: return null
-        if (!authorization.startsWith("Bearer ")) throw NullEntityException()
+    fun getMember(): Member {
+        try {
+            val authorization = getHeader("Authorization")
+                .takeIf { !it.isBlank() } ?: throw NullEntityException("인증 정보가 없습니다.")
+            
+            if (!authorization.startsWith("Bearer ")) {
+                throw NullEntityException("잘못된 인증 형식입니다.")
+            }
 
-        val token = authorization.removePrefix("Bearer ")
-        val tokenBits = token.split(" ", limit = 3)
+            val tokenBits = authorization.removePrefix("Bearer ").split(" ", limit = 3)
+            if (tokenBits.size < 3) {
+                throw NullEntityException("토큰 형식이 올바르지 않습니다.")
+            }
 
-        if (tokenBits.size < 3) return null
+            val userType = UserType.fromString(tokenBits[2])
+            if (userType == UserType.NOTHING) {
+                throw NullEntityException("유효하지 않은 사용자 타입입니다.")
+            }
 
-        val userType = UserType.fromString(tokenBits[2])
-        return (SecurityContextHolder.getContext().authentication?.principal as? UserDetails)?.let {
-            customUserDetailsService.loadUserByUsername(it.username, userType)
+            val authentication = SecurityContextHolder.getContext().authentication
+                ?: throw NullEntityException("인증 컨텍스트가 없습니다.")
+                
+            val userDetails = authentication.principal as? UserDetails
+                ?: throw NullEntityException("사용자 정보가 올바르지 않습니다.")
+
+            return customUserDetailsService.loadUserByUsername(userDetails.username, userType)
+        } catch (e: Exception) {
+            when (e) {
+                is NullEntityException -> throw e
+                else -> throw NullEntityException("사용자 정보 조회 중 오류가 발생했습니다: ${e.message}")
+            }
         }
     }
 
