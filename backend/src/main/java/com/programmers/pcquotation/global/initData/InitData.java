@@ -67,10 +67,10 @@ public class InitData {
 		if(sellerService.findSellerByUsername("seller0001").isPresent()) return;
 		SellerSignupRequest sellerSignupRequest = new SellerSignupRequest(
 			"seller0001",
-			"seller0001@gmail.com",
 			"seller",
 			"seller",
 			"쿠팡주",
+			"seller0001@gmail.com",
 			true,
 			"사과는",
 			"빨간색");
