@@ -157,7 +157,7 @@ class AuthService(
 
     val memberFromRq: AuthRequest
         get() {
-            val member = rq.getMember()!!
+            val member = rq.getMember()
             val auth = member.authorities
             val userType = UserType.fromString(auth.toString()).toString()
             return AuthRequest(userType)
