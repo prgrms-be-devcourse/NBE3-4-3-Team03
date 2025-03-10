@@ -9,7 +9,6 @@ import com.programmers.pcquotation.domain.estimate.entity.Estimate;
 import com.programmers.pcquotation.domain.estimate.repository.EstimateRepository;
 import com.programmers.pcquotation.domain.estimate.service.EstimateService;
 import com.programmers.pcquotation.domain.estimaterequest.entity.EstimateRequest;
-import com.programmers.pcquotation.domain.estimaterequest.entity.EstimateRequestStatus;
 import com.programmers.pcquotation.domain.estimaterequest.service.EstimateRequestService;
 import com.programmers.pcquotation.domain.item.entity.Item;
 import com.programmers.pcquotation.domain.item.service.ItemService;
@@ -73,14 +72,10 @@ public class EstimateServiceTest {
     );
 
     private final EstimateRequest estimateRequest = new EstimateRequest(
-            1,
             "게임용",
             1_000_000,
             "롤",
-            LocalDateTime.of(2025, 3, 4, 12, 0, 0),
-            sampleCustomer,
-            List.of(),
-            EstimateRequestStatus.Wait
+            sampleCustomer
     );
 
     private final Item sampleItem1 = new Item(

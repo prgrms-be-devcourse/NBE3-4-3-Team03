@@ -40,4 +40,4 @@ out/
 .vscode/
 
 application-secret.yml
-src/main/resources/static/
+src/main/resources/static

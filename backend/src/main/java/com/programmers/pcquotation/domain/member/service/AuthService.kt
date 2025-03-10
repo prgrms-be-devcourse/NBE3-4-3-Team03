@@ -103,7 +103,7 @@ class AuthService(
             LoginResponse(
                 it,
                 accessToken,
-                SELLER,
+                CUSTOMER,
                 "로그인 성공"
             )
         }
