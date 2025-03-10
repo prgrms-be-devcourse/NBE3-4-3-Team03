@@ -1,5 +1,7 @@
 package com.programmers.pcquotation.domain.alarm;
 
+import java.io.IOException;
+
 public interface AlarmStrategy {
-	public void doSomething();
+	void doSomething() throws IOException;
 }

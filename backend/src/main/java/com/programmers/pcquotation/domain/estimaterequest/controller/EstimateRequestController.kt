@@ -57,9 +57,7 @@ class EstimateRequestController(
                 list = estimateRequestService.getEstimateRequestByCustomerId(customer)
             }
 
-            UserType.SELLER -> {
-                list = estimateRequestService.getAllEstimateRequest()
-            }
+            UserType.SELLER -> estimateRequestService.getAllEstimateRequest()
 
             UserType.ADMIN -> emptyList<EstimateRequestResDto>()
             UserType.NOTHING -> emptyList<EstimateRequestResDto>()
