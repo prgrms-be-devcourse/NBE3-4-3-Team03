@@ -1,10 +1,10 @@
 package com.programmers.pcquotation.global.enums;
 
 enum class UserType(val value: String) {
-	CUSTOMER("customer"),
-	SELLER("seller"),
-	ADMIN("admin"),
-	NOTHING("nothing");
+	CUSTOMER("CUSTOMER"),
+	SELLER("SELLER"),
+	ADMIN("ADMIN"),
+	NOTHING("NOTHING");
 
 	companion object {
 		@JvmStatic
