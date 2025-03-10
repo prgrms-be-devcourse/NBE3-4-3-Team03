@@ -18,7 +18,7 @@ class Estimate(
 	@ManyToOne
 	var seller: Seller,
 
-	var totalPrice: Int,
+	var totalPrice: Int = 0,
 
 	@OneToMany(mappedBy = "estimate", cascade = [CascadeType.ALL], orphanRemoval = true)
 	private val _estimateComponents: MutableList<EstimateComponent> = mutableListOf(),
