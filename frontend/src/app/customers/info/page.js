@@ -15,116 +15,146 @@ import { Client } from '@stomp/stompjs';
 const QuoteComponent = ({quote,onConfirm,onChat,onSelectQuote, onDelete, onEdit})=>{
   const [selected,setSelected] = useState(false)
   const [receivedQuotes,setReceivedQuotes] = useState([])
+  const [sortType, setSortType] = useState('LATEST')
 
   // 받은 견적 목록 조회
   useEffect(() => {
-    if (!selected)return;
-    if (receivedQuotes.length>0)return;
-    const fetchReceivedQuotes = async () => {
-      try {
-        const response = await fetch(`http://localhost:8080/api/estimate/estimate-request/${quote.id}`, {
-          credentials: 'include'
-        });
-        if (!response.ok) {
-          throw new Error('받은 견적 데이터를 가져오는데 실패했습니다');
-        }
-        const data = await response.json();
-        console.log(data)
-        setReceivedQuotes(data);
-      } catch (error) {
-        console.error('받은 견적 데이터 로딩 오류:', error);
-      }
-    };
+    if (!selected) return;
+    if (receivedQuotes.length>0) return;
     fetchReceivedQuotes();
-
   }, [selected]);
 
-  return (
+  // 정렬된 견적 목록 조회 함수
+  const fetchReceivedQuotes = async () => {
+    try {
+      const response = await fetch(
+        `http://localhost:8080/api/estimate/estimate-request/${quote.id}?sortType=${sortType}`, 
+        {
+          credentials: 'include'
+        }
+      );
+      if (!response.ok) {
+        throw new Error('받은 견적 데이터를 가져오는데 실패했습니다');
+      }
+      const data = await response.json();
+      console.log(data)
+      setReceivedQuotes(data);
+    } catch (error) {
+      console.error('받은 견적 데이터 로딩 오류:', error);
+    }
+  };
 
+  // 정렬 타입 변경 시 견적 목록 다시 조회
+  useEffect(() => {
+    if (selected && receivedQuotes.length > 0) {
+      fetchReceivedQuotes();
+    }
+  }, [sortType]);
+
+  // 정렬 변경 핸들러
+  const handleSortChange = (e) => {
+    setSortType(e.target.value);
+  };
+
+  return (
       <div key={quote.id}
            className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-sm"
       >
         <div className="flex justify-between items-center mb-4">
    <span className="text-lg font-semibold dark:text-white">
      견적 요청 #{quote.id}
-
    </span>
           <div className="flex gap-2">
-                  {/* 수정/삭제 버튼 추가 */}
-                      <>
-                          <button
-                              onClick={() => onEdit(quote)}
-                              className="px-3 py-1 text-blue-600 hover:text-blue-700 transition-colors"
-                          >
-                              수정
-                          </button>
-                          <button
-                              onClick={() => {
-                                  if (window.confirm('정말 삭제하시겠습니까?')) {
-                                      onDelete(quote.id);
-                                  }
-                              }}
-                              className="px-3 py-1 text-red-600 hover:text-red-700 transition-colors"
-                          >
-                              삭제
-                          </button>
-                      </>
-                  <button
-                      onClick={() => setSelected(p => !p)}
-                      className="px-3 py-1 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
-                  >
-                      {selected ? "닫기" : "열기"}
-                  </button>
-              </div>
+            <>
+              <button
+                onClick={() => onEdit(quote)}
+                className="px-3 py-1 text-blue-600 hover:text-blue-700 transition-colors"
+              >
+                수정
+              </button>
+              <button
+                onClick={() => {
+                  if (window.confirm('정말 삭제하시겠습니까?')) {
+                    onDelete(quote.id);
+                  }
+                }}
+                className="px-3 py-1 text-red-600 hover:text-red-700 transition-colors"
+              >
+                삭제
+              </button>
+            </>
+            <button
+              onClick={() => setSelected(p => !p)}
+              className="px-3 py-1 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+            >
+              {selected ? "닫기" : "열기"}
+            </button>
           </div>
+        </div>
         <div className="grid grid-cols-2 gap-2 text-sm mb-6">
           <div className="text-gray-600 dark:text-gray-400">요청일</div>
           <div className="dark:text-white">{new Date(quote.createDate).toLocaleDateString()}</div>
           <div className="text-gray-600 dark:text-gray-400">예산</div>
-          <div className="dark:text-white">{quote.budget}</div>
+          <div className="dark:text-white">{quote.budget.toLocaleString()}원</div>
           <div className="text-gray-600 dark:text-gray-400">용도</div>
           <div className="dark:text-white">{quote.purpose}</div>
         </div>
         {/* 받은 견적 목록 */}
         {selected && receivedQuotes.length > 0 && (
-            <div className="mt-6 border-t dark:border-gray-700 pt-4">
-              <h3 className="text-md font-semibold mb-4 dark:text-white">받은 견적 ({receivedQuotes.length})</h3>
-              <div className="space-y-4">
-                {receivedQuotes.map(receivedQuote => (
-                    <div key={receivedQuote.id} className="bg-gray-50 dark:bg-gray-700 p-4 rounded-lg">
-                      <div className="flex justify-between items-center mb-2">
-                        <span className="font-medium dark:text-white">{receivedQuote.companyName}</span>
-                      </div>
-                      <div className="grid grid-cols-2 gap-2 text-sm">
-                        <div className="text-gray-600 dark:text-gray-400">받은날짜</div>
-                        <div className="dark:text-white">{new Date(receivedQuote.createdDate).toLocaleDateString()}</div>
-                        <div className="text-gray-600 dark:text-gray-400">견적금액</div>
-                        <div className="dark:text-white">{receivedQuote.totalPrice}</div>
-                      </div>
-                      <div className="mt-3 flex gap-2">
-                        <button
-                            className="text-sm text-blue-500 hover:text-blue-400"
-                            onClick={() => onSelectQuote(receivedQuote)}
-                        >
-                          상세보기
-                        </button>
-                        <button
-                            className="text-sm text-green-600 hover:text-green-500"
-                            onClick={()=>onConfirm(receivedQuote)}
-                        >
-                          채택하기
-                        </button>
-                        <button
-                            className="text-sm text-purple-600 hover:text-purple-500"
-                            onClick={()=>onChat(receivedQuote)}
-                        >
-                          문의하기
-                        </button>
-                      </div>
-                    </div>
-                ))}
-              </div>
+          <div className="mt-6 border-t dark:border-gray-700 pt-4">
+            <div className="flex justify-between items-center mb-4">
+              <h3 className="text-md font-semibold dark:text-white">
+                받은 견적 ({receivedQuotes.length})
+              </h3>
+              {/* 정렬 드롭다운 추가 */}
+              <select
+                value={sortType}
+                onChange={handleSortChange}
+                className="px-3 py-1.5 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+              >
+                <option value="LATEST">최신순</option>
+                <option value="PRICE_ASC">가격 낮은순</option>
+                <option value="PRICE_DESC">가격 높은순</option>
+              </select>
             </div>
+            <div className="space-y-4">
+              {receivedQuotes.map(receivedQuote => (
+                <div key={receivedQuote.id} className="bg-gray-50 dark:bg-gray-700 p-4 rounded-lg">
+                  <div className="flex justify-between items-center mb-2">
+                    <span className="font-medium dark:text-white">{receivedQuote.companyName}</span>
+                  </div>
+                  <div className="grid grid-cols-2 gap-2 text-sm">
+                    <div className="text-gray-600 dark:text-gray-400">받은날짜</div>
+                    <div className="dark:text-white">
+                      {new Date(receivedQuote.createdDate).toLocaleDateString()}
+                    </div>
+                    <div className="text-gray-600 dark:text-gray-400">견적금액</div>
+                    <div className="dark:text-white">{receivedQuote.totalPrice.toLocaleString()}원</div>
+                  </div>
+                  <div className="mt-3 flex gap-2">
+                    <button
+                      className="text-sm text-blue-500 hover:text-blue-400"
+                      onClick={() => onSelectQuote(receivedQuote)}
+                    >
+                      상세보기
+                    </button>
+                    <button
+                      className="text-sm text-green-600 hover:text-green-500"
+                      onClick={()=>onConfirm(receivedQuote)}
+                    >
+                      채택하기
+                    </button>
+                    <button
+                      className="text-sm text-purple-600 hover:text-purple-500"
+                      onClick={()=>onChat(receivedQuote)}
+                    >
+                      문의하기
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
         )}
       </div>
   )

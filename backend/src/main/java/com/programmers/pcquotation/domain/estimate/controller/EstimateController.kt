@@ -4,6 +4,7 @@ import com.programmers.pcquotation.domain.chat.service.ChatRoomService
 import com.programmers.pcquotation.domain.chat.service.ChatService
 import com.programmers.pcquotation.domain.estimate.dto.EstimateCreateRequest
 import com.programmers.pcquotation.domain.estimate.dto.EstimateResponse
+import com.programmers.pcquotation.domain.estimate.dto.EstimateSortType
 import com.programmers.pcquotation.domain.estimate.dto.EstimateUpdateReqDto
 import com.programmers.pcquotation.domain.estimate.service.EstimateService
 import org.springframework.http.HttpStatus
@@ -45,9 +46,10 @@ class EstimateController(
 
     @GetMapping("/estimate-request/{id}")
     fun getEstimatesByEstimateRequest(
-        @PathVariable("id") id: Int
+        @PathVariable("id") id: Int,
+        @RequestParam(required = false, defaultValue = "LATEST") sortType: EstimateSortType
     ): ResponseEntity<List<EstimateResponse>> {
-        val estimates = estimateService.getEstimatesByEstimateRequest(id)
+        val estimates = estimateService.getEstimatesByEstimateRequest(id, sortType)
         return ResponseEntity(estimates, HttpStatus.OK)
     }
 

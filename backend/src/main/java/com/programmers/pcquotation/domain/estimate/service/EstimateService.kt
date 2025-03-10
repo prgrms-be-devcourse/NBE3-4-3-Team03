@@ -38,10 +38,10 @@ class EstimateService(
         return estimateRepository.save(estimate)
     }
 
-    fun getEstimatesByEstimateRequest(estimateRequestId: Int): List<EstimateResponse> {
+    fun getEstimatesByEstimateRequest(estimateRequestId: Int, sortType: EstimateSortType = EstimateSortType.LATEST): List<EstimateResponse> {
         val estimates = estimateRepository.getAllByEstimateRequestId(estimateRequestId)
 
-        return estimates.map { estimate ->
+        val estimateResponses = estimates.map { estimate ->
             with(estimate) {
                 EstimateResponse(
                     id = estimate.id,
@@ -54,6 +54,12 @@ class EstimateService(
                     items = getItemInfoFromComponents(estimateComponents)
                 )
             }
+        }
+
+        return when (sortType) {
+            EstimateSortType.LATEST -> estimateResponses.sortedByDescending { it.createdDate }
+            EstimateSortType.PRICE_ASC -> estimateResponses.sortedBy { it.totalPrice }
+            EstimateSortType.PRICE_DESC -> estimateResponses.sortedByDescending { it.totalPrice }
         }
     }
 
