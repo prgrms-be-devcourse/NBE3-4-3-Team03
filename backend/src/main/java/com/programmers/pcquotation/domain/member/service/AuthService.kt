@@ -97,8 +97,8 @@ class AuthService(
 
         val accessToken = this.getAccessToken(customer)
         rq.setCookie("accessToken", accessToken)
-        rq.setCookie("apiKey", customer.apiKey ?: throw Exception("ApiKey가 존재하지 않습니다."))
-        rq.setCookie("userType", CUSTOMER.toString())
+        rq.setCookie("apiKey", customer.apiKey)
+        rq.setCookie("userType", CUSTOMER.value)
         return customer.apiKey?.let {
             LoginResponse(
                 it,
@@ -119,8 +119,8 @@ class AuthService(
         }
         val accessToken = this.getAccessToken(seller)
         rq.setCookie("accessToken", accessToken)
-        rq.setCookie("apiKey", seller.apiKey ?: throw Exception("ApiKey가 존재하지 않습니다."))
-        rq.setCookie("userType", SELLER.toString())
+        rq.setCookie("apiKey", seller.apiKey)
+        rq.setCookie("userType", SELLER.value)
 
         return seller.apiKey?.let {
             LoginResponse(
@@ -141,8 +141,8 @@ class AuthService(
         }
         val accessToken = this.getAccessToken(admin)
         rq.setCookie("accessToken", accessToken)
-        rq.setCookie("apiKey", admin.apiKey ?: throw Exception("ApiKey가 존재하지 않습니다."))
-        rq.setCookie("userType", ADMIN.toString())
+        rq.setCookie("apiKey", admin.apiKey)
+        rq.setCookie("userType", ADMIN.value)
 
 
         return admin.apiKey?.let {
@@ -157,9 +157,9 @@ class AuthService(
 
     val memberFromRq: AuthRequest
         get() {
-            val member = rq.getMember()
-            val auth = member.toString()
-            val userType = UserType.fromString(auth).toString()
+            val member = rq.member
+            val auth = member.authorities
+            val userType = UserType.fromString(auth.toString()).toString()
             return AuthRequest(userType)
         }
 
