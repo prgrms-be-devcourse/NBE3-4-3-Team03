@@ -156,10 +156,10 @@ class InitData(
         )
     }
 
-    private fun insertItem(category: Long, name: String, url: String) {
+    private fun insertItem(categoryId: Long, name: String, url: String) {
         if (itemService.findByName(name) != null) return
         val multipartFile: MultipartFile = CustomMultipartFile.fromUrl(url)
-        val itemCreateRequest = ItemCreateRequest(category, name, multipartFile)
+        val itemCreateRequest = ItemCreateRequest(categoryId, name, multipartFile)
 
         itemService.addItem(itemCreateRequest)
     }
