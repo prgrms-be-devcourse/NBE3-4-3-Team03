@@ -1,10 +1,7 @@
 package com.programmers.pcquotation.domain.member.dto
 
 import com.programmers.pcquotation.domain.customer.dto.CustomerSignupRequest
-import lombok.ToString
 
-
-@ToString
 data class OAuth2NaverUserInfoDto(
     val resultCode: String,
     val message: String,
@@ -12,7 +9,6 @@ data class OAuth2NaverUserInfoDto(
 ) {
     val provider = "KAKAO"
 
-    @ToString
     data class NaverUserResponse(
         val id: String,
         val nickname: String,

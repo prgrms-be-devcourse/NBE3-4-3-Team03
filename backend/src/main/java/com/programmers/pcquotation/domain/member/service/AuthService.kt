@@ -141,7 +141,7 @@ class AuthService(
         }
         val accessToken = this.getAccessToken(admin)
         rq.setCookie("accessToken", accessToken)
-        rq.setCookie("apiKey", admin.apiKey?: throw Exception("ApiKey가 존재하지 않습니다."))
+        rq.setCookie("apiKey", admin.apiKey ?: throw Exception("ApiKey가 존재하지 않습니다."))
         rq.setCookie("userType", ADMIN.value)
 
 

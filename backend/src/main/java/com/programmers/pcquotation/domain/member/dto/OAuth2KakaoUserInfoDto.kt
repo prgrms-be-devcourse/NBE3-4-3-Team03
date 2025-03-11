@@ -1,9 +1,7 @@
 package com.programmers.pcquotation.domain.member.dto
 
 import com.programmers.pcquotation.domain.customer.dto.CustomerSignupRequest
-import lombok.ToString
 
-@ToString
 data class OAuth2KakaoUserInfoDto(
     val resultCode: String,
     val message: String,

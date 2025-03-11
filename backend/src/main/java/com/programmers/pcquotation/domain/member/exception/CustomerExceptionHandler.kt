@@ -13,35 +13,35 @@ class Oauth2ExceptionHandler {
     fun handleOauth2InfoResponse(ex: Oauth2InfoResponseException): ResponseEntity<Any> {
         return ResponseEntity.status(HttpStatus.FOUND)
             .header(LOCATION, "http://localhost:3000/social/error/${ex.message}")
-            .build<Any>()
+            .build()
     }
 
     @ExceptionHandler(Oauth2LoginException::class)
     fun handleOauth2Login(ex: Oauth2LoginException): ResponseEntity<Any> {
         return ResponseEntity.status(HttpStatus.FOUND)
             .header(LOCATION, "http://localhost:3000/social/error/${ex.message}")
-            .build<Any>()
+            .build()
     }
 
     @ExceptionHandler(RedirectInfoException::class)
     fun handleRedirectInfo(ex: RedirectInfoException): ResponseEntity<Any> {
         return ResponseEntity.status(HttpStatus.FOUND)
             .header(LOCATION, "http://localhost:3000/social/error/${ex.message}")
-            .build<Any>()
+            .build()
     }
 
     @ExceptionHandler(TokenNotFoundException::class)
     fun handleTokenNotFound(ex: TokenNotFoundException): ResponseEntity<Any> {
         return ResponseEntity.status(HttpStatus.FOUND)
             .header(LOCATION, "http://localhost:3000/social/error/${ex.message}")
-            .build<Any>()
+            .build()
     }
 
     @ExceptionHandler(UserNotFoundException::class)
     fun handleUserNotFound(ex: UserNotFoundException): ResponseEntity<Any> {
         return ResponseEntity.status(HttpStatus.FOUND)
             .header(LOCATION, "http://localhost:3000/social/error/${ex.message}")
-            .build<Any>()
+            .build()
     }
 
 
