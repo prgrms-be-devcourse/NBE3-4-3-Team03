@@ -606,26 +606,66 @@ export default function MyPage() {
               {/* 페이지네이션 컨트롤 */}
               <div className="flex justify-center mt-6 gap-2">
                 <button
+                  onClick={() => setPage(0)}
+                  disabled={page === 0}
+                  className={`px-3 py-1 rounded-md ${
+                    page === 0
+                      ? 'bg-gray-200 text-gray-500 dark:bg-gray-700 dark:text-gray-400 cursor-not-allowed'
+                      : 'bg-blue-500 text-white hover:bg-blue-600 dark:bg-blue-600 dark:hover:bg-blue-700'
+                  }`}
+                >
+                  처음
+                </button>
+                <button
                   onClick={() => setPage(prev => Math.max(0, prev - 1))}
                   disabled={page === 0}
-                  className="px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 disabled:opacity-50"
+                  className={`px-3 py-1 rounded-md ${
+                    page === 0
+                      ? 'bg-gray-200 text-gray-500 dark:bg-gray-700 dark:text-gray-400 cursor-not-allowed'
+                      : 'bg-blue-500 text-white hover:bg-blue-600 dark:bg-blue-600 dark:hover:bg-blue-700'
+                  }`}
                 >
                   이전
                 </button>
-                <span className="px-4 py-2 text-gray-700 dark:text-gray-300">
-                  {page + 1} / {totalPages}
-                </span>
+                {[...Array(totalPages)].map((_, number) => (
+                  <button
+                    key={number}
+                    onClick={() => setPage(number)}
+                    className={`px-3 py-1 rounded-md ${
+                      page === number
+                        ? 'bg-blue-500 text-white dark:bg-blue-600'
+                        : 'bg-gray-200 text-gray-700 hover:bg-gray-300 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600'
+                    }`}
+                  >
+                    {number + 1}
+                  </button>
+                ))}
                 <button
-                  onClick={() => setPage(prev => prev + 1)}
+                  onClick={() => setPage(prev => Math.min(totalPages - 1, prev + 1))}
                   disabled={page >= totalPages - 1}
-                  className="px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 disabled:opacity-50"
+                  className={`px-3 py-1 rounded-md ${
+                    page >= totalPages - 1
+                      ? 'bg-gray-200 text-gray-500 dark:bg-gray-700 dark:text-gray-400 cursor-not-allowed'
+                      : 'bg-blue-500 text-white hover:bg-blue-600 dark:bg-blue-600 dark:hover:bg-blue-700'
+                  }`}
                 >
                   다음
+                </button>
+                <button
+                  onClick={() => setPage(totalPages - 1)}
+                  disabled={page >= totalPages - 1}
+                  className={`px-3 py-1 rounded-md ${
+                    page >= totalPages - 1
+                      ? 'bg-gray-200 text-gray-500 dark:bg-gray-700 dark:text-gray-400 cursor-not-allowed'
+                      : 'bg-blue-500 text-white hover:bg-blue-600 dark:bg-blue-600 dark:hover:bg-blue-700'
+                  }`}
+                >
+                  마지막
                 </button>
               </div>
 
               <Link href="/estimateRequest">
-                <button className="mt-4 px-4 py-2 rounded-lg bg-blue-600 text-white hover:bg-blue-700 transition-colors">
+                <button className="mt-4 px-3 py-1 rounded-md bg-blue-500 text-white hover:bg-blue-600 dark:bg-blue-600 dark:hover:bg-blue-700 transition-colors">
                   견적 요청하기
                 </button>
               </Link>
