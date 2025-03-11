@@ -7,6 +7,9 @@ import com.programmers.pcquotation.domain.estimate.dto.EstimateResponse
 import com.programmers.pcquotation.domain.estimate.dto.EstimateSortType
 import com.programmers.pcquotation.domain.estimate.dto.EstimateUpdateReqDto
 import com.programmers.pcquotation.domain.estimate.service.EstimateService
+import org.springframework.data.domain.Page
+import org.springframework.data.domain.Pageable
+import org.springframework.data.web.PageableDefault
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.security.access.prepost.PreAuthorize
@@ -58,9 +61,10 @@ class EstimateController(
     @PreAuthorize("hasRole('SELLER')")
     @GetMapping("/seller/{id}")
     fun getEstimatesBySeller(
-        @PathVariable("id") id: Int
-    ): ResponseEntity<List<EstimateResponse>> {
-        val estimates = estimateService.getEstimatesBySeller(id)
+        @PathVariable("id") id: Int,
+        @PageableDefault(size = 5) pageable: Pageable
+    ): ResponseEntity<Page<EstimateResponse>> {
+        val estimates = estimateService.getEstimatesBySeller(id, pageable)
         return ResponseEntity(estimates, HttpStatus.OK)
     }
 }
