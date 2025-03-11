@@ -5,7 +5,7 @@ import jakarta.persistence.*
 
 @Entity
 class ChatRoom(
-    @OneToOne(cascade = [CascadeType.REMOVE], fetch = FetchType.LAZY)
+    @OneToOne(cascade = [CascadeType.DETACH], fetch = FetchType.LAZY)
     @JoinColumn(name = "estimate_id")
     var estimate: Estimate?
 ) {

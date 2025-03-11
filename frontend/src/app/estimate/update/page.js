@@ -157,10 +157,10 @@ export default function CreateEstimate() {
     // 견적 데이터 구성
     const estimateSubmitData = {
       estimateId: requestInfo.estimateId,
-      item: Object.values(estimateData)
+      items: Object.values(estimateData)
         .filter(item => item !== null)
         .map(item => ({
-          item: item.id,
+          itemId: item.id,
           price: item.price || 0
         }))
     };
@@ -173,6 +173,7 @@ export default function CreateEstimate() {
         headers: {
           'Content-Type': 'application/json',
         },
+        credentials: 'include',
         body: JSON.stringify(estimateSubmitData),
       });
 
