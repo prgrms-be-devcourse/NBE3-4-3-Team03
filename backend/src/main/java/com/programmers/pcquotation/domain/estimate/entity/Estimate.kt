@@ -28,8 +28,6 @@ class Estimate(
 	@OneToMany(mappedBy = "estimate", cascade = [CascadeType.ALL], orphanRemoval = true)
 	var comments: List<Comment> = ArrayList(),
 
-	@Column(nullable = false)
-	var isAdopted: Boolean = false
 ) {
 	val estimateComponents: List<EstimateComponent>
 		get() = _estimateComponents.toList()
