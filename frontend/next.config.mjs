@@ -8,6 +8,15 @@ const nextConfig = {
             },
         ];
     },
+    // Node.js 경고 메시지 숨기기
+    webpack: (config, { isServer }) => {
+        if (!isServer) {
+            config.resolve.fallback = Object.assign({}, config.resolve.fallback, {
+                util: false
+            });
+        }
+        return config;
+    },
 };
 
 export default nextConfig;
