@@ -27,27 +27,27 @@ import com.programmers.pcquotation.domain.estimate.repository.EstimateRepository
 @SpringBootTest
 public class ChatRoomServiceTest {
 
-    @Mock
-    private ChatRoomRepository chatRoomRepository;
+	@Mock
+	private ChatRoomRepository chatRoomRepository;
 
-    @Mock
-    private EstimateRepository estimateRepository;
+	@Mock
+	private EstimateRepository estimateRepository;
 
-    @InjectMocks
-    private ChatRoomService chatRoomService;
+	@InjectMocks
+	private ChatRoomService chatRoomService;
 
-    @Test
-    public void createChatRoom_success() {
+	@Test
+	public void createChatRoom_success() {
 
-        // Given
-        Estimate estimate = mock(Estimate.class);
+		// Given
+		Estimate estimate = mock(Estimate.class);
 
-        // When
-        chatRoomService.createChatRoom(estimate);
+		// When
+		chatRoomService.createChatRoom(estimate);
 
-        // Then
-        verify(chatRoomRepository).save(any(ChatRoom.class));
-    }
+		// Then
+		verify(chatRoomRepository).save(any(ChatRoom.class));
+	}
 
 	@Test
 	public void createChatRoom_estimateNotFound() {
@@ -60,32 +60,32 @@ public class ChatRoomServiceTest {
 		});
 	}
 
-    @Test
-    public void deleteChatRoom_success() {
-        // Given
-        int estimateId = 1;
-        Estimate estimate = mock(Estimate.class);
+	@Test
+	public void deleteChatRoom_success() {
+		// Given
+		int estimateId = 1;
+		Estimate estimate = mock(Estimate.class);
 
-        when(estimateRepository.findById(estimateId)).thenReturn(Optional.of(estimate));
+		when(estimateRepository.findById(estimateId)).thenReturn(Optional.of(estimate));
 
-        // When
-        chatRoomService.deleteChatRoom(estimateId);
+		// When
+		chatRoomService.deleteChatRoom(estimateId);
 
-        // Then
-        verify(chatRoomRepository).deleteByEstimate(estimate);
-    }
+		// Then
+		verify(chatRoomRepository).deleteByEstimate(estimate);
+	}
 
-    @Test
-    public void deleteChatRoom_estimateNotFound() {
-        // Given
-        int estimateId = 1;
+	@Test
+	public void deleteChatRoom_estimateNotFound() {
+		// Given
+		int estimateId = 1;
 
-        // 모킹
-        when(estimateRepository.findById(estimateId)).thenReturn(Optional.empty());
+		// 모킹
+		when(estimateRepository.findById(estimateId)).thenReturn(Optional.empty());
 
-        // When & Then
-        assertThrows(NoSuchElementException.class, () -> {
-            chatRoomService.deleteChatRoom(estimateId);
-        });
-    }
+		// When & Then
+		assertThrows(NoSuchElementException.class, () -> {
+			chatRoomService.deleteChatRoom(estimateId);
+		});
+	}
 }
