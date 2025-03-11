@@ -183,6 +183,10 @@ export default function MyPage() {
   const [chatError, setChatError] = useState(null);
   const messagesEndRef = useRef(null);
 
+  const [page, setPage] = useState(0);
+  const [size, setSize] = useState(5);
+  const [totalPages, setTotalPages] = useState(0);
+
   /**
    *
    * @param {{id:number}} quote
@@ -210,27 +214,25 @@ export default function MyPage() {
   }, [])
 
   // 견적 요청 목록 조회
-  useEffect(() => {
-    const fetchQuotes = async () => {
-      try {
-        const response = await fetch('http://localhost:8080/estimate/request', {
-          credentials: 'include'
-        });
-        if (!response.ok) {
-          throw new Error('견적 데이터를 가져오는데 실패했습니다');
-        }
-        const data = await response.json();
-
-        setRequestedQuotes(data);
-      } catch (error) {
-        console.error('견적 데이터 로딩 오류:', error);
-      }
-    };
-
-    if (activeTab === 'requested') {
-      fetchQuotes();
+  const fetchRequestedQuotes = async () => {
+    try {
+      const response = await fetch(`http://localhost:8080/estimate/request?page=${page}&size=${size}`, {
+        credentials: 'include'
+      });
+      if (!response.ok) throw new Error('견적 데이터를 가져오는데 실패했습니다');
+      const data = await response.json();
+      setRequestedQuotes(data.content);
+      setTotalPages(data.totalPages);
+    } catch (error) {
+      console.error('Error:', error);
     }
-  }, [activeTab]);
+  };
+
+  useEffect(() => {
+    if (activeTab === 'requested') {
+      fetchRequestedQuotes();
+    }
+  }, [activeTab, page, size]);
 
   const getCustomerInfo = () => {
     fetch("http://localhost:8080/customer", {
@@ -589,12 +591,41 @@ export default function MyPage() {
             <div>
               <div className="space-y-8">
                 {requestedQuotes.map(quote => (
-                    <QuoteComponent key={quote.id} quote={quote} onConfirm={onConfirm} onChat={onChat} onSelectQuote={onSelcectQuote}onDelete={handleDelete} onEdit={() => setEditQuote(quote)}/>             ))}
+                    <QuoteComponent 
+                      key={quote.id} 
+                      quote={quote} 
+                      onConfirm={onConfirm} 
+                      onChat={onChat} 
+                      onSelectQuote={onSelcectQuote}
+                      onDelete={handleDelete} 
+                      onEdit={() => setEditQuote(quote)}
+                    />
+                ))}
               </div>
-              <Link href="/estimateRequest">
+              
+              {/* 페이지네이션 컨트롤 */}
+              <div className="flex justify-center mt-6 gap-2">
                 <button
-                    className="mt-4 px-4 py-2 rounded-lg bg-blue-600 text-white hover:bg-blue-700 transition-colors"
+                  onClick={() => setPage(prev => Math.max(0, prev - 1))}
+                  disabled={page === 0}
+                  className="px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 disabled:opacity-50"
                 >
+                  이전
+                </button>
+                <span className="px-4 py-2 text-gray-700 dark:text-gray-300">
+                  {page + 1} / {totalPages}
+                </span>
+                <button
+                  onClick={() => setPage(prev => prev + 1)}
+                  disabled={page >= totalPages - 1}
+                  className="px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 disabled:opacity-50"
+                >
+                  다음
+                </button>
+              </div>
+
+              <Link href="/estimateRequest">
+                <button className="mt-4 px-4 py-2 rounded-lg bg-blue-600 text-white hover:bg-blue-700 transition-colors">
                   견적 요청하기
                 </button>
               </Link>

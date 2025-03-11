@@ -1,19 +1,26 @@
 package com.programmers.pcquotation.domain.estimaterequest.controller;
 
 import java.security.Principal;
-import java.util.List;
 
-import com.programmers.pcquotation.domain.estimaterequest.dto.EstimateRequestData;
-import com.programmers.pcquotation.domain.estimaterequest.entity.EstimateRequestStatus;
-import com.programmers.pcquotation.global.enums.UserType;
-import com.programmers.pcquotation.global.rq.Rq;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import com.programmers.pcquotation.domain.customer.entity.Customer;
+import com.programmers.pcquotation.domain.estimaterequest.dto.EstimateRequestData;
 import com.programmers.pcquotation.domain.estimaterequest.dto.EstimateRequestResDto;
 import com.programmers.pcquotation.domain.estimaterequest.service.EstimateRequestService;
+import com.programmers.pcquotation.global.enums.UserType;
 import com.programmers.pcquotation.global.rq.Rq;
 
 import jakarta.validation.Valid;
@@ -50,18 +57,21 @@ public class EstimateRequestController {
 	}
 
 	@GetMapping
-	public ResponseEntity<List<EstimateRequestResDto>> getER(Principal principal) {
+	public ResponseEntity<Page<EstimateRequestResDto>> getER(
+			Principal principal,
+			@PageableDefault(size = 5) Pageable pageable
+	) {
 		String type = rq.getCookieValue("userType");
-		UserType userType =  UserType.fromString(type);
-		List<EstimateRequestResDto> list = null;
+		UserType userType = UserType.fromString(type);
+		Page<EstimateRequestResDto> list = null;
 
 		switch (userType) {
 			case CUSTOMER -> {
 				Customer customer = estimateRequestService.findCustomer(principal.getName());
-				list = estimateRequestService.getEstimateRequestByCustomerId(customer);
+				list = estimateRequestService.getEstimateRequestByCustomerId(customer, pageable);
 			}
 			case SELLER -> {
-				list = estimateRequestService.getAllEstimateRequest();
+				list = estimateRequestService.getAllEstimateRequest(pageable);
 			}
 		}
 

@@ -28,7 +28,9 @@ export default function MyPage() {
   const [chatError, setChatError] = useState(null);
   const messagesEndRef = useRef(null);
 
-
+  const [page, setPage] = useState(0);
+  const [size, setSize] = useState(5);
+  const [totalPages, setTotalPages] = useState(0);
 
   useEffect(() => {
     getSellerInfo()
@@ -66,13 +68,14 @@ export default function MyPage() {
       setIsLoading(true);
       try {
         if (activeTab === 'requested') {
-          const response = await fetch('http://localhost:8080/estimate/request', {
+          const response = await fetch(`http://localhost:8080/estimate/request?page=${page}&size=${size}`, {
             credentials: 'include'
           });
           if (!response.ok) throw new Error('견적 데이터를 불러오는데 실패했습니다');
           const data = await response.json();
           console.log('요청받은 견적 데이터:', data);
-          setRequestedQuotes(data);
+          setRequestedQuotes(data.content);
+          setTotalPages(data.totalPages);
         } else if (activeTab === 'written') {
           const response = await fetch(`http://localhost:8080/api/estimate/seller/${sellerInfo.id}`, {
             credentials: 'include'
@@ -91,7 +94,7 @@ export default function MyPage() {
     if (activeTab === 'requested' || activeTab === 'written') {
       fetchData();
     }
-  }, [activeTab]);
+  }, [activeTab, page, size]);
 
 
   const getStatusStyle = (status) => {
@@ -464,6 +467,27 @@ const fetchComments = async (estimateId) => {
                           );
                         })
                     )}
+                    
+                    {/* 페이지네이션 컨트롤 */}
+                    <div className="flex justify-center mt-6 gap-2">
+                      <button
+                        onClick={() => setPage(prev => Math.max(0, prev - 1))}
+                        disabled={page === 0}
+                        className="px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 disabled:opacity-50"
+                      >
+                        이전
+                      </button>
+                      <span className="px-4 py-2 text-gray-700 dark:text-gray-300">
+                        {page + 1} / {totalPages}
+                      </span>
+                      <button
+                        onClick={() => setPage(prev => prev + 1)}
+                        disabled={page >= totalPages - 1}
+                        className="px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 disabled:opacity-50"
+                      >
+                        다음
+                      </button>
+                    </div>
                   </div>
               )}
             </div>
