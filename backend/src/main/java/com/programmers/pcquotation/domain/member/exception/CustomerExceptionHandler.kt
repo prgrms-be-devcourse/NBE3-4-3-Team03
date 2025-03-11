@@ -11,24 +11,15 @@ class Oauth2ExceptionHandler {
 
     @ExceptionHandler(Oauth2InfoResponseException::class)
     fun handleOauth2InfoResponse(ex: Oauth2InfoResponseException): ResponseEntity<Any> {
-        val url = "http://localhost:3000/social/error/${ex.message}"
-        println(url)
         return ResponseEntity.status(HttpStatus.FOUND)
-            .header(LOCATION, url)
+            .header(LOCATION, "http://localhost:3000/social/error/${ex.message}")
             .build<Any>()
     }
 
     @ExceptionHandler(Oauth2LoginException::class)
     fun handleOauth2Login(ex: Oauth2LoginException): ResponseEntity<Any> {
-        val url = "http://localhost:3000/social/error/${ex.message}"
-        println(url)
-        println(url)
-        println(url)
-        println(url)
-        println(url)
-
         return ResponseEntity.status(HttpStatus.FOUND)
-            .header(LOCATION, url)
+            .header(LOCATION, "http://localhost:3000/social/error/${ex.message}")
             .build<Any>()
     }
 
