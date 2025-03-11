@@ -15,6 +15,8 @@ import com.programmers.pcquotation.domain.item.exception.ItemNotFoundException;
 import com.programmers.pcquotation.domain.item.repository.ItemRepository;
 
 import jakarta.transaction.Transactional;
+import org.springframework.cache.annotation.CacheEvict
+import org.springframework.cache.annotation.Cacheable
 
 @Service
 class ItemService(
@@ -22,8 +24,8 @@ class ItemService(
     private val imageService: ImageService,
     private val categoryRepository: CategoryRepository
 ) {
-
     @Transactional
+    @CacheEvict(value = ["items"], allEntries = true)
     fun addItem(request: ItemCreateRequest): ItemCreateResponse {
         val category: Category = categoryRepository.findById(request.categoryId)
             .orElseThrow { IllegalArgumentException("유효하지 않은 카테고리 ID입니다.") }
@@ -42,19 +44,20 @@ class ItemService(
         return ItemCreateResponse(id, "부품 생성 완료")
     }
 
-
     @Transactional
+    @Cacheable(value = ["items"], key = "'id'")
     fun getItemList(): List<ItemInfoResponse> {
         return itemRepository.findAll().map { toItemInfoResponse(it) }
     }
 
     @Transactional
+    @Cacheable(value = ["items"], key = "#categoryId")
     fun getItemsByCategory(categoryId: Long): List<ItemInfoResponse> {
         return itemRepository.findByCategoryId(categoryId).map { toItemInfoResponse(it) }
     }
 
-
     @Transactional
+    @CacheEvict(value = ["items"], allEntries = true)
     fun updateItem(id: Long, request: ItemUpdateRequest): ItemUpdateResponse {
         val item: Item = itemRepository.findById(id)
             .orElseThrow { ItemNotFoundException(id) }
@@ -74,6 +77,7 @@ class ItemService(
     }
 
     @Transactional
+    @CacheEvict(value = ["items"], allEntries = true)
     fun deleteItem(id: Long): ItemDeleteResponse {
         val item: Item = itemRepository.findById(id)
             .orElseThrow { ItemNotFoundException(id) }
