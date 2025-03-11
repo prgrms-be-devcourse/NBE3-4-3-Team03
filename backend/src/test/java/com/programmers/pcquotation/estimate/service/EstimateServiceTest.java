@@ -32,8 +32,7 @@ import static org.mockito.Mockito.*;
 @ActiveProfiles("test")
 @SpringBootTest
 public class EstimateServiceTest {
-    @InjectMocks
-    private EstimateService estimateService;
+    
 
     @Mock
     private EstimateRequestService estimateRequestService;
@@ -46,6 +45,9 @@ public class EstimateServiceTest {
 
     @Mock
     private ItemService itemService;
+    
+    @InjectMocks
+    private EstimateService estimateService;
 
 
     private final Customer sampleCustomer = new Customer(
