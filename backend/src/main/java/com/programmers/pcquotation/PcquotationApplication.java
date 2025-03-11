@@ -5,7 +5,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.context.properties.ConfigurationPropertiesScan;
 import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 
-@SpringBootApplication
+@SpringBootApplication(scanBasePackages = "com.programmers.pcquotation")
 @EnableJpaAuditing
 @ConfigurationPropertiesScan("com.programmers.pcquotation.global.Properties")
 

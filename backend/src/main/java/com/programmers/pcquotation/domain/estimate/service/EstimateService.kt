@@ -1,5 +1,6 @@
 package com.programmers.pcquotation.domain.estimate.service
 
+import com.programmers.pcquotation.domain.alarm.service.AlarmService
 import com.programmers.pcquotation.domain.estimate.dto.*
 import com.programmers.pcquotation.domain.estimate.entity.Estimate
 import com.programmers.pcquotation.domain.estimate.entity.EstimateComponent
@@ -18,7 +19,8 @@ class EstimateService(
     private val estimateRepository: EstimateRepository,
     private val estimateRequestService: EstimateRequestService,
     private val sellerService: SellerService,
-    private val itemService: ItemService
+    private val itemService: ItemService,
+    private val alarmService: AlarmService
 ) {
     @Transactional
     fun createEstimate(request: EstimateCreateRequest, sellerName: String): Estimate {
@@ -36,7 +38,6 @@ class EstimateService(
 
         val components = mapItemsToEstimateComponents(estimate, request.items)
         estimate.addEstimateComponents(components)
-
         return estimateRepository.save(estimate)
     }
 

@@ -12,4 +12,5 @@ interface SellerRepository : JpaRepository<Seller, Long> {
     fun findByApiKey(apiKey: String): Optional<Seller>
 
     fun findByEmail(email: String): Optional<Seller>
+    fun existsByUsername(username: String): Boolean
 }
