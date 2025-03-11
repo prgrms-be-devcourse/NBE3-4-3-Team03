@@ -42,28 +42,74 @@ const QuoteComponent = ({quote,onConfirm,onChat,onSelectQuote, onDelete, onEdit}
 
     // SSE 연결
     useEffect(() => {
-        const eventSource = new EventSource(`/sse/customer?estimateRequestId=${quote.id}`);
+        let eventSource;
+        let retryCount = 0;
+        const maxRetries = 3;
+        const retryInterval = 5000; // 5초
 
-        eventSource.onmessage = (event) => {
-            const data = JSON.parse(event.data);
-            handleEvent(data);
+        const connectSSE = () => {
+            eventSource = new EventSource(`/sse/customer?estimateRequestId=${quote.id}`);
+
+            eventSource.onmessage = (event) => {
+                try {
+                    console.log('Received SSE event:', event);
+                    if (!event.data) {
+                        console.log('No data in event');
+                        return;
+                    }
+                    const data = JSON.parse(event.data);
+                    handleEvent(data);
+                } catch (error) {
+                    console.error('Error parsing SSE event:', error);
+                }
+            };
+
+            eventSource.addEventListener('createEstimate', (event) => {
+                try {
+                    console.log('Received createEstimate event:', event);
+                    const data = JSON.parse(event.data);
+                    console.log('요청하신 견적이 도착했습니다:', data);
+                    setReceivedQuotes(prevState => [...prevState, data]);
+                } catch (error) {
+                    console.error('Error handling createEstimate event:', error);
+                }
+            });
+
+            eventSource.onerror = (error) => {
+                console.error('EventSource failed: ', error);
+                eventSource.close();
+                
+                if (retryCount < maxRetries) {
+                    console.log(`재연결 시도 ${retryCount + 1}/${maxRetries}...`);
+                    setTimeout(() => {
+                        retryCount++;
+                        connectSSE();
+                    }, retryInterval);
+                } else {
+                    console.error('최대 재시도 횟수 초과');
+                }
+            };
         };
 
-        eventSource.onerror = (error) => {
-            console.error('EventSource failed: ', error);
-        };
+        connectSSE();
 
         return () => {
-            eventSource.close();
+            if (eventSource) {
+                eventSource.close();
+            }
         };
     }, [quote.id]);
 
     // SSE 이벤트 처리
     const handleEvent = (data) => {
-        if (data.eventName === 'createEstimate') {
-            // 견적 생성 이벤트 처리
-            console.log('요청하신 견적이 도착했습니다:', data.message);
-            setReceivedQuotes(prevState => [...prevState, data.message]); // 실시간 견적 추가
+        try {
+            console.log('Handling event:', data);
+            if (data.eventName === 'createEstimate') {
+                console.log('요청하신 견적이 도착했습니다:', data.message);
+                setReceivedQuotes(prevState => [...prevState, data.message]);
+            }
+        } catch (error) {
+            console.error('Error in handleEvent:', error);
         }
     };
 

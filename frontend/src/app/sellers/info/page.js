@@ -98,35 +98,137 @@ export default function MyPage() {
 
   // SSE 연결
   useEffect(() => {
-    const eventSource = new EventSource(`/sse/seller?username=${sellerInfo.username}`);
+    let eventSource;
+    let retryCount = 0;
+    const maxRetries = 3;
+    const retryInterval = 5000; // 5초
 
-    eventSource.onmessage = (event) => {
-      const data = JSON.parse(event.data);
-      handleEvent(data);
+    const connectSSE = () => {
+        if (!sellerInfo?.username) {
+            console.log('판매자 정보가 없어 SSE 연결을 건너뜁니다.');
+            return;
+        }
+
+        try {
+            console.log('SSE 연결 시도:', sellerInfo.username);
+            eventSource = new EventSource(`http://localhost:8080/sse/seller?username=${encodeURIComponent(sellerInfo.username)}`, {
+                withCredentials: true
+            });
+
+            eventSource.onmessage = (event) => {
+                try {
+                    console.log('Received SSE event:', event);
+                    if (!event.data) {
+                        console.log('No data in event');
+                        return;
+                    }
+                    const data = JSON.parse(event.data);
+                    handleEvent(data);
+                } catch (error) {
+                    console.error('Error parsing SSE event:', error);
+                }
+            };
+
+            eventSource.addEventListener('createEstimateRequest', (event) => {
+                try {
+                    console.log('Received createEstimateRequest event:', event);
+                    const data = JSON.parse(event.data);
+                    console.log('견적요청이 도착했습니다:', data);
+                    setRequestedQuotes(prevState => [...prevState, data]);
+                } catch (error) {
+                    console.error('Error handling createEstimateRequest event:', error);
+                }
+            });
+
+            eventSource.addEventListener('adopt', (event) => {
+                try {
+                    console.log('Received adopt event:', event);
+                    const data = JSON.parse(event.data);
+                    console.log('작성한 견적이 채택됐습니다:', data);
+                    setWrittenQuotes(prevState => 
+                        prevState.map(quote =>
+                            quote.id === data.estimateId ? { ...quote, status: '채택됨' } : quote
+                        )
+                    );
+                } catch (error) {
+                    console.error('Error handling adopt event:', error);
+                }
+            });
+
+            eventSource.onerror = (error) => {
+                console.log('SSE 연결 상태:', eventSource.readyState);
+                
+                if (eventSource.readyState === EventSource.CONNECTING) {
+                    console.log('SSE 연결 시도 중...');
+                    return;
+                }
+
+                if (eventSource.readyState === EventSource.CLOSED) {
+                    console.log('SSE 연결이 닫혔습니다.');
+                    eventSource.close();
+
+                    if (retryCount < maxRetries) {
+                        console.log(`재연결 시도 ${retryCount + 1}/${maxRetries}...`);
+                        setTimeout(() => {
+                            retryCount++;
+                            connectSSE();
+                        }, retryInterval);
+                    } else {
+                        console.error('최대 재시도 횟수 초과');
+                        setChatError('SSE 연결 실패');
+                    }
+                }
+            };
+
+            eventSource.onopen = () => {
+                console.log('SSE 연결 성공');
+                retryCount = 0; // 연결 성공시 재시도 카운트 초기화
+            };
+
+        } catch (error) {
+            console.error('SSE 연결 중 에러 발생:', error);
+            if (retryCount < maxRetries) {
+                setTimeout(() => {
+                    retryCount++;
+                    connectSSE();
+                }, retryInterval);
+            }
+        }
     };
 
-    eventSource.onerror = (error) => {
-      console.error('EventSource failed: ', error);
-      setChatError('SSE 연결 실패');
-    };
+    // 판매자 정보가 있을 때만 SSE 연결 시도
+    if (sellerInfo?.username) {
+        console.log('판매자 정보 있음, SSE 연결 시도');
+        connectSSE();
+    } else {
+        console.log('판매자 정보 없음, SSE 연결 건너뜀');
+    }
 
     return () => {
-      eventSource.close();
+        if (eventSource) {
+            console.log('SSE 연결 정리');
+            eventSource.close();
+        }
     };
-  }, [sellerInfo.username]);
+}, [sellerInfo?.username]); // sellerInfo.username이 변경될 때만 실행
 
   // SSE 이벤트 처리
   const handleEvent = (data) => {
-    if (data.eventName === 'createEstimateRequest') {
-      // 견적 요청 이벤트 처리
-      console.log('견적요청이 도착했습니다:', data.message);
-      setRequestedQuotes(prevState => [...prevState, data.message]); // 실시간 견적 요청 추가
-    } else if (data.eventName === 'adopt') {
-      // 견적 채택 이벤트 처리
-      console.log('작성한 견적이 채택됐습니다:', data.message);
-      setWrittenQuotes(prevState => prevState.map(quote =>
-          quote.id === data.estimateId ? { ...quote, status: '채택됨' } : quote
-      )); // 실시간 견적 상태 업데이트
+    try {
+        console.log('Handling event:', data);
+        if (data.eventName === 'createEstimateRequest') {
+            console.log('견적요청이 도착했습니다:', data.message);
+            setRequestedQuotes(prevState => [...prevState, data.message]);
+        } else if (data.eventName === 'adopt') {
+            console.log('작성한 견적이 채택됐습니다:', data.message);
+            setWrittenQuotes(prevState => 
+                prevState.map(quote =>
+                    quote.id === data.estimateId ? { ...quote, status: '채택됨' } : quote
+                )
+            );
+        }
+    } catch (error) {
+        console.error('Error in handleEvent:', error);
     }
   };
 
@@ -168,18 +270,44 @@ export default function MyPage() {
     }
   };
 
-  const getSellerInfo = () => {
-    fetch("http://localhost:8080/seller", {
-      method: "GET",
-      credentials: "include",
-    })
-      .then((response) => {
-        return response.json();
-      })
-      .then((data) => {
-        setSellerInfo(data);
+  const getSellerInfo = async () => {
+    try {
+      console.log('판매자 정보 요청 시작');
+      const response = await fetch("http://localhost:8080/seller", {
+        method: "GET",
+        credentials: "include",
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json'
+        }
       });
-  }
+
+      console.log('서버 응답 상태:', response.status);
+      console.log('응답 헤더:', Object.fromEntries(response.headers.entries()));
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const data = await response.json();
+      console.log('받은 판매자 정보:', data);
+
+      if (!data) {
+        console.log('데이터가 없습니다');
+        return;
+      }
+
+      setSellerInfo(data);
+      return data;
+    } catch (error) {
+      console.error('판매자 정보 가져오기 실패:', error);
+      if (error.name === 'SyntaxError') {
+        console.error('JSON 파싱 에러 - 서버 응답이 올바른 JSON 형식이 아닙니다');
+      }
+      setError('판매자 정보를 가져오는데 실패했습니다.');
+      return null;
+    }
+  };
 
   const handleLogout = async (e) => {
     e.preventDefault();

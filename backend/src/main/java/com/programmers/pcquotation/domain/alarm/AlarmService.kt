@@ -22,18 +22,42 @@ class AlarmService(
 	private val estimateRequestRepository: EstimateRequestRepository
 ) {
 	
-	private val customerSseEmitterMap: Map<String, SseEmitter> = ConcurrentHashMap(
+	private val customerSseEmitterMap: MutableMap<String, SseEmitter> = ConcurrentHashMap(
 		customerRepository.findAll().stream().collect(
 			Collectors.toMap(
 				Customer::username,
-				Function { customer: Customer -> SseEmitter(Long.MAX_VALUE) })
+				Function { customer: Customer -> 
+					val emitter = SseEmitter(180000L) // 3분으로 타임아웃 설정
+					emitter.onCompletion {
+						customerSseEmitterMap.remove(customer.username)
+					}
+					emitter.onTimeout {
+						customerSseEmitterMap.remove(customer.username)
+					}
+					emitter.onError { 
+						customerSseEmitterMap.remove(customer.username)
+					}
+					emitter
+				})
 		)
 	)
-	private val sellerSseEmitterMap: Map<String, SseEmitter> = ConcurrentHashMap(
+	private val sellerSseEmitterMap: MutableMap<String, SseEmitter> = ConcurrentHashMap(
 		sellerRepository.findAll().stream().collect(
 			Collectors.toMap(
 				Seller::username,
-				Function { seller: Seller -> SseEmitter(Long.MAX_VALUE) })
+				Function { seller: Seller -> 
+					val emitter = SseEmitter(180000L) // 3분으로 타임아웃 설정
+					emitter.onCompletion {
+						sellerSseEmitterMap.remove(seller.username)
+					}
+					emitter.onTimeout {
+						sellerSseEmitterMap.remove(seller.username)
+					}
+					emitter.onError { 
+						sellerSseEmitterMap.remove(seller.username)
+					}
+					emitter
+				})
 		)
 	)
 	
