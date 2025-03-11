@@ -25,8 +25,9 @@ class Admin : Member {
         .map { role: String? -> SimpleGrantedAuthority(role) }
         .toList()
 
-    constructor(username: String, password: String) {
+    constructor(username: String, password: String, apiKey: String) {
         this.username = username
         this.password = password
+        this.apiKey = apiKey
     }
 }
