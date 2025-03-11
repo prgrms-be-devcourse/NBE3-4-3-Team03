@@ -39,7 +39,35 @@ const QuoteComponent = ({quote,onConfirm,onChat,onSelectQuote, onDelete, onEdit}
 
   }, [selected]);
 
-  return (
+
+    // SSE 연결
+    useEffect(() => {
+        const eventSource = new EventSource(`/sse/customer?estimateRequestId=${quote.id}`);
+
+        eventSource.onmessage = (event) => {
+            const data = JSON.parse(event.data);
+            handleEvent(data);
+        };
+
+        eventSource.onerror = (error) => {
+            console.error('EventSource failed: ', error);
+        };
+
+        return () => {
+            eventSource.close();
+        };
+    }, [quote.id]);
+
+    // SSE 이벤트 처리
+    const handleEvent = (data) => {
+        if (data.eventName === 'createEstimate') {
+            // 견적 생성 이벤트 처리
+            console.log('요청하신 견적이 도착했습니다:', data.message);
+            setReceivedQuotes(prevState => [...prevState, data.message]); // 실시간 견적 추가
+        }
+    };
+
+        return (
 
       <div key={quote.id}
            className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-sm"

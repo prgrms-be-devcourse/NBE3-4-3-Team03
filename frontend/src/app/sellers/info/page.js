@@ -59,9 +59,12 @@ export default function MyPage() {
     }
   }, [activeTab]);
 
+  // 판매자 정보 가져오기
+      useEffect(() => {
+        getSellerInfo();
+      }, []);
 
-
-  useEffect(() => {
+      useEffect(() => {
     const fetchData = async () => {
       setIsLoading(true);
       try {
@@ -91,7 +94,41 @@ export default function MyPage() {
     if (activeTab === 'requested' || activeTab === 'written') {
       fetchData();
     }
-  }, [activeTab]);
+  }, [activeTab, sellerInfo.id]);
+
+  // SSE 연결
+  useEffect(() => {
+    const eventSource = new EventSource(`/sse/seller?username=${sellerInfo.username}`);
+
+    eventSource.onmessage = (event) => {
+      const data = JSON.parse(event.data);
+      handleEvent(data);
+    };
+
+    eventSource.onerror = (error) => {
+      console.error('EventSource failed: ', error);
+      setChatError('SSE 연결 실패');
+    };
+
+    return () => {
+      eventSource.close();
+    };
+  }, [sellerInfo.username]);
+
+  // SSE 이벤트 처리
+  const handleEvent = (data) => {
+    if (data.eventName === 'createEstimateRequest') {
+      // 견적 요청 이벤트 처리
+      console.log('견적요청이 도착했습니다:', data.message);
+      setRequestedQuotes(prevState => [...prevState, data.message]); // 실시간 견적 요청 추가
+    } else if (data.eventName === 'adopt') {
+      // 견적 채택 이벤트 처리
+      console.log('작성한 견적이 채택됐습니다:', data.message);
+      setWrittenQuotes(prevState => prevState.map(quote =>
+          quote.id === data.estimateId ? { ...quote, status: '채택됨' } : quote
+      )); // 실시간 견적 상태 업데이트
+    }
+  };
 
 
   const getStatusStyle = (status) => {

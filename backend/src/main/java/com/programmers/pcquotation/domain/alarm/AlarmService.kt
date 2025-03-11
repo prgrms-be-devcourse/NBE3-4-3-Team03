@@ -4,6 +4,7 @@ import com.programmers.pcquotation.domain.customer.entity.Customer
 import com.programmers.pcquotation.domain.customer.repository.CustomerRepository
 import com.programmers.pcquotation.domain.estimate.entity.Estimate
 import com.programmers.pcquotation.domain.estimate.repository.EstimateRepository
+import com.programmers.pcquotation.domain.estimaterequest.repository.EstimateRequestRepository
 import com.programmers.pcquotation.domain.seller.entitiy.Seller
 import com.programmers.pcquotation.domain.seller.repository.SellerRepository
 import org.springframework.stereotype.Service
@@ -17,7 +18,8 @@ import java.util.stream.Collectors
 class AlarmService(
 	private val estimateRepository: EstimateRepository,
 	private val customerRepository: CustomerRepository,
-	private val sellerRepository: SellerRepository
+	private val sellerRepository: SellerRepository,
+	private val estimateRequestRepository: EstimateRequestRepository
 ) {
 	
 	private val customerSseEmitterMap: Map<String, SseEmitter> = ConcurrentHashMap(
@@ -80,7 +82,8 @@ class AlarmService(
 		}
 	}
 	
-	fun getCustomerEmitter(username: String): SseEmitter {
+	fun getCustomerEmitter(estimateRequestId: Int): SseEmitter {
+		val username = estimateRequestRepository.findById(estimateRequestId).orElseThrow().customer.username
 		return customerSseEmitterMap[username] ?: throw RuntimeException("Customer not found.")
 	}
 	

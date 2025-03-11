@@ -8,10 +8,12 @@ import org.springframework.web.servlet.mvc.method.annotation.SseEmitter
 
 @RestController
 @RequestMapping("/sse")
-class AlarmController (private val alarmService: AlarmService){
+class AlarmController (
+	private val alarmService: AlarmService
+){
 	@GetMapping("/customer")
-	fun getCustomerEmitter(@RequestParam username: String): SseEmitter {
-		return alarmService.getCustomerEmitter(username)
+	fun getCustomerEmitter(@RequestParam estimateRequestId: Int): SseEmitter {
+		return alarmService.getCustomerEmitter(estimateRequestId)
 	}
 	
 	@GetMapping("/seller")
