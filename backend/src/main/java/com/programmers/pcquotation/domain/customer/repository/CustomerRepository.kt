@@ -13,4 +13,5 @@ interface CustomerRepository : JpaRepository<Customer, Long> {
 
     fun findByApiKey(apiKey: String): Optional<Customer>
 	fun existsByUsername(username: String): Boolean
+	fun findByUsername(username: String): MutableList<Customer>
 }

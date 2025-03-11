@@ -1,4 +1,4 @@
-package com.programmers.pcquotation.domain.alarm;
+package com.programmers.pcquotation.domain.alarm.service;
 
 import java.io.IOException;
 

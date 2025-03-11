@@ -1,6 +1,6 @@
 package com.programmers.pcquotation.domain.estimaterequest.controller
 
-import com.programmers.pcquotation.domain.alarm.AlarmService
+import com.programmers.pcquotation.domain.alarm.service.AlarmService
 import com.programmers.pcquotation.domain.estimaterequest.dto.EstimateRequestData
 import com.programmers.pcquotation.domain.estimaterequest.dto.EstimateRequestResDto
 import com.programmers.pcquotation.domain.estimaterequest.service.EstimateRequestService
@@ -49,12 +49,11 @@ class EstimateRequestController(
     fun getEstimateRequest(principal: Principal): List<EstimateRequestResDto?>? {
         val type = rq.getCookieValue("userType")
         val userType = UserType.fromString(type)
-        var list: List<EstimateRequestResDto?>? = null
 
-        when (userType) {
+        val list = when (userType) {
             UserType.CUSTOMER -> {
                 val customer = estimateRequestService.findCustomer(principal.name)
-                list = estimateRequestService.getEstimateRequestByCustomerId(customer)
+                estimateRequestService.getEstimateRequestByCustomerId(customer)
             }
 
             UserType.SELLER -> estimateRequestService.getAllEstimateRequest()

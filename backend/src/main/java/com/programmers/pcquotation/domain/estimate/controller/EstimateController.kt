@@ -1,5 +1,6 @@
 package com.programmers.pcquotation.domain.estimate.controller
 
+import com.programmers.pcquotation.domain.alarm.service.AlarmService
 import com.programmers.pcquotation.domain.chat.service.ChatRoomService
 import com.programmers.pcquotation.domain.chat.service.ChatService
 import com.programmers.pcquotation.domain.estimate.dto.EstimateCreateRequest
@@ -18,7 +19,8 @@ import java.security.Principal
 class EstimateController(
     private val estimateService: EstimateService,
     private val chatService: ChatService,
-    private val chatRoomService: ChatRoomService
+    private val chatRoomService: ChatRoomService,
+    private val alarmService: AlarmService
 ) {
     @PostMapping
     fun createEstimate(
@@ -27,6 +29,7 @@ class EstimateController(
     ): ResponseEntity<String> {
         val estimate = estimateService.createEstimate(request, principal.name)
         chatRoomService.createChatRoom(estimate)
+        alarmService.createEstimateAlarmToCustomer(principal.name)
         return ResponseEntity.ok().body("")
     }
 

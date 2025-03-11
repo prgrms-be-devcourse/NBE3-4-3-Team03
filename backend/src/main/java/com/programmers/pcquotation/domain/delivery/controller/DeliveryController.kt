@@ -1,6 +1,6 @@
 package com.programmers.pcquotation.domain.delivery.controller
 
-import com.programmers.pcquotation.domain.alarm.AlarmService
+import com.programmers.pcquotation.domain.alarm.service.AlarmService
 import com.programmers.pcquotation.domain.delivery.entity.DeliveryCreateRequest
 import com.programmers.pcquotation.domain.delivery.entity.DeliveryDto
 import com.programmers.pcquotation.domain.delivery.service.DeliveryService
