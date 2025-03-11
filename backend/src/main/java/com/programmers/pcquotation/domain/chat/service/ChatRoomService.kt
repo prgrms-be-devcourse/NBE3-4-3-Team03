@@ -5,6 +5,7 @@ import com.programmers.pcquotation.domain.chat.repository.ChatRoomRepository
 import com.programmers.pcquotation.domain.estimate.entity.Estimate
 import com.programmers.pcquotation.domain.estimate.repository.EstimateRepository
 import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Transactional
 
 @Service
 class ChatRoomService(
@@ -17,8 +18,10 @@ class ChatRoomService(
         chatRoomRepository.save(chatRoom)
     }
 
-    fun deleteChatRoom(estimateId: Int) {
-        val estimate = estimateRepository.getEstimateById(estimateId)
+    @Transactional
+    fun deleteChatRoom(id: Int) {
+        val estimate = estimateRepository.findById(id)
+            .orElseThrow { NoSuchElementException("존재하지 않는 견적서입니다.") }
         chatRoomRepository.deleteByEstimate(estimate);
     }
 }
