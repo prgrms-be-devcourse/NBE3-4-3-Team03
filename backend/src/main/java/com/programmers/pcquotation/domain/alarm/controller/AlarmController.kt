@@ -1,6 +1,5 @@
 package com.programmers.pcquotation.domain.alarm.controller
 
-import com.programmers.pcquotation.domain.alarm.AlarmEntity
 import com.programmers.pcquotation.domain.alarm.service.AlarmService
 import org.springframework.security.core.annotation.AuthenticationPrincipal
 import org.springframework.security.core.userdetails.UserDetails
@@ -21,9 +20,5 @@ class AlarmController (
 		val sseEmitter: SseEmitter = alarmService.subscribe(userName)
 		return sseEmitter
 	}
-	
-	@GetMapping("/notifications")
-	fun getNotifications(@AuthenticationPrincipal userDetails: UserDetails): List<AlarmEntity> {
-		return alarmService.getNotifications(userDetails.username)
-	}
+
 }

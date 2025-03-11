@@ -1,74 +1,45 @@
 package com.programmers.pcquotation.domain.alarm.service
 
-import com.programmers.pcquotation.domain.alarm.AlarmEntity
-import com.programmers.pcquotation.domain.alarm.AlarmRepository
 import com.programmers.pcquotation.domain.estimate.entity.Estimate
 import com.programmers.pcquotation.domain.estimate.repository.EstimateRepository
 import com.programmers.pcquotation.domain.seller.entitiy.Seller
 import com.programmers.pcquotation.domain.seller.repository.SellerRepository
 import org.springframework.stereotype.Service
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter
+import java.io.IOException
 import java.util.concurrent.ConcurrentHashMap
 
 @Service
 class AlarmService(
 	private val estimateRepository: EstimateRepository,
-	private val sellerRepository: SellerRepository,
-	private val alarmRepository: AlarmRepository
+	private val sellerRepository: SellerRepository
 ) {
 	val sseEmitterMap: MutableMap<String, SseEmitter> = ConcurrentHashMap()
 
+	//최초 연결 로직
 	fun subscribe(userName: String): SseEmitter {
 		val sseEmitter = SseEmitter(Long.MAX_VALUE)
 		try {
-			sseEmitter.send(SseEmitter.event()
-				.name("connect")
-				.data("Connected successfully"))
-			
-			val unreadNotifications = alarmRepository
-				.findByReceiverNameAndIsReadOrderByIdDesc(userName, false)
-			
-			unreadNotifications.forEach { notification ->
-				sseEmitter.send(SseEmitter.event()
-					.name("unreadMessage")
-					.data(notification))
-				notification.isRead = true
-			}
-			alarmRepository.saveAll(unreadNotifications)
-			
-			sseEmitterMap[userName] = sseEmitter
-			
-			sseEmitter.onCompletion {
-				sseEmitterMap.remove(userName)
-			}
-			sseEmitter.onTimeout {
-				sseEmitter.complete()
-				sseEmitterMap.remove(userName)
-			}
-			sseEmitter.onError { e ->
-				sseEmitter.complete()
-				sseEmitterMap.remove(userName)
-			}
-			
-		} catch (e: Exception) {
-			sseEmitter.completeWithError(e)
-			sseEmitterMap.remove(userName)
-			throw e
+			sseEmitter.send(SseEmitter.event().name("connect"))
+		} catch (e: IOException) {
+			e.printStackTrace()
 		}
+		sseEmitter.onCompletion { sseEmitterMap.remove(userName) }
+		sseEmitter.onTimeout { sseEmitterMap.remove(userName) }
+		sseEmitter.onError { e: Throwable? -> sseEmitterMap.remove(userName) }
 		
 		return sseEmitter
 	}
 	
+	//구매자가 견적요청을 생성하면 판매자에게 알림을보냄
 	fun createEstimateRequestAlarmToAllSeller() {
 		val sellerList:List<Seller> = sellerRepository.findAll()
 		
 		for(seller in sellerList){
-			val message = "견적요청이 왔습니다."
 			if(sseEmitterMap.containsKey(seller.username)){
 				val sseEmitterReceiver: SseEmitter? = sseEmitterMap[seller.username]
 				try {
-					sseEmitterReceiver?.send(SseEmitter.event().name("addMessage").data(message))
-					saveNotification(seller.username.toString(), message)
+					sseEmitterReceiver?.send(SseEmitter.event().name("addMessage").data("견적요청이 왔습니다."))
 				} catch (e: Exception) {
 					sseEmitterMap.remove(seller.username)
 				}
@@ -76,60 +47,31 @@ class AlarmService(
 		}
 	}
 	
+	//구매자가 견적을 채택하면 판매자에게 알림을 보냄
 	fun adoptAlarmToSeller(estimateId:Int) {
 		val estimate:Estimate = estimateRepository.findById(estimateId).orElseThrow()
-		
 		val sellerName:String = estimate.seller.username.toString()
-		val message ="견적이 채댁됐습니다."
 		
 		if(sseEmitterMap.containsKey(sellerName)){
 			val sseEmitterReceiver: SseEmitter? = sseEmitterMap[sellerName]
 			try {
-				sseEmitterReceiver?.send(SseEmitter.event().name("addMessage").data(message))
-				saveNotification(sellerName, message)
+				sseEmitterReceiver?.send(SseEmitter.event().name("addMessage").data("견적이 채댁됐습니다."))
 			} catch (e: Exception) {
 				sseEmitterMap.remove(sellerName)
 			}
 		}
 	}
 	
+	//판매자가 견적을 작성하면 구매자에게 알림을 보냄
 	fun createEstimateAlarmToCustomer(customerName:String) {
-		val message ="견적이 생성됐습니다."
 		if(sseEmitterMap.containsKey(customerName)){
 			val sseEmitterReceiver: SseEmitter? = sseEmitterMap[customerName]
 			try {
-				sseEmitterReceiver?.send(SseEmitter.event().name("addMessage").data(message))
-				saveNotification(customerName, message)
+				sseEmitterReceiver?.send(SseEmitter.event().name("addMessage").data("견적이 생성됐습니다."))
 			} catch (e: Exception) {
 				sseEmitterMap.remove(customerName)
 			}
 		}
 	}
-	private fun saveNotification(receiverName: String, message: String) {
-		val alarmEntity = AlarmEntity(
-			receiverName = receiverName,
-			message = message)
-		alarmRepository.save(alarmEntity)
-	}
-	
-	fun getNotifications(username: String): List<AlarmEntity> {
-		return alarmRepository.findByReceiverNameAndIsReadOrderByIdDesc(username, false)
-	}
 
-	private fun sendNotification(userName: String, message: String) {
-		if (sseEmitterMap.containsKey(userName)) {
-			try {
-				val sseEmitter = sseEmitterMap[userName]
-				sseEmitter?.send(SseEmitter.event()
-					.name("addMessage")
-					.data(AlarmEntity(
-						receiverName = userName,
-						message = message
-					)))
-			} catch (e: Exception) {
-				sseEmitterMap.remove(userName)
-			}
-		}
-		saveNotification(userName, message)
-	}
 }
