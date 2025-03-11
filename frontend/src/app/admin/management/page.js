@@ -1,5 +1,6 @@
 'use client';
 import React, { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 
 const ItemModal = ({ isOpen, onClose, onSubmit, item, categories }) => {
     const [name, setName] = useState('');
@@ -92,6 +93,7 @@ const ItemModal = ({ isOpen, onClose, onSubmit, item, categories }) => {
 };
 
 export default function ItemList() {
+    const router = useRouter();
     const [categories, setCategories] = useState([]);
     const [items, setItems] = useState([]);
     const [selectedCategory, setSelectedCategory] = useState(null);
@@ -305,9 +307,34 @@ export default function ItemList() {
         });
     }
 
+    const handleLogout = async () => {
+        try {
+            const response = await fetch("http://localhost:8080/api/auth/logout", {
+                method: 'POST',
+                credentials: 'include'
+            });
+
+            if (response.ok) {
+                router.replace("/admin/login");
+            }
+        } catch (error) {
+            console.error('로그아웃 실패:', error);
+        }
+    };
+
     return (
         <div className="min-h-screen bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-white p-8">
-            <h1 className="text-3xl font-bold text-center mb-8">관리자 페이지</h1>
+            <div className="relative mb-6">
+                <div className="absolute right-0">
+                    <button
+                        onClick={handleLogout}
+                        className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
+                    >
+                        로그아웃
+                    </button>
+                </div>
+                <h1 className="text-3xl font-bold dark:text-white text-center">관리자 페이지</h1>
+            </div>
 
             {/* 카테고리 추가, 수정, 삭제 버튼 */}
             <div className="flex justify-center mb-6 gap-2">

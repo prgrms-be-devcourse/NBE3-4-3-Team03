@@ -28,7 +28,12 @@ export default function MyPage() {
   const [chatError, setChatError] = useState(null);
   const messagesEndRef = useRef(null);
 
-
+  const [page, setPage] = useState(0);
+  const [size, setSize] = useState(5);
+  const [totalPages, setTotalPages] = useState(0);
+  const [writtenPage, setWrittenPage] = useState(0);
+  const [writtenSize, setWrittenSize] = useState(5);
+  const [writtenTotalPages, setWrittenTotalPages] = useState(0);
 
   useEffect(() => {
     getSellerInfo()
@@ -66,21 +71,23 @@ export default function MyPage() {
       setIsLoading(true);
       try {
         if (activeTab === 'requested') {
-          const response = await fetch('http://localhost:8080/estimate/request', {
+          const response = await fetch(`http://localhost:8080/estimate/request?page=${page}&size=${size}`, {
             credentials: 'include'
           });
           if (!response.ok) throw new Error('견적 데이터를 불러오는데 실패했습니다');
           const data = await response.json();
           console.log('요청받은 견적 데이터:', data);
-          setRequestedQuotes(data);
+          setRequestedQuotes(data.content);
+          setTotalPages(data.totalPages);
         } else if (activeTab === 'written') {
-          const response = await fetch(`http://localhost:8080/api/estimate/seller/${sellerInfo.id}`, {
+          const response = await fetch(`http://localhost:8080/api/estimate/seller/${sellerInfo.id}?page=${writtenPage}&size=${writtenSize}`, {
             credentials: 'include'
           });
           if (!response.ok) throw new Error('작성한 견적 데이터를 불러오는데 실패했습니다');
           const data = await response.json();
           console.log('작성한 견적 데이터:', data);
-          setWrittenQuotes(data);
+          setWrittenQuotes(data.content || []);
+          setWrittenTotalPages(data.totalPages || 0);
         }
       } catch (err) {
         setError(err.message);
@@ -91,7 +98,7 @@ export default function MyPage() {
     if (activeTab === 'requested' || activeTab === 'written') {
       fetchData();
     }
-  }, [activeTab]);
+  }, [activeTab, page, size, writtenPage, writtenSize, sellerInfo.id]);
 
 
   const getStatusStyle = (status) => {
@@ -362,6 +369,83 @@ const fetchComments = async (estimateId) => {
     setChatMessages([]);
   };
 
+  const renderPagination = (currentPage, totalPages, setPageFunction) => {
+    const pageNumbers = [];
+    const maxVisiblePages = 5;
+    let startPage = Math.max(0, currentPage - Math.floor(maxVisiblePages / 2));
+    let endPage = Math.min(totalPages - 1, startPage + maxVisiblePages - 1);
+
+    if (endPage - startPage + 1 < maxVisiblePages) {
+      startPage = Math.max(0, endPage - maxVisiblePages + 1);
+    }
+
+    for (let i = startPage; i <= endPage; i++) {
+      pageNumbers.push(i);
+    }
+
+    return (
+      <div className="flex justify-center mt-6 gap-2">
+        <button
+          onClick={() => setPageFunction(0)}
+          disabled={currentPage === 0}
+          className={`px-3 py-1 rounded-md ${
+            currentPage === 0
+              ? 'bg-gray-200 text-gray-500 dark:bg-gray-700 dark:text-gray-400 cursor-not-allowed'
+              : 'bg-blue-500 text-white hover:bg-blue-600 dark:bg-blue-600 dark:hover:bg-blue-700'
+          }`}
+        >
+          처음
+        </button>
+        <button
+          onClick={() => setPageFunction(prev => Math.max(0, prev - 1))}
+          disabled={currentPage === 0}
+          className={`px-3 py-1 rounded-md ${
+            currentPage === 0
+              ? 'bg-gray-200 text-gray-500 dark:bg-gray-700 dark:text-gray-400 cursor-not-allowed'
+              : 'bg-blue-500 text-white hover:bg-blue-600 dark:bg-blue-600 dark:hover:bg-blue-700'
+          }`}
+        >
+          이전
+        </button>
+        {pageNumbers.map(number => (
+          <button
+            key={number}
+            onClick={() => setPageFunction(number)}
+            className={`px-3 py-1 rounded-md ${
+              currentPage === number
+                ? 'bg-blue-500 text-white dark:bg-blue-600'
+                : 'bg-gray-200 text-gray-700 hover:bg-gray-300 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600'
+            }`}
+          >
+            {number + 1}
+          </button>
+        ))}
+        <button
+          onClick={() => setPageFunction(prev => Math.min(totalPages - 1, prev + 1))}
+          disabled={currentPage >= totalPages - 1}
+          className={`px-3 py-1 rounded-md ${
+            currentPage >= totalPages - 1
+              ? 'bg-gray-200 text-gray-500 dark:bg-gray-700 dark:text-gray-400 cursor-not-allowed'
+              : 'bg-blue-500 text-white hover:bg-blue-600 dark:bg-blue-600 dark:hover:bg-blue-700'
+          }`}
+        >
+          다음
+        </button>
+        <button
+          onClick={() => setPageFunction(totalPages - 1)}
+          disabled={currentPage >= totalPages - 1}
+          className={`px-3 py-1 rounded-md ${
+            currentPage >= totalPages - 1
+              ? 'bg-gray-200 text-gray-500 dark:bg-gray-700 dark:text-gray-400 cursor-not-allowed'
+              : 'bg-blue-500 text-white hover:bg-blue-600 dark:bg-blue-600 dark:hover:bg-blue-700'
+          }`}
+        >
+          마지막
+        </button>
+      </div>
+    );
+  };
+
   return (
       <div className="min-h-screen p-8 dark:bg-gray-900">
         <h1 className="text-2xl font-bold mb-8 dark:text-white">판매자 페이지</h1>
@@ -464,6 +548,9 @@ const fetchComments = async (estimateId) => {
                           );
                         })
                     )}
+                    
+                    {/* 페이지네이션 컨트롤 */}
+                    {renderPagination(page, totalPages, setPage)}
                   </div>
               )}
             </div>
@@ -471,101 +558,90 @@ const fetchComments = async (estimateId) => {
 
         {/* 작성한 견적 탭 */}
         {activeTab === 'written' && (
-            <div>
-              {isLoading ? (
-                  <div className="text-center py-8 dark:text-white">로딩중...</div>
-              ) : error ? (
-                  <div className="text-center py-8 text-red-500">{error}</div>
-              ) : (
-                  <div className="space-y-8">
-                    {writtenQuotes.length === 0 ? (
-                        <div className="text-center py-8 dark:text-white">작성한 견적이 없습니다.</div>
-                    ) : (
-                        writtenQuotes.map(quote => {
-                          const delivery = deliveryInfo[quote.id]|| {};
-                          const requestStatus = delivery.status || 'Wait';
-                          const statusStyle = getStatusStyle(requestStatus);
-                        
-                          return (
-                              <div key={quote.id} className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-sm">
-                                <div className="flex justify-between items-center mb-4">
-                                  <div className="flex items-center gap-3">
-                                    <span className="text-lg font-semibold dark:text-white">견적 #{quote.id}</span>
-                                    <span className={`px-2 py-1 rounded-full text-sm ${statusStyle.bgColor} ${statusStyle.textColor}`}>
+            <div className="space-y-4">
+              {writtenQuotes.map((quote) => {
+                const delivery = deliveryInfo[quote.id]|| {};
+                const requestStatus = delivery.status || 'Wait';
+                const statusStyle = getStatusStyle(requestStatus);
+              
+                return (
+                    <div key={quote.id} className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-sm">
+                      <div className="flex justify-between items-center mb-4">
+                        <div className="flex items-center gap-3">
+                          <span className="text-lg font-semibold dark:text-white">견적 #{quote.id}</span>
+                          <span className={`px-2 py-1 rounded-full text-sm ${statusStyle.bgColor} ${statusStyle.textColor}`}>
                             {statusStyle.text}
                           </span>
-                                  </div>
-                                  <div className="flex gap-2">
-                                    <button
-                                        className="px-3 py-1 rounded-lg border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
-                                        onClick={() => {
-                                          router.push(`/estimate/update?estimateId=${quote.id}&requestId=${quote.estimateRequestId}&customerName=${quote.customerName}&budget=${quote.budget}&purpose=${quote.purpose}&createDate=${quote.createdDate}`);
-                                        }}
-                                    >
-                                      수정
-                                    </button>
-                                    <button
-                                        className="px-3 py-1 rounded-lg border border-red-300 dark:border-red-800 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/30 transition-colors"
-                                        onClick={async () => {
-                                          if (window.confirm('정말로 이 견적을 삭제하시겠습니까?')) {
-                                            try {
-                                              const response = await fetch(`http://localhost:8080/api/estimate/${quote.id}`, {
-                                                method: 'DELETE',
-                                                credentials: 'include'
-                                              });
+                        </div>
+                        <div className="flex gap-2">
+                          <button
+                              className="px-3 py-1 rounded-lg border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+                              onClick={() => {
+                                router.push(`/estimate/update?estimateId=${quote.id}&requestId=${quote.estimateRequestId}&customerName=${quote.customerName}&budget=${quote.budget}&purpose=${quote.purpose}&createDate=${quote.createdDate}`);
+                              }}
+                          >
+                            수정
+                          </button>
+                          <button
+                              className="px-3 py-1 rounded-lg border border-red-300 dark:border-red-800 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/30 transition-colors"
+                              onClick={async () => {
+                                if (window.confirm('정말로 이 견적을 삭제하시겠습니까?')) {
+                                  try {
+                                    const response = await fetch(`http://localhost:8080/api/estimate/${quote.id}`, {
+                                      method: 'DELETE',
+                                      credentials: 'include'
+                                    });
 
-                                              if (!response.ok) {
-                                                throw new Error('견적 삭제에 실패했습니다');
-                                              }
-                                              setWrittenQuotes(prev => prev.filter(q => q.id !== quote.id));
-                                            } catch (error) {
-                                              console.error('견적 삭제 오류:', error);
-                                              alert('견적 삭제 중 오류가 발생했습니다.');
-                                            }
-                                          }
-                                        }}
-                                    >
-                                      삭제
-                                    </button>
-                                    <button
-                                        className="px-3 py-1 rounded-lg border border-purple-300 dark:border-purple-800 text-purple-600 dark:text-purple-400 hover:bg-purple-50 dark:hover:bg-purple-900/30 transition-colors"
-                                        onClick={() => handleOpenChat(quote)}
-                                    >
-                                      문의하기
-                                    </button>
-                                  </div>
-                                </div>
-                                <div className="grid grid-cols-2 gap-2 text-sm mb-6">
-                                  <div className="text-gray-600 dark:text-gray-400">요청자</div>
-                                  <div className="dark:text-white">{quote.customerName}</div>
-                                  <div className="text-gray-600 dark:text-gray-400">요청일</div>
-                                  <div className="dark:text-white">{new Date(quote.createdDate).toLocaleDateString()}</div>
-                                  <div className="text-gray-600 dark:text-gray-400">용도</div>
-                                  <div className="dark:text-white">{quote.purpose}</div>
-                                  <div className="text-gray-600 dark:text-gray-400">예산</div>
-                                  <div className="dark:text-white">{quote.budget.toLocaleString()}원</div>
-                                  <div className="text-gray-600 dark:text-gray-400">총 견적금액</div>
-                                  <div className="dark:text-white">{quote.totalPrice.toLocaleString()}원</div>
-                                  <div className="text-gray-600 dark:text-gray-400">배송 주소</div>
-                                  <div className="dark:text-white">{delivery?.address || '배송 정보 없음'}</div>
-                                </div>
-                                <div className="border dark:border-gray-700 rounded-lg p-4">
-                                  <h4 className="font-medium mb-3 dark:text-white">견적 구성</h4>
-                                  <div className="grid grid-cols-2 gap-2 text-sm">
-                                    {quote.items.map((item, index) => (
-                                        <div key={`${quote.id}-${index}`} className="col-span-2 grid grid-cols-2">
-                                          <div className="text-gray-600 dark:text-gray-400">{item.categoryName}</div>
-                                          <div className="dark:text-white">{item.itemName}</div>
-                                        </div>
-                                    ))}
-                                  </div>
-                                </div>
+                                    if (!response.ok) {
+                                      throw new Error('견적 삭제에 실패했습니다');
+                                    }
+                                    setWrittenQuotes(prev => prev.filter(q => q.id !== quote.id));
+                                  } catch (error) {
+                                    console.error('견적 삭제 오류:', error);
+                                    alert('견적 삭제 중 오류가 발생했습니다.');
+                                  }
+                                }
+                              }}
+                          >
+                            삭제
+                          </button>
+                          <button
+                              className="px-3 py-1 rounded-lg border border-purple-300 dark:border-purple-800 text-purple-600 dark:text-purple-400 hover:bg-purple-50 dark:hover:bg-purple-900/30 transition-colors"
+                              onClick={() => handleOpenChat(quote)}
+                          >
+                            문의하기
+                          </button>
+                        </div>
+                      </div>
+                      <div className="grid grid-cols-2 gap-2 text-sm mb-6">
+                        <div className="text-gray-600 dark:text-gray-400">요청자</div>
+                        <div className="dark:text-white">{quote.customerName}</div>
+                        <div className="text-gray-600 dark:text-gray-400">요청일</div>
+                        <div className="dark:text-white">{new Date(quote.createdDate).toLocaleDateString()}</div>
+                        <div className="text-gray-600 dark:text-gray-400">용도</div>
+                        <div className="dark:text-white">{quote.purpose}</div>
+                        <div className="text-gray-600 dark:text-gray-400">예산</div>
+                        <div className="dark:text-white">{quote.budget.toLocaleString()}원</div>
+                        <div className="text-gray-600 dark:text-gray-400">총 견적금액</div>
+                        <div className="dark:text-white">{quote.totalPrice.toLocaleString()}원</div>
+                        <div className="text-gray-600 dark:text-gray-400">배송 주소</div>
+                        <div className="dark:text-white">{delivery?.address || '배송 정보 없음'}</div>
+                      </div>
+                      <div className="border dark:border-gray-700 rounded-lg p-4">
+                        <h4 className="font-medium mb-3 dark:text-white">견적 구성</h4>
+                        <div className="grid grid-cols-2 gap-2 text-sm">
+                          {quote.items.map((item, index) => (
+                              <div key={`${quote.id}-${index}`} className="col-span-2 grid grid-cols-2">
+                                <div className="text-gray-600 dark:text-gray-400">{item.categoryName}</div>
+                                <div className="dark:text-white">{item.itemName}</div>
                               </div>
-                          );
-                        })
-                    )}
-                  </div>
-              )}
+                          ))}
+                        </div>
+                      </div>
+                    </div>
+                );
+              })}
+              {renderPagination(writtenPage, writtenTotalPages, setWrittenPage)}
             </div>
         )}
 
