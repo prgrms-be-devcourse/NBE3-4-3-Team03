@@ -66,7 +66,7 @@ class InitData(
             verificationQuestion = "사과는",
             verificationAnswer = "빨간색"
         )
-        authService.processSignup(sellerSignupRequest)
+        authService.processSellerSignup(sellerSignupRequest)
     }
 
     private fun insertCustomer() {
@@ -80,7 +80,7 @@ class InitData(
             verificationQuestion = "바나나는",
             verificationAnswer = "노란색"
         )
-        authService.processSignup(customerSignupRequest)
+        authService.processCustomerSignup(customerSignupRequest)
     }
 
     fun insertCPU() {
