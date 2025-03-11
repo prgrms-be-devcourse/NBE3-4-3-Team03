@@ -73,6 +73,9 @@ jobs:
           BUSINESS_ENCODING_KEY: ${{ secrets.BUSINESS_ENCODING_KEY }}          
         run: ./gradlew build --no-daemon -x test
 
+      - name: Clean Gradle Cache
+        run: ./gradlew clean
+
       - name: 테스트 실행
         working-directory: backend
         env:
