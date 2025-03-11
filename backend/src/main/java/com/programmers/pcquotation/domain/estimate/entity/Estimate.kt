@@ -26,8 +26,7 @@ class Estimate(
 	var createDate: LocalDateTime = LocalDateTime.now(),
 
 	@OneToMany(mappedBy = "estimate", cascade = [CascadeType.ALL], orphanRemoval = true)
-	var comments: List<Comment> = ArrayList()
-
+	var comments: List<Comment> = ArrayList(),
 
 ) {
 	val estimateComponents: List<EstimateComponent>

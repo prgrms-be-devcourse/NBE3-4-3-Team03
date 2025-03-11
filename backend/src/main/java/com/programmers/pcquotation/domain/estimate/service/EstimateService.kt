@@ -9,6 +9,8 @@ import com.programmers.pcquotation.domain.estimaterequest.service.EstimateReques
 import com.programmers.pcquotation.domain.item.service.ItemService
 import com.programmers.pcquotation.domain.seller.entitiy.Seller
 import com.programmers.pcquotation.domain.seller.service.SellerService
+import org.springframework.data.domain.Page
+import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
@@ -39,10 +41,10 @@ class EstimateService(
         return estimateRepository.save(estimate)
     }
 
-    fun getEstimatesByEstimateRequest(estimateRequestId: Int): List<EstimateResponse> {
+    fun getEstimatesByEstimateRequest(estimateRequestId: Int, sortType: EstimateSortType = EstimateSortType.LATEST): List<EstimateResponse> {
         val estimates = estimateRepository.getAllByEstimateRequestId(estimateRequestId)
 
-        return estimates.map { estimate ->
+        val estimateResponses = estimates.map { estimate ->
             with(estimate) {
                 EstimateResponse(
                     id = estimate.id,
@@ -56,15 +58,19 @@ class EstimateService(
                 )
             }
         }
+
+        return when (sortType) {
+            EstimateSortType.LATEST -> estimateResponses.sortedByDescending { it.createdDate }
+            EstimateSortType.PRICE_ASC -> estimateResponses.sortedBy { it.totalPrice }
+            EstimateSortType.PRICE_DESC -> estimateResponses.sortedByDescending { it.totalPrice }
+        }
     }
 
-    fun getEstimatesBySeller(id: Int): List<EstimateResponse> {
+    fun getEstimatesBySeller(id: Int, pageable: Pageable): Page<EstimateResponse> {
         val seller = sellerService.findById(id.toLong())
             .orElseThrow { NoSuchElementException("존재하지 않는 판매자입니다.") } as Seller
 
-        val estimates = estimateRepository.getAllBySeller(seller)
-
-        return estimates.map { estimate ->
+        return estimateRepository.findAllBySeller(seller, pageable).map { estimate ->
             with(estimate) {
                 EstimateResponse(
                     id = estimate.id,
@@ -119,10 +125,13 @@ class EstimateService(
         }
     }
 
-    private fun getItemInfoFromComponents(estimateComponents: List<EstimateComponent>): List<ItemInfoDto> {
-        return estimateComponents.map { estimateComponent ->
-            with(estimateComponent.item) {
-                ItemInfoDto(categoryName = category.category, itemName = name)
+    private fun getItemInfoFromComponents(components: List<EstimateComponent>): List<ItemInfoDto> {
+        return components.map { component ->
+            with(component.item) {
+                ItemInfoDto(
+                    categoryName = category.category,
+                    itemName = name
+                )
             }
         }
     }
