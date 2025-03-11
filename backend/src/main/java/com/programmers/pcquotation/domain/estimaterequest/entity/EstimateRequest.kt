@@ -41,7 +41,7 @@ class EstimateRequest @JvmOverloads constructor(
         this.otherRequest = estimateRequestData.otherRequest
     }
 
-    fun updateDeliveryStatus(estimateRequestStatus: EstimateRequestStatus) {
+    fun updateEstimateRequestStatus(estimateRequestStatus: EstimateRequestStatus) {
         this.status = estimateRequestStatus
     }
 

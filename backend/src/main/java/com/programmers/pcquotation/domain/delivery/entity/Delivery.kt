@@ -8,7 +8,7 @@ import jakarta.persistence.*
 @Entity
 class Delivery @JvmOverloads constructor(
     @JsonIgnore
-    @OneToOne(fetch = FetchType.LAZY, cascade = [CascadeType.ALL])
+    @OneToOne(fetch = FetchType.LAZY, cascade = [CascadeType.ALL, CascadeType.REMOVE])
     val estimate: Estimate,
 
     @Column(length = 50)

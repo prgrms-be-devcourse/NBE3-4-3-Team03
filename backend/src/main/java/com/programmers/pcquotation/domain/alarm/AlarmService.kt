@@ -23,22 +23,22 @@ class AlarmService(
 	private val customerSseEmitterMap: Map<String, SseEmitter> = ConcurrentHashMap(
 		customerRepository.findAll().stream().collect(
 			Collectors.toMap(
-				Customer::customerName,
+				Customer::username,
 				Function { customer: Customer -> SseEmitter(Long.MAX_VALUE) })
 		)
 	)
 	private val sellerSseEmitterMap: Map<String, SseEmitter> = ConcurrentHashMap(
 		sellerRepository.findAll().stream().collect(
 			Collectors.toMap(
-				Seller::companyName,
+				Seller::username,
 				Function { seller: Seller -> SseEmitter(Long.MAX_VALUE) })
 		)
 	)
 	
 	fun createEstimateAlarmToCustomer(estimate: Estimate) {
 		val estimateRequest = estimate.estimateRequest
-		val customerName = estimateRequest.customer.customerName
-		if (customerRepository.existsByUsername(customerName)) {
+		val customerName = estimateRequest.customer.username
+		if (customerRepository.existsByUsername(customerName.toString())) {
 			val sseEmitterReceiver = customerSseEmitterMap[customerName]
 			alarmTemplate {
 				sseEmitterReceiver!!.send(
@@ -61,8 +61,8 @@ class AlarmService(
 	
 	fun adoptAlarmToSeller(estimateId: Int) {
 		val estimate = estimateRepository.findById(estimateId).orElseThrow()
-		val sellerName = estimate.seller.companyName
-		if (sellerRepository.existsByUsername(sellerName)) {
+		val sellerName = estimate.seller.username
+		if (sellerRepository.existsByUsername(sellerName.toString())) {
 			val sseEmitterReceiver = sellerSseEmitterMap[sellerName]
 			alarmTemplate {
 				sseEmitterReceiver!!.send(
@@ -78,5 +78,13 @@ class AlarmService(
 		} catch (e: IOException) {
 			throw RuntimeException(e)
 		}
+	}
+	
+	fun getCustomerEmitter(username: String): SseEmitter {
+		return customerSseEmitterMap[username] ?: throw RuntimeException("Customer not found.")
+	}
+	
+	fun getSellerEmitter(username: String): SseEmitter {
+		return sellerSseEmitterMap[username] ?: throw RuntimeException("Seller not found.")
 	}
 }

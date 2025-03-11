@@ -46,7 +46,7 @@ class EstimateRequestController(
     }
 
     @GetMapping
-    fun getEstimateRequest(principal: Principal): ResponseEntity<List<EstimateRequestResDto?>?> {
+    fun getEstimateRequest(principal: Principal): List<EstimateRequestResDto?>? {
         val type = rq.getCookieValue("userType")
         val userType = UserType.fromString(type)
         var list: List<EstimateRequestResDto?>? = null
@@ -62,6 +62,6 @@ class EstimateRequestController(
             UserType.ADMIN -> emptyList<EstimateRequestResDto>()
             UserType.NOTHING -> emptyList<EstimateRequestResDto>()
         }
-        return ResponseEntity(list, HttpStatus.OK)
+        return list
     }
 }

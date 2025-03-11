@@ -20,6 +20,7 @@ class DeliveryServiceByJpa(
     //배달 생성을 통해 채택된 상태로 변경
     override fun create(deliveryCreateRequest:DeliveryCreateRequest, estimateId: Int) {
         val estimate = estimateRepository.getEstimateById(estimateId)
+        estimate.estimateRequest.updateEstimateRequestStatus(EstimateRequestStatus.Adopt)
         val delivery = Delivery(estimate, deliveryCreateRequest.address)
         deliveryRepository.save(delivery)
     }
@@ -40,7 +41,7 @@ class DeliveryServiceByJpa(
     //배달 삭제 로직을 통해 견적 요청 상태가 초기값으로 돌아가게함
     override fun deleteByDeliveryId(id: Int) {
         val delivery = deliveryRepository.findById(id).orElseThrow { NullEntityException() }
-        delivery.estimate.estimateRequest.updateDeliveryStatus(EstimateRequestStatus.Wait)
+        delivery.estimate.estimateRequest.updateEstimateRequestStatus(EstimateRequestStatus.Wait)
         deliveryRepository.delete(delivery)
     }
 
