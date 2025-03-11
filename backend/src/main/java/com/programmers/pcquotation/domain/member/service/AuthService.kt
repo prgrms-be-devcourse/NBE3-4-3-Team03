@@ -40,7 +40,7 @@ class AuthService(
 ) {
 
 
-    fun processSignup(customerSignupRequest: CustomerSignupRequest): CustomerSignupResponse {
+    fun processCustomerSignup(customerSignupRequest: CustomerSignupRequest): CustomerSignupResponse {
         if (customerSignupRequest.password != customerSignupRequest.confirmPassword) {
             throw PasswordMismatchException()
         }
@@ -63,7 +63,7 @@ class AuthService(
         return CustomerSignupResponse(customer, "회원가입 성공")
     }
 
-    fun processSignup(sellerSignupRequest: SellerSignupRequest): SellerSignupResponse {
+    fun processSellerSignup(sellerSignupRequest: SellerSignupRequest): SellerSignupResponse {
         if (sellerSignupRequest.password != sellerSignupRequest.confirmPassword) {
             throw PasswordMismatchException()
         }
@@ -141,7 +141,7 @@ class AuthService(
         }
         val accessToken = this.getAccessToken(admin)
         rq.setCookie("accessToken", accessToken)
-        rq.setCookie("apiKey", admin.apiKey?: throw Exception("ApiKey가 존재하지 않습니다."))
+        rq.setCookie("apiKey", admin.apiKey ?: throw Exception("ApiKey가 존재하지 않습니다."))
         rq.setCookie("userType", ADMIN.value)
 
 

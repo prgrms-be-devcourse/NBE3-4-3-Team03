@@ -49,7 +49,13 @@ class Customer : Member{
         this.verificationAnswer = customerSignupRequest.verificationAnswer
         this.apiKey = apiKey
     }
-
+    constructor(username: String, password: String,customerName: String,email: String,apiKey:String) {
+        this.username =  username
+        this.password = password
+        this.customerName = customerName
+        this.email = email
+        this.apiKey = apiKey
+    }
     constructor(
         username: String?,
         password: String?,

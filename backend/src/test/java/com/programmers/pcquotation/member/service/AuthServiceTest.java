@@ -51,7 +51,7 @@ public class AuthServiceTest {
                 "밥"
         );
 
-        assertThrows(PasswordMismatchException.class, () -> authService.processSignup(customerSignupRequest));
+        assertThrows(PasswordMismatchException.class, () -> authService.processCustomerSignup(customerSignupRequest));
     }
 
     @Test
@@ -69,7 +69,7 @@ public class AuthServiceTest {
         Customer customer = customerSignupRequest.toCustomer();
         when(customerRepository.getCustomerByUsername(customerSignupRequest.getUsername())).thenReturn(Optional.of(customer));
 
-        assertThrows(CustomerAlreadyExistException.class, () -> authService.processSignup(customerSignupRequest));
+        assertThrows(CustomerAlreadyExistException.class, () -> authService.processCustomerSignup(customerSignupRequest));
     }
 
     @Test
@@ -87,7 +87,7 @@ public class AuthServiceTest {
         Customer customer = customerSignupRequest.toCustomer();
         when(customerRepository.getCustomerByEmail(customerSignupRequest.getEmail())).thenReturn(Optional.of(customer));
 
-        assertThrows(CustomerAlreadyExistException.class, () -> authService.processSignup(customerSignupRequest));
+        assertThrows(CustomerAlreadyExistException.class, () -> authService.processCustomerSignup(customerSignupRequest));
     }
 
 

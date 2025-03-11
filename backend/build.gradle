@@ -67,6 +67,10 @@ dependencies {
     // Jsoup & CSV
     implementation 'org.jsoup:jsoup:1.15.3'
     implementation 'com.opencsv:opencsv:5.7.1'
+
+
+    //oauth2-client
+    implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
 }
 
 tasks.named('test') {
