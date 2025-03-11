@@ -10,6 +10,7 @@ import com.programmers.pcquotation.domain.estimate.service.EstimateService
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.security.access.prepost.PreAuthorize
+import org.springframework.transaction.annotation.Transactional
 import org.springframework.web.bind.annotation.*
 import java.security.Principal
 
@@ -36,6 +37,7 @@ class EstimateController(
         return ResponseEntity.ok().body("")
     }
 
+    @Transactional
     @DeleteMapping("/{id}")
     fun deleteEstimate(@PathVariable("id") id: Int): ResponseEntity<String> {
         chatService.deleteChat(id)

@@ -298,6 +298,13 @@ export default function ItemList() {
         setIsModalOpen(true);
     };
 
+    const crawlItems = () => {
+        fetch(`http://localhost:8080/crawl-items`, {
+            method: 'GET',
+            credentials: "include",
+        });
+    }
+
     return (
         <div className="min-h-screen bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-white p-8">
             <h1 className="text-3xl font-bold text-center mb-8">관리자 페이지</h1>
@@ -334,6 +341,14 @@ export default function ItemList() {
                     disabled={!selectedCategory}
                 >
                     삭제
+                </button>
+
+                <button
+                    onClick={crawlItems}
+                    className={`px-3 py-1 w-28 rounded-lg text-sm shadow-md transition "bg-gray-600 text-gray-300"
+                        }`}
+                >
+                    부품 크롤링
                 </button>
             </div>
 
@@ -419,5 +434,3 @@ export default function ItemList() {
         </div>
     );
 }
-
-
