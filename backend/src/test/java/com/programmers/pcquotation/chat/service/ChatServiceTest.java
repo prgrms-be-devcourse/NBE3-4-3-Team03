@@ -100,4 +100,20 @@ public class ChatServiceTest {
 			chatService.saveChat(username, content, chatRoomId);
 		});
 	}
+
+	@Test
+	public void getChat_success(){
+		// Given
+		String username = "테스트 username";
+		String content = "테스트용 메세지 입니다.";
+		long chatRoomId = 1L;
+
+		// 모킹
+		when(estimateRepository.getEstimateById((int)chatRoomId)).thenReturn(null);
+
+		// When & Then
+		assertThrows(NoSuchElementException.class, () -> {
+			chatService.saveChat(username, content, chatRoomId);
+		});
+	}
 }
