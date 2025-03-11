@@ -79,11 +79,13 @@ class SecurityConfig(private val customAuthenticationFilter: CustomAuthenticatio
     fun corsConfigurationSource(): CorsConfigurationSource {
         val config = CorsConfiguration()
 
-        config.allowCredentials = true
-        config.allowedOrigins = listOf("http://localhost:3000")
-        config.allowedMethods = listOf("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS")
-        config.allowedHeaders = listOf("*")
-        config.exposedHeaders = listOf("*")
+        config.apply {
+            allowCredentials = true
+            allowedOrigins = listOf("http://localhost:3000")
+            allowedMethods = listOf("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS")
+            allowedHeaders = listOf("*")
+            exposedHeaders = listOf("*")
+        }
 
         val source = UrlBasedCorsConfigurationSource()
         source.registerCorsConfiguration("/**", config)
