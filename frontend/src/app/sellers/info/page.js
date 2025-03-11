@@ -552,8 +552,8 @@ const fetchComments = async (estimateId) => {
                                 <div className="border dark:border-gray-700 rounded-lg p-4">
                                   <h4 className="font-medium mb-3 dark:text-white">견적 구성</h4>
                                   <div className="grid grid-cols-2 gap-2 text-sm">
-                                    {quote.items.map((item) => (
-                                        <div key={item.categoryName} className="col-span-2 grid grid-cols-2">
+                                    {quote.items.map((item, index) => (
+                                        <div key={`${quote.id}-${index}`} className="col-span-2 grid grid-cols-2">
                                           <div className="text-gray-600 dark:text-gray-400">{item.categoryName}</div>
                                           <div className="dark:text-white">{item.itemName}</div>
                                         </div>

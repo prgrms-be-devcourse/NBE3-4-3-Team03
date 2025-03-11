@@ -72,7 +72,7 @@ class EstimateService(
         return estimates.map { estimate ->
             with(estimate) {
                 EstimateResponse(
-                    id = id,
+                    id = estimate.id,
                     purpose = estimateRequest.purpose,
                     budget = estimateRequest.budget,
                     customerName = estimateRequest.customer.customerName,

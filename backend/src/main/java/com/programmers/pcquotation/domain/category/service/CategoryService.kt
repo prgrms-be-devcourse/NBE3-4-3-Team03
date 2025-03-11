@@ -34,6 +34,18 @@ class CategoryService(
         return CategoryCreateResponse(savedCategory.id, "카테고리 생성 완료")
     }
 
+    @Transactional
+    fun addCategory(categoryName: String): Category {
+        val category = categoryRepository.findByCategory((categoryName))
+
+        return if (category.isEmpty) {
+            val newCategory = Category(category = categoryName)
+            categoryRepository.save(newCategory)
+        } else {
+            category.get()
+        }
+    }
+
     fun getCategoryList(): List<CategoryInfoResponse> {
         return categoryRepository.findAll()
             .map { category ->
