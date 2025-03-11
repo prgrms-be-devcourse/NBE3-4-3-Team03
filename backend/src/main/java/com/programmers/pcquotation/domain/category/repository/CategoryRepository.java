@@ -5,6 +5,10 @@ import org.springframework.stereotype.Repository;
 
 import com.programmers.pcquotation.domain.category.entity.Category;
 
+import java.util.List;
+import java.util.Optional;
+
 @Repository
 public interface CategoryRepository extends JpaRepository<Category, Long> {
+    Optional<Category> findByCategory(String category);
 }

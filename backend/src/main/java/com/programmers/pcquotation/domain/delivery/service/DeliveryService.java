@@ -56,6 +56,7 @@ public class DeliveryService {
         delivery.getEstimate().getEstimateRequest().UpdateDeliveryStatus(EstimateRequestStatus.Wait);
 
         deliveryRepository.delete(delivery);
+        deliveryRepository.deleteById(id);
     }
 
     public void modify(Integer id, String address) {
