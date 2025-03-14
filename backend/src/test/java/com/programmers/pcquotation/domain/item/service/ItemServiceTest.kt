@@ -1,157 +1,166 @@
-package com.programmers.pcquotation.domain.item.service;
+package com.programmers.pcquotation.domain.item.service
 
-import static org.assertj.core.api.Assertions.*;
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
-
-import java.util.ArrayList;
-import java.util.Optional;
-
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
-import org.springframework.test.context.ActiveProfiles;
-import org.springframework.web.multipart.MultipartFile;
-
-import com.programmers.pcquotation.domain.category.entity.Category;
-import com.programmers.pcquotation.domain.category.repository.CategoryRepository;
-import com.programmers.pcquotation.domain.estimate.repository.EstimateRepository;
-import com.programmers.pcquotation.domain.item.dto.ItemCreateRequest;
-import com.programmers.pcquotation.domain.item.dto.ItemCreateResponse;
-import com.programmers.pcquotation.domain.item.dto.ItemDeleteResponse;
-import com.programmers.pcquotation.domain.item.dto.ItemUpdateRequest;
-import com.programmers.pcquotation.domain.item.dto.ItemUpdateResponse;
-import com.programmers.pcquotation.domain.item.entity.Item;
-import com.programmers.pcquotation.domain.item.repository.ItemRepository;
-import com.programmers.pcquotation.util.TestCategoryFactory;
-import com.programmers.pcquotation.util.TestItemFactory;
+import com.programmers.pcquotation.domain.category.entity.Category
+import com.programmers.pcquotation.domain.category.repository.CategoryRepository
+import com.programmers.pcquotation.domain.estimate.repository.EstimateRepository
+import com.programmers.pcquotation.domain.item.dto.ItemCreateRequest
+import com.programmers.pcquotation.domain.item.dto.ItemUpdateRequest
+import com.programmers.pcquotation.domain.item.entity.Item
+import com.programmers.pcquotation.domain.item.repository.ItemRepository
+import com.programmers.pcquotation.util.TestCategoryFactory.Companion.createTestCategory
+import com.programmers.pcquotation.util.TestItemFactory.Companion.createTestItem
+import org.assertj.core.api.Assertions
+import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.DisplayName
+import org.junit.jupiter.api.Test
+import org.mockito.*
+import org.mockito.invocation.InvocationOnMock
+import org.mockito.kotlin.any
+import org.springframework.test.context.ActiveProfiles
+import org.springframework.web.multipart.MultipartFile
+import java.util.*
 
 @ActiveProfiles("test")
-class ItemServiceTest {
-	@InjectMocks
-	private ItemService itemService;
+internal class ItemServiceTest {
+    @InjectMocks
+    private lateinit var itemService: ItemService
 
-	@Mock
-	private EstimateRepository estimateRepository;
+    @Mock
+    private lateinit var estimateRepository: EstimateRepository
 
-	@Mock
-	private ItemRepository itemRepository;
+    @Mock
+    private lateinit var itemRepository: ItemRepository
 
-	@Mock
-	private ImageService imageService;
+    @Mock
+    private lateinit var imageService: ImageService
 
-	@Mock
-	private CategoryRepository categoryRepository;
+    @Mock
+    private lateinit var categoryRepository: CategoryRepository
 
-	@Mock
-	private MultipartFile mockFile;
+    @Mock
+    private lateinit var mockFile: MultipartFile
 
-	private Item item;
-	private Category oldCategory;
-	private Category newCategory;
+    private val oldCategory = createTestCategory(1L, "기존 카테고리")
+    private val newCategory = createTestCategory(2L, "새로운 카테고리")
+    private val item = createTestItem(
+        1L,
+        "기존 부품 이름",
+        "old-image.jpg",
+        oldCategory
+    )
 
-	@BeforeEach
-	void setUp() {
-		MockitoAnnotations.openMocks(this);
-		oldCategory = TestCategoryFactory.createTestCategory(1L, "기존 카테고리");
-		newCategory = TestCategoryFactory.createTestCategory(2L, "새로운 카테고리");
+    @BeforeEach
+    fun setUp() {
+        MockitoAnnotations.openMocks(this)
+    }
 
-		item = TestItemFactory.createTestItem(
-			1L,
-			"기존 부품 이름",
-			"old-image.jpg",
-			oldCategory
-		);
-	}
+    @Test
+    @DisplayName("addItem 데이터 추가, 저장 테스트")
+    fun addItemTest() {
+        val expectedImagePath = "uploads/img.png"
+        Mockito.`when`(imageService.storeImage(any()))
+            .thenReturn(expectedImagePath)
 
-	@Test
-	@DisplayName("addItem 데이터 추가, 저장 테스트")
-	void addItemTest() {
+        val mockCategory = Mockito.mock(
+            Category::class.java
+        )
+        Mockito.`when`(mockCategory.id).thenReturn(2L)
+        Mockito.`when`(
+            categoryRepository.findById(2L)
+        ).thenReturn(Optional.of(mockCategory))
 
-		String expectedImagePath = "uploads/img.png";
-		when(imageService.storeImage(any(MultipartFile.class))).thenReturn(expectedImagePath);
+        val request = ItemCreateRequest(2L, "부품", mockFile)
 
-		Category mockCategory = mock(Category.class);
-		when(mockCategory.getId()).thenReturn(2L);
-		when(categoryRepository.findById(2L)).thenReturn(Optional.of(mockCategory));
+        val itemToSave = Item(null, "부품", expectedImagePath, mockCategory, ArrayList())
 
-		ItemCreateRequest request = new ItemCreateRequest(2L, "부품", mockFile);
+        Mockito.`when`(
+            itemRepository.save(
+                ArgumentMatchers.any(
+                    Item::class.java
+                )
+            )
+        ).thenAnswer { invocation: InvocationOnMock ->
+            val item =
+                invocation.getArgument<Item>(0)
+            Item(
+                1L, item.name, item.imgFilename, item.category,
+                item.estimateComponents
+            )
+        }
 
-		Item itemToSave = new Item(null, "부품", expectedImagePath, mockCategory, new ArrayList<>());
+        val response = itemService.addItem(request)
 
-		when(itemRepository.save(any(Item.class))).thenAnswer(invocation -> {
-			Item item = invocation.getArgument(0);
+        Assertions.assertThat(response.id).isEqualTo(1L) // Mock에서 반환된 ID 검증
+        Assertions.assertThat(response.message).isEqualTo("부품 생성 완료")
+    }
 
-			return new Item(1L, item.getName(), item.getImgFilename(), item.getCategory(),
-				item.getEstimateComponents());
-		});
+    @DisplayName("부품 조회 테스트")
+    @Test
+    fun getItemListTest() {
+            val testCategory =
+                createTestCategory(1L, "GPU")
 
-		ItemCreateResponse response = itemService.addItem(request);
+            val item = Item(
+                name = "4090",
+                imgFilename = "gpu.jpg",
+                category = testCategory
+            )
 
-		assertThat(response.getId()).isEqualTo(1L); // Mock에서 반환된 ID 검증
-		assertThat(response.getMessage()).isEqualTo("부품 생성 완료");
-	}
+            org.junit.jupiter.api.Assertions.assertNotNull(item)
+            org.junit.jupiter.api.Assertions.assertEquals("4090", item.name)
+            org.junit.jupiter.api.Assertions.assertEquals("gpu.jpg", item.imgFilename)
+            org.junit.jupiter.api.Assertions.assertEquals("GPU", item.category.category)
+        }
 
-	@Test
-	@DisplayName("부품 조회 테스트")
-	void getItemListTest() {
+    @Test
+    @DisplayName("부품 수정 테스트")
+    fun updateItemTest() {
+        val request = ItemUpdateRequest("새로운 부품 이름", "new-image.jpg", 2L)
 
-		Category testCategory = TestCategoryFactory.createTestCategory(1L, "GPU");
+        Mockito.`when`(itemRepository.findById(1L)).thenReturn(
+            Optional.of(
+                item
+            )
+        )
+        Mockito.`when`(
+            categoryRepository.findById(2L)
+        ).thenReturn(
+            Optional.of(
+                newCategory
+            )
+        )
 
-		Item item = new Item();
-		item.setName("4090");
-		item.setImgFilename("gpu.jpg");
-		item.setCategory(testCategory);
+        val response = itemService.updateItem(1L, request)
 
-		assertNotNull(item);
-		assertEquals("4090", item.getName());
-		assertEquals("gpu.jpg", item.getImgFilename());
-		assertEquals("GPU", item.getCategory().getCategory());
-	}
+        Assertions.assertThat(response.id).isEqualTo(1L)
+        Assertions.assertThat(response.message).isEqualTo("부품 수정 완료")
 
-	@Test
-	@DisplayName("부품 수정 테스트")
-	void updateItemTest() {
+        Assertions.assertThat(item.name).isEqualTo("새로운 부품 이름")
+        Assertions.assertThat(item.imgFilename).isEqualTo("new-image.jpg")
+        Assertions.assertThat(item.category).isEqualTo(newCategory)
 
-		ItemUpdateRequest request = new ItemUpdateRequest("새로운 부품 이름", "new-image.jpg", 2L);
+        Mockito.verify(itemRepository, Mockito.times(1)).findById(1L)
+        Mockito.verify(categoryRepository, Mockito.times(1)).findById(2L)
+    }
 
-		when(itemRepository.findById(1L)).thenReturn(Optional.of(item));
-		when(categoryRepository.findById(2L)).thenReturn(Optional.of(newCategory));
+    @Test
+    @DisplayName("부품 삭제 테스트")
+    fun deleteItemTest() {
+        val itemId = 1L
+        val mockCategory = Category(
+            category = "부품 카테고리"
+        )
 
-		ItemUpdateResponse response = itemService.updateItem(1L, request);
+        val item = createTestItem(itemId, "부품1", "image.png", mockCategory)
+        Mockito.`when`(itemRepository.findById(itemId)).thenReturn(Optional.of(item))
 
-		assertThat(response.getId()).isEqualTo(1L);
-		assertThat(response.getMessage()).isEqualTo("부품 수정 완료");
+        val response = itemService.deleteItem(itemId)
 
-		assertThat(item.getName()).isEqualTo("새로운 부품 이름");
-		assertThat(item.getImgFilename()).isEqualTo("new-image.jpg");
-		assertThat(item.getCategory()).isEqualTo(newCategory);
+        Assertions.assertThat(response.id).isEqualTo(itemId)
+        Assertions.assertThat(response.message).isEqualTo("부품 삭제 완료")
 
-		verify(itemRepository, times(1)).findById(1L);
-		verify(categoryRepository, times(1)).findById(2L);
-	}
+        Mockito.verify(itemRepository, Mockito.times(1)).findById(itemId)
 
-	@Test
-	@DisplayName("부품 삭제 테스트")
-	void deleteItemTest() {
-
-		Long itemId = 1L;
-		Category mockCategory = new Category();
-		mockCategory.setCategory("부품 카테고리");
-
-		Item item = TestItemFactory.createTestItem(itemId, "부품1", "image.png", mockCategory);
-		when(itemRepository.findById(itemId)).thenReturn(Optional.of(item));
-
-		ItemDeleteResponse response = itemService.deleteItem(itemId);
-
-		assertThat(response.getId()).isEqualTo(itemId);
-		assertThat(response.getMessage()).isEqualTo("부품 삭제 완료");
-
-		verify(itemRepository, times(1)).findById(itemId);
-
-		verify(itemRepository, times(1)).delete(item);
-	}
+        Mockito.verify(itemRepository, Mockito.times(1)).delete(item)
+    }
 }

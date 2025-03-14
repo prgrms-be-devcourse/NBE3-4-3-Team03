@@ -1,44 +1,44 @@
-package com.programmers.pcquotation.estimate.controller;
+package com.programmers.pcquotation.domain.estimate.controller
 
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import com.programmers.pcquotation.domain.estimate.controller.EstimateController
+import com.programmers.pcquotation.domain.seller.service.SellerService
+import com.programmers.pcquotation.util.Util
+import org.junit.jupiter.api.DisplayName
+import org.junit.jupiter.api.Test
+import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
+import org.springframework.boot.test.context.SpringBootTest
+import org.springframework.http.MediaType
+import org.springframework.security.test.context.support.WithMockUser
+import org.springframework.test.context.ActiveProfiles
+import org.springframework.test.web.servlet.MockMvc
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders
+import org.springframework.test.web.servlet.result.MockMvcResultHandlers
+import org.springframework.test.web.servlet.result.MockMvcResultMatchers
+import org.springframework.transaction.annotation.Transactional
+import java.nio.charset.StandardCharsets
 
-import java.nio.charset.StandardCharsets;
-
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.http.MediaType;
-import org.springframework.security.test.context.support.WithMockUser;
-import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.ResultActions;
-import org.springframework.transaction.annotation.Transactional;
-
-import com.programmers.pcquotation.domain.estimate.controller.EstimateController;
-import com.programmers.pcquotation.domain.seller.service.SellerService;
-import com.programmers.pcquotation.util.util;
 @ActiveProfiles("test")
 @SpringBootTest
 @AutoConfigureMockMvc
 @Transactional
 class EstimateControllerTest {
+    @Autowired
+    private lateinit var mvc: MockMvc
 
-	@Autowired
-	private MockMvc mvc;
+    @Autowired
+    private lateinit var sellerService: SellerService
 
-	@Autowired
-	private SellerService sellerService;
+    @Test
+    @WithMockUser(username = "seller123", roles = ["SELLER"])
+    @DisplayName("견적작성 테스트")
+    @Throws(
+        Exception::class
+    )
 
-	@Test
-	@WithMockUser(username = "seller123", roles = {"SELLER"})
-	@DisplayName("견적작성 테스트")
-	void v1() throws Exception {
-		String token  = "Bearer " + util.loginSeller("seller123","zzzzz",mvc,sellerService);
-		String requestBody = """
+    fun v1() {
+        val token = "Bearer " + Util.loginSeller("seller123", "zzzzz", mvc, sellerService)
+        val requestBody = """
 			{
 			   "estimateRequestId" : 1,
 			   "items" : [
@@ -52,50 +52,51 @@ class EstimateControllerTest {
 			     }
 			   ]
 			 }
-			""";
+			
+			""".trimIndent()
 
-		ResultActions resultActions = mvc.perform(
-			post("/api/estimate")
-				.contentType(MediaType.APPLICATION_JSON)
-				.content(requestBody)
-				.characterEncoding(StandardCharsets.UTF_8)
-				.header("Authorization",  token)
-		).andDo(print());
+        val resultActions = mvc.perform(
+            MockMvcRequestBuilders.post("/api/estimate")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(requestBody)
+                .characterEncoding(StandardCharsets.UTF_8)
+                .header("Authorization", token)
+        ).andDo(MockMvcResultHandlers.print())
 
-		// 응답 상태 코드 확인
-		resultActions
-			.andExpect(status().isOk());
+        // 응답 상태 코드 확인
+        resultActions
+            .andExpect(MockMvcResultMatchers.status().isOk())
 
-		//테스트 추가 검증 필요
-	}
+        //테스트 추가 검증 필요
+    }
 
-	@Test
-	@WithMockUser(username = "seller123", roles = {"SELLER"})
-	@DisplayName("견적요청 별 견적작성 조회")
-	void v2() throws Exception {
-		String token  = "Bearer " + util.loginSeller("seller123","zzzzz",mvc,sellerService);
+    @Test
+    @WithMockUser(username = "seller123", roles = ["SELLER"])
+    @DisplayName("견적요청 별 견적작성 조회")
+    @Throws(
+        Exception::class
+    )
+    fun v2() {
+        val token = "Bearer " + Util.loginSeller("seller123", "zzzzz", mvc, sellerService)
 
-		ResultActions resultActions = mvc.perform(
-			get("/api/estimate/estimate-request/{id}", 1)
-				.contentType(MediaType.APPLICATION_JSON)
-				.characterEncoding(StandardCharsets.UTF_8)
-				.header("Authorization",  token)
+        val resultActions = mvc.perform(
+            MockMvcRequestBuilders.get("/api/estimate/estimate-request/{id}", 1)
+                .contentType(MediaType.APPLICATION_JSON)
+                .characterEncoding(StandardCharsets.UTF_8)
+                .header("Authorization", token)
 
-		).andDo(print());
+        ).andDo(MockMvcResultHandlers.print())
 
-		// 응답 상태 코드 확인
-		resultActions
-			.andExpect(handler().handlerType(EstimateController.class))
-			.andExpect(handler().methodName("getEstimatesByEstimateRequest"))
-			.andExpect(status().isOk())
-			// 응답 본문이 배열인지 확인
-			.andExpect(jsonPath("$").isArray())
-			// 응답의 각 필드 존재 여부 확인
-			.andExpect(jsonPath("$[0].id").exists())
-			.andExpect(jsonPath("$[0].companyName").exists())
-			.andExpect(jsonPath("$[0].createdDate").exists())
-			.andExpect(jsonPath("$[0].totalPrice").exists())
-			.andExpect(jsonPath("$[0].items").exists());
-	}
-
+        // 응답 상태 코드 확인
+        resultActions
+            .andExpect(MockMvcResultMatchers.handler().handlerType(EstimateController::class.java))
+            .andExpect(MockMvcResultMatchers.handler().methodName("getEstimatesByEstimateRequest"))
+            .andExpect(MockMvcResultMatchers.status().isOk()) // 응답 본문이 배열인지 확인
+            .andExpect(MockMvcResultMatchers.jsonPath("$").isArray()) // 응답의 각 필드 존재 여부 확인
+            .andExpect(MockMvcResultMatchers.jsonPath("$[0].id").exists())
+            .andExpect(MockMvcResultMatchers.jsonPath("$[0].companyName").exists())
+            .andExpect(MockMvcResultMatchers.jsonPath("$[0].createdDate").exists())
+            .andExpect(MockMvcResultMatchers.jsonPath("$[0].totalPrice").exists())
+            .andExpect(MockMvcResultMatchers.jsonPath("$[0].items").exists())
+    }
 }

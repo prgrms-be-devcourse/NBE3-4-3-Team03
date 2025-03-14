@@ -1,50 +1,40 @@
-package com.programmers.pcquotation.domain.item.service;
+package com.programmers.pcquotation.domain.item.service
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
-
-import java.io.File;
-import java.io.IOException;
-
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Nested;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.test.context.ActiveProfiles;
-import org.springframework.web.multipart.MultipartFile;
+import org.junit.jupiter.api.*
+import org.junit.jupiter.api.extension.ExtendWith
+import org.mockito.ArgumentMatchers
+import org.mockito.Mock
+import org.mockito.Mockito
+import org.mockito.junit.jupiter.MockitoExtension
+import org.springframework.test.context.ActiveProfiles
+import org.springframework.web.multipart.MultipartFile
+import java.io.File
+import java.io.IOException
 
 @ActiveProfiles("test")
-@ExtendWith(MockitoExtension.class)
+@ExtendWith(MockitoExtension::class)
 class ImageServiceTest {
+    private lateinit var imageService: ImageService
 
-	private ImageService imageService;
+    @Mock
+    private lateinit var multipartFile: MultipartFile
 
-	@Mock
-	private MultipartFile multipartFile;
+    @BeforeEach
+    fun setUp() {
+        imageService = ImageService("src/main/resources/static/image/item/")
+    }
 
-	@BeforeEach
-	void setUp() {
-		imageService = new ImageService("src/main/resources/static/image/item/");
-	}
+    @Test
+    @DisplayName("정상적인 저장")
+    @Throws(IOException::class)
+    fun t1() {
+        val originFilename = "test.png"
+        Mockito.`when`(multipartFile.isEmpty).thenReturn(false)
+        Mockito.`when`(multipartFile.originalFilename).thenReturn(originFilename)
 
-	@Nested
-	public class ImageStoreTest {
+        val filename = imageService.storeImage(multipartFile)
 
-		@Test
-		@DisplayName("정상적인 저장")
-		void t1() throws IOException {
-
-			String originFilename = "test.png";
-			when(multipartFile.isEmpty()).thenReturn(false);
-			when(multipartFile.getOriginalFilename()).thenReturn(originFilename);
-
-			String filename = imageService.storeImage(multipartFile);
-
-			assertNotNull(filename);
-			verify(multipartFile).transferTo(any(File.class));
-		}
-	}
+        Assertions.assertNotNull(filename)
+        Mockito.verify(multipartFile).transferTo(ArgumentMatchers.any(File::class.java))
+    }
 }

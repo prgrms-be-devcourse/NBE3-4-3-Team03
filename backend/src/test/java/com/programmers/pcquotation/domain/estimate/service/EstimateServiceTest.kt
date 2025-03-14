@@ -1,226 +1,241 @@
-//package com.programmers.pcquotation.estimate.service;
-//
-//import com.programmers.pcquotation.domain.category.entity.Category;
-//import com.programmers.pcquotation.domain.customer.entity.Customer;
-//import com.programmers.pcquotation.domain.estimate.dto.EstimateCreateRequest;
-//import com.programmers.pcquotation.domain.estimate.dto.EstimateItemDto;
-//import com.programmers.pcquotation.domain.estimate.dto.EstimateUpdateReqDto;
-//import com.programmers.pcquotation.domain.estimate.entity.Estimate;
-//import com.programmers.pcquotation.domain.estimate.repository.EstimateRepository;
-//import com.programmers.pcquotation.domain.estimate.service.EstimateService;
-//import com.programmers.pcquotation.domain.estimaterequest.entity.EstimateRequest;
-//import com.programmers.pcquotation.domain.estimaterequest.service.EstimateRequestService;
-//import com.programmers.pcquotation.domain.item.entity.Item;
-//import com.programmers.pcquotation.domain.item.service.ItemService;
-//import com.programmers.pcquotation.domain.seller.entitiy.Seller;
-//import com.programmers.pcquotation.domain.seller.service.SellerService;
-//import org.junit.jupiter.api.Test;
-//import org.mockito.ArgumentCaptor;
-//import org.mockito.InjectMocks;
-//import org.mockito.Mock;
-//import org.springframework.boot.test.context.SpringBootTest;
-//import org.springframework.test.context.ActiveProfiles;
-//
-//import java.time.LocalDateTime;
-//import java.util.ArrayList;
-//import java.util.List;
-//import java.util.NoSuchElementException;
-//import java.util.Optional;
-//
-//import static org.junit.jupiter.api.Assertions.*;
-//import static org.mockito.Mockito.*;
-//@ActiveProfiles("test")
-//@SpringBootTest
-//public class EstimateServiceTest {
-//
-//
-//    @Mock
-//    private EstimateRequestService estimateRequestService;
-//
-//    @Mock
-//    private SellerService sellerService;
-//
-//    @Mock
-//    private EstimateRepository estimateRepository;
-//
-//    @Mock
-//    private ItemService itemService;
-//
-//    @InjectMocks
-//    private EstimateService estimateService;
-//
-//
-//    private final Customer sampleCustomer = new Customer(
-//            1L,
-//            "customer1",
-//            "1234",
-//            "홍길동",
-//            "customer1@test.com",
-//            "좋아하는 음식은?",
-//            "밥",
-//            "api-key"
-//    );
-//
-//    private final Seller sampleSeller = new Seller(
-//            1L,
-//            "seller1",
-//            "1234",
-//            "컴퓨터세상",
-//            "seller1@test.com",
-//            "좋아하는 음식은?",
-//            "밥",
-//            true,
-//            "api-key"
-//    );
-//
-//    private final EstimateRequest estimateRequest = new EstimateRequest(
-//            "게임용",
-//            1_000_000,
-//            "롤",
-//            sampleCustomer
-//    );
-//
-//    private final Item sampleItem1 = new Item(
-//            1L,
-//            "CPU1",
-//            "cpu1.png",
-//            new Category(1L, "CPU", List.of()),
-//            List.of()
-//    );
-//
-//    private final Item sampleItem2 = new Item(
-//            2L,
-//            "RAM1",
-//            "ram1.png",
-//            new Category(2L, "RAM", List.of()),
-//            List.of()
-//    );
-//
-//    Estimate sampleEstimate = new Estimate(
-//            1,
-//            estimateRequest,
-//            sampleSeller,
-//            5000,
-//            new ArrayList<>(),
-//            LocalDateTime.of(2025, 3, 4, 12, 0),
-//            List.of()
-//    );
-//
-//    @Test
-//    public void createEstimate_success() {
-//        when(estimateRequestService.getEstimateRequestById(1)).thenReturn(Optional.of(estimateRequest));
-//        when(sellerService.findByUserName("seller1")).thenReturn(Optional.of(sampleSeller));
-//        when(itemService.findById(1L)).thenReturn(sampleItem1);
-//        when(itemService.findById(2L)).thenReturn(sampleItem2);
-//        when(estimateRepository.save(any(Estimate.class))).thenReturn(sampleEstimate);
-//
-//        EstimateCreateRequest request = new EstimateCreateRequest(
-//                1,
-//                List.of(
-//                        new EstimateItemDto(1L, 3000),
-//                        new EstimateItemDto(2L, 5000)
-//                )
-//        );
-//
-//        estimateService.createEstimate(request, "seller1");
-//
-//        ArgumentCaptor<Estimate> estimateCaptor = ArgumentCaptor.forClass(Estimate.class);
-//        verify(estimateRepository, times(1)).save(estimateCaptor.capture());
-//
-//        Estimate capturedEstimate = estimateCaptor.getValue();
-//        assertNotNull(capturedEstimate);
-//        assertEquals("seller1", capturedEstimate.getSeller().getUsername());
-//        assertEquals(8000, capturedEstimate.getTotalPrice());
-//    }
-//
-//    @Test
-//    public void createEstimate_estimateRequestNotFound() {
-//        when(estimateRequestService.getEstimateRequestById(1)).thenReturn(Optional.empty());
-//
-//        EstimateCreateRequest request = new EstimateCreateRequest(
-//                1,
-//                List.of(
-//                        new EstimateItemDto(1L, 3000),
-//                        new EstimateItemDto(2L, 5000)
-//                )
-//        );
-//
-//        assertThrows(NoSuchElementException.class, () -> estimateService.createEstimate(request, "seller1"));
-//    }
-//
-//    @Test
-//    public void createEstimate_sellerNotFound() {
-//        when(sellerService.findById(1L)).thenReturn(Optional.empty());
-//
-//        EstimateCreateRequest request = new EstimateCreateRequest(
-//                1,
-//                List.of(
-//                        new EstimateItemDto(1L, 3000),
-//                        new EstimateItemDto(2L, 5000)
-//                )
-//        );
-//
-//        assertThrows(NoSuchElementException.class, () -> estimateService.createEstimate(request, "seller1"));
-//    }
-//
-//    // @Test
-//    // public void getEstimateByEstimateRequest_Success() {
-//    //     when(estimateRepository.getAllByEstimateRequestId(1)).thenReturn(List.of(sampleEstimate));
-//    //
-//    //     assertEquals(1, estimateService.getEstimatesByEstimateRequest(1, null).size());
-//    // }
-//    //
-//    // @Test
-//    // public void getEstimatesBySeller_Success() {
-//    //     when(sellerService.findById(1L)).thenReturn(Optional.of(sampleSeller));
-//    //     when(estimateRepository.getAllBySeller(sampleSeller)).thenReturn(List.of(sampleEstimate));
-//    //
-//    //     assertEquals(1, estimateService.getEstimatesBySeller(1, null));
-//    // }
-//    //
-//    // @Test
-//    // public void getEstimatesBySeller_SellerNotFound() {
-//    //     when(sellerService.findById(1L)).thenReturn(Optional.empty());
-//    //
-//    //     assertThrows(NoSuchElementException.class, () -> estimateService.getEstimatesBySeller(1, null));
-//    // }
-//
-//    @Test
-//    public void deleteEstimate_Success() {
-//        when(estimateRepository.findById(1)).thenReturn(Optional.of(sampleEstimate));
-//
-//        estimateService.deleteEstimate(1);
-//
-//        verify(estimateRepository, times(1)).delete(sampleEstimate);
-//    }
-//
-//    @Test
-//    public void deleteEstimate_estimateNotFound() {
-//        when(estimateRepository.findById(1)).thenReturn(Optional.empty());
-//
-//        assertThrows(NoSuchElementException.class, () -> estimateService.deleteEstimate(1));
-//    }
-//
-//    @Test
-//    public void updateEstimate_Success() {
-//        when(estimateRepository.getEstimateById(1)).thenReturn(sampleEstimate);
-//        when(itemService.findById(1L)).thenReturn(sampleItem1);
-//
-//        EstimateUpdateReqDto request = new EstimateUpdateReqDto(
-//                1,
-//                List.of(
-//                        new EstimateItemDto(1L, 3000)
-//                )
-//        );
-//
-//        estimateService.updateEstimate(request);
-//
-//        ArgumentCaptor<Estimate> estimateCaptor = ArgumentCaptor.forClass(Estimate.class);
-//        verify(estimateRepository, times(1)).save(estimateCaptor.capture());
-//
-//        Estimate capturedEstimate = estimateCaptor.getValue();
-//        assertNotNull(capturedEstimate);
-//        assertEquals("seller1", capturedEstimate.getSeller().getUsername());
-//        assertEquals(3000, capturedEstimate.getTotalPrice());
-//    }
-//}
+package com.programmers.pcquotation.domain.estimate.service
+
+import com.programmers.pcquotation.domain.category.entity.Category
+import com.programmers.pcquotation.domain.customer.entity.Customer
+import com.programmers.pcquotation.domain.estimate.dto.EstimateCreateRequest
+import com.programmers.pcquotation.domain.estimate.dto.EstimateItemDto
+import com.programmers.pcquotation.domain.estimate.dto.EstimateSortType
+import com.programmers.pcquotation.domain.estimate.dto.EstimateUpdateReqDto
+import com.programmers.pcquotation.domain.estimate.entity.Estimate
+import com.programmers.pcquotation.domain.estimate.repository.EstimateRepository
+import com.programmers.pcquotation.domain.estimate.service.EstimateService
+import com.programmers.pcquotation.domain.estimaterequest.entity.EstimateRequest
+import com.programmers.pcquotation.domain.estimaterequest.service.EstimateRequestService
+import com.programmers.pcquotation.domain.item.entity.Item
+import com.programmers.pcquotation.domain.item.service.ItemService
+import com.programmers.pcquotation.domain.seller.entity.Seller
+import com.programmers.pcquotation.domain.seller.service.SellerService
+import org.junit.jupiter.api.Assertions
+import org.junit.jupiter.api.Test
+import org.mockito.*
+import org.springframework.boot.test.context.SpringBootTest
+import org.springframework.data.domain.PageImpl
+import org.springframework.data.domain.Pageable
+import org.springframework.test.context.ActiveProfiles
+import java.time.LocalDateTime
+import java.util.*
+
+@ActiveProfiles("test")
+@SpringBootTest
+class EstimateServiceTest {
+    @Mock
+    private lateinit var estimateRequestService: EstimateRequestService
+
+    @Mock
+    private lateinit var sellerService: SellerService
+
+    @Mock
+    private lateinit var estimateRepository: EstimateRepository
+
+    @Mock
+    private lateinit var itemService: ItemService
+
+    @InjectMocks
+    private lateinit var estimateService: EstimateService
+
+    private val sampleCustomer = Customer(
+        1L,
+        "customer1",
+        "1234",
+        "홍길동",
+        "customer1@test.com",
+        "좋아하는 음식은?",
+        "밥",
+        "api-key"
+    )
+
+    private val sampleSeller = Seller(
+        1L,
+        "seller1",
+        "1234",
+        "컴퓨터세상",
+        "seller1@test.com",
+        "좋아하는 음식은?",
+        "밥",
+        true,
+        "api-key"
+    )
+
+    private val estimateRequest = EstimateRequest(
+        "게임용",
+        1000000,
+        "롤",
+        sampleCustomer
+    )
+
+    private val sampleItem1 = Item(
+        1L,
+        "CPU1",
+        "cpu1.png",
+        Category(1L, "CPU")
+    )
+
+    private val sampleItem2 = Item(
+        2L,
+        "RAM1",
+        "ram1.png",
+        Category(2L, "RAM")
+    )
+
+    private val sampleEstimate: Estimate = Estimate(
+        1,
+        estimateRequest,
+        sampleSeller,
+        5000,
+        ArrayList(),
+        LocalDateTime.of(2025, 3, 4, 12, 0),
+        listOf()
+    )
+
+    @Test
+    fun createEstimate_success() {
+        Mockito.`when`(estimateRequestService.getEstimateRequestById(1)).thenReturn(Optional.of(estimateRequest))
+        Mockito.`when`(sellerService.findByUserName("seller1")).thenReturn(Optional.of(sampleSeller))
+        Mockito.`when`(itemService.findById(1L)).thenReturn(sampleItem1)
+        Mockito.`when`(itemService.findById(2L)).thenReturn(sampleItem2)
+        Mockito.`when`(estimateRepository.save(ArgumentMatchers.any(Estimate::class.java))).thenReturn(sampleEstimate)
+
+        val request = EstimateCreateRequest(
+            1,
+            listOf(
+                EstimateItemDto(1L, 3000),
+                EstimateItemDto(2L, 5000)
+            )
+        )
+
+        estimateService.createEstimate(request, "seller1")
+
+        val estimateCaptor = ArgumentCaptor.forClass(Estimate::class.java)
+        Mockito.verify(estimateRepository, Mockito.times(1)).save(estimateCaptor.capture())
+
+        val capturedEstimate = estimateCaptor.value
+        Assertions.assertNotNull(capturedEstimate)
+        Assertions.assertEquals("seller1", capturedEstimate.seller.username)
+        Assertions.assertEquals(8000, capturedEstimate.totalPrice)
+    }
+
+    @Test
+    fun createEstimate_estimateRequestNotFound() {
+        Mockito.`when`(estimateRequestService.getEstimateRequestById(1)).thenReturn(Optional.empty())
+
+        val request = EstimateCreateRequest(
+            1,
+            listOf(
+                EstimateItemDto(1L, 3000),
+                EstimateItemDto(2L, 5000)
+            )
+        )
+
+        Assertions.assertThrows(
+            NoSuchElementException::class.java
+        ) { estimateService.createEstimate(request, "seller1") }
+    }
+
+    @Test
+    fun createEstimate_sellerNotFound() {
+        Mockito.`when`(sellerService.findById(1L)).thenReturn(Optional.empty())
+
+        val request = EstimateCreateRequest(
+            1,
+            listOf(
+                EstimateItemDto(1L, 3000),
+                EstimateItemDto(2L, 5000)
+            )
+        )
+
+        Assertions.assertThrows(
+            NoSuchElementException::class.java
+        ) { estimateService.createEstimate(request, "seller1") }
+    }
+
+    @Test
+    fun estimateByEstimateRequest_Success() {
+            Mockito.`when`(estimateRepository.getAllByEstimateRequestId(1))
+                .thenReturn(listOf(sampleEstimate))
+
+            Assertions.assertEquals(
+                1,
+                estimateService.getEstimatesByEstimateRequest(1, EstimateSortType.LATEST).size
+            )
+        }
+
+    @Test
+    fun getEstimatesBySeller_Success() {
+            Mockito.`when`(
+                sellerService.findById(
+                    1L
+                )
+            ).thenReturn(Optional.of(sampleSeller))
+            Mockito.`when`(
+                estimateRepository.findAllBySeller(
+                    sampleSeller,
+                    Pageable.unpaged()
+                )
+            ).thenReturn(PageImpl(listOf(sampleEstimate)))
+
+            Assertions.assertEquals(
+                1,
+                estimateService.getEstimatesBySeller(1, Pageable.unpaged()).size
+            )
+        }
+
+    @Test
+    fun getEstimatesBySeller_SellerNotFound() {
+            Mockito.`when`(sellerService.findById(1L)).thenReturn(Optional.empty())
+
+            Assertions.assertThrows(NoSuchElementException::class.java) {
+                estimateService.getEstimatesBySeller(1, Pageable.unpaged())
+            }
+        }
+
+    @Test
+    fun deleteEstimate_Success() {
+        Mockito.`when`(estimateRepository.findById(1)).thenReturn(Optional.of(sampleEstimate))
+
+        estimateService.deleteEstimate(1)
+
+        Mockito.verify(estimateRepository, Mockito.times(1)).delete(sampleEstimate)
+    }
+
+    @Test
+    fun deleteEstimate_estimateNotFound() {
+        Mockito.`when`(estimateRepository.findById(1)).thenReturn(Optional.empty())
+
+        Assertions.assertThrows(
+            NoSuchElementException::class.java
+        ) { estimateService.deleteEstimate(1) }
+    }
+
+    @Test
+    fun updateEstimate_Success() {
+        Mockito.`when`(estimateRepository.getEstimateById(1)).thenReturn(sampleEstimate)
+        Mockito.`when`(itemService.findById(1L)).thenReturn(sampleItem1)
+
+        val request = EstimateUpdateReqDto(
+            1,
+            listOf(
+                EstimateItemDto(1L, 3000)
+            )
+        )
+
+        estimateService.updateEstimate(request)
+
+        val estimateCaptor = ArgumentCaptor.forClass(Estimate::class.java)
+        Mockito.verify(estimateRepository, Mockito.times(1)).save(estimateCaptor.capture())
+
+        val capturedEstimate = estimateCaptor.value
+        Assertions.assertNotNull(capturedEstimate)
+        Assertions.assertEquals("seller1", capturedEstimate.seller.username)
+        Assertions.assertEquals(3000, capturedEstimate.totalPrice)
+    }
+}

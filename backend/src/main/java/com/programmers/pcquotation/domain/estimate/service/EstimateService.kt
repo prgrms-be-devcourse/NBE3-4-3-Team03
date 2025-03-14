@@ -19,8 +19,7 @@ class EstimateService(
     private val estimateRepository: EstimateRepository,
     private val estimateRequestService: EstimateRequestService,
     private val sellerService: SellerService,
-    private val itemService: ItemService,
-    private val alarmService: AlarmService
+    private val itemService: ItemService
 ) {
     @Transactional
     fun createEstimate(request: EstimateCreateRequest, sellerName: String): Estimate {

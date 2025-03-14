@@ -1,110 +1,125 @@
-package com.programmers.pcquotation.domain.category.service;
+package com.programmers.pcquotation.domain.category.service
 
-import static org.assertj.core.api.Assertions.*;
-import static org.mockito.Mockito.*;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
-import org.springframework.test.context.ActiveProfiles;
-
-import com.programmers.pcquotation.domain.category.dto.CategoryCreateRequest;
-import com.programmers.pcquotation.domain.category.dto.CategoryCreateResponse;
-import com.programmers.pcquotation.domain.category.dto.CategoryDeleteResponse;
-import com.programmers.pcquotation.domain.category.dto.CategoryInfoResponse;
-import com.programmers.pcquotation.domain.category.dto.CategoryUpdateRequest;
-import com.programmers.pcquotation.domain.category.entity.Category;
-import com.programmers.pcquotation.domain.category.repository.CategoryRepository;
-import com.programmers.pcquotation.util.TestCategoryFactory;
+import com.programmers.pcquotation.domain.category.dto.CategoryCreateRequest
+import com.programmers.pcquotation.domain.category.dto.CategoryInfoResponse
+import com.programmers.pcquotation.domain.category.dto.CategoryUpdateRequest
+import com.programmers.pcquotation.domain.category.entity.Category
+import com.programmers.pcquotation.domain.category.repository.CategoryRepository
+import com.programmers.pcquotation.util.TestCategoryFactory.Companion.createTestCategory
+import org.assertj.core.api.Assertions
+import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.DisplayName
+import org.junit.jupiter.api.Test
+import org.mockito.ArgumentMatchers
+import org.mockito.Mock
+import org.mockito.Mockito
+import org.mockito.MockitoAnnotations
+import org.springframework.test.context.ActiveProfiles
+import java.util.*
 
 @ActiveProfiles("test")
-public class CategoryServiceTest {
+class CategoryServiceTest {
+    private lateinit var categoryService: CategoryService
 
-	private CategoryService categoryService;
+    @Mock
+    private lateinit var categoryRepository: CategoryRepository
 
-	@Mock
-	private CategoryRepository categoryRepository;
+    @BeforeEach
+    fun setUp() {
+        MockitoAnnotations.openMocks(this)
+        categoryService = CategoryService(categoryRepository)
+    }
 
-	@BeforeEach
-	void setUp() {
-		MockitoAnnotations.openMocks(this);
-		categoryService = new CategoryService(categoryRepository);
-	}
+    @Test
+    @DisplayName("addCategory 데이터 추가, 저장 테스트")
+    fun addCategoryTest() {
+        val request = CategoryCreateRequest("카테고리")
+        val savedCategory = Category(1L, "카테고리", ArrayList()) // items는 기본값인 빈 리스트로 설정됨
 
-	@Test
-	@DisplayName("addCategory 데이터 추가, 저장 테스트")
-	void addCategoryTest() {
+        Mockito.`when`<Any>(
+            categoryRepository.save(ArgumentMatchers.argThat { category: Category -> category.category == "카테고리" })
+        )
+            .thenReturn(savedCategory)
 
-		CategoryCreateRequest request = new CategoryCreateRequest("카테고리");
-		Category savedCategory = new Category(1L, "카테고리", new ArrayList<>()); // items는 기본값인 빈 리스트로 설정됨
+        val response = categoryService.addCategory(request)
 
-		when(categoryRepository.save(argThat(category -> category.getCategory().equals("카테고리"))))
-			.thenReturn(savedCategory);
+        Assertions.assertThat(response.id).isEqualTo(1L)
+        Assertions.assertThat(response.message).isEqualTo("카테고리 생성 완료")
+    }
 
-		CategoryCreateResponse response = categoryService.addCategory(request);
+    @DisplayName("카테고리 다건조회 테스트")
+    @Test
+    fun getCategoryListTest() {
+            val category1 =
+                Category(
+                    1L,
+                    "카테고리",
+                    ArrayList()
+                )
+            val category2 =
+                Category(
+                    2L,
+                    "카테고리2",
+                    ArrayList()
+                )
 
-		assertThat(response.getId()).isEqualTo(1L);
-		assertThat(response.getMessage()).isEqualTo("카테고리 생성 완료");
-	}
+            Mockito.`when`(
+                categoryRepository.findAll()
+            ).thenReturn(
+                listOf(
+                    category1,
+                    category2
+                )
+            )
 
-	@Test
-	@DisplayName("카테고리 다건조회 테스트")
-	void getCategoryListTest() {
+            val response = categoryService.getCategoryList()
 
-		Category category1 = new Category(1L, "카테고리", new ArrayList<>());
-		Category category2 = new Category(2L, "카테고리2", new ArrayList<>());
+            val expectedList = listOf(
+                CategoryInfoResponse(1L, "카테고리"),
+                CategoryInfoResponse(2L, "카테고리2")
+            )
 
-		when(categoryRepository.findAll()).thenReturn(List.of(category1, category2));
+            Assertions.assertThat(response).hasSize(expectedList.size)
+            for (i in response.indices) {
+                Assertions.assertThat(response[i].id).isEqualTo(expectedList[i].id)
+                Assertions.assertThat(response[i].category)
+                    .isEqualTo(expectedList[i].category)
+            }
+        }
 
-		List<CategoryInfoResponse> response = categoryService.getCategoryList();
+    @Test
+    @DisplayName("카테고리 수정 테스트")
+    fun updateCategoryTest() {
+        val categoryId = 1L
+        val existingCategory = createTestCategory(categoryId, "기존 카테고리")
+        val updateRequest = CategoryUpdateRequest("수정된 카테고리")
 
-		List<CategoryInfoResponse> expectedList = List.of(
-			new CategoryInfoResponse(1L, "카테고리"),
-			new CategoryInfoResponse(2L, "카테고리2")
-		);
+        Mockito.`when`(
+            categoryRepository.findById(categoryId)
+        ).thenReturn(Optional.of(existingCategory))
 
-		assertThat(response).hasSize(expectedList.size());
-		for (int i = 0; i < response.size(); i++) {
-			assertThat(response.get(i).getId()).isEqualTo(expectedList.get(i).getId());
-			assertThat(response.get(i).getCategory()).isEqualTo(expectedList.get(i).getCategory());
-		}
-	}
+        categoryService.updateCategory(categoryId, updateRequest)
 
-	@Test
-	@DisplayName("카테고리 수정 테스트")
-	void updateCategoryTest() {
+        Assertions.assertThat(existingCategory.category).isEqualTo("수정된 카테고리")
+    }
 
-		Long categoryId = 1L;
-		Category existingCategory = TestCategoryFactory.createTestCategory(categoryId, "기존 카테고리");
-		CategoryUpdateRequest updateRequest = new CategoryUpdateRequest("수정된 카테고리");
+    @Test
+    @DisplayName("카테고리 삭제 테스트")
+    fun deleteCategoryTest() {
+        val categoryId = 1L
+        val existingCategory = createTestCategory(1L, "기존 카테고리")
+        Mockito.`when`(
+            categoryRepository.findById(categoryId)
+        ).thenReturn(Optional.of(existingCategory))
 
-		when(categoryRepository.findById(categoryId)).thenReturn(Optional.of(existingCategory));
+        val response = categoryService.deleteCategory(categoryId)
 
-		categoryService.updateCategory(categoryId, updateRequest);
-
-		assertThat(existingCategory.getCategory()).isEqualTo("수정된 카테고리");
-	}
-
-	@Test
-	@DisplayName("카테고리 삭제 테스트")
-	void deleteCategoryTest() {
-
-		Long categoryId = 1L;
-		Category existingCategory = TestCategoryFactory.createTestCategory(1L, "기존 카테고리");
-		when(categoryRepository.findById(categoryId)).thenReturn(Optional.of(existingCategory));
-
-		CategoryDeleteResponse response = categoryService.deleteCategory(categoryId);
-
-		assertThat(response.getId()).isEqualTo(categoryId);
-		assertThat(response.getMessage()).isEqualTo("카테고리 삭제 완료");
-		verify(categoryRepository).delete(any(Category.class));
-
-	}
-
+        Assertions.assertThat(response.id).isEqualTo(categoryId)
+        Assertions.assertThat(response.message).isEqualTo("카테고리 삭제 완료")
+        Mockito.verify(categoryRepository).delete(
+            ArgumentMatchers.any(
+                Category::class.java
+            )
+        )
+    }
 }

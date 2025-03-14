@@ -22,11 +22,10 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers
 
-
 @SpringBootTest
 @Transactional
 @AutoConfigureMockMvc
-class 견적요청테스트 {
+class EstimateRequestControllerTest {
 	
 	@MockitoBean
 	private lateinit var estimateRequestService: EstimateRequestService

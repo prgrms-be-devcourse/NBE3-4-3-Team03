@@ -1,91 +1,84 @@
-package com.programmers.pcquotation.chat.service;
+package com.programmers.pcquotation.domain.chat.service
 
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-
-import java.util.NoSuchElementException;
-import java.util.Optional;
-
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.ActiveProfiles;
-
-import com.programmers.pcquotation.domain.chat.entity.ChatRoom;
-import com.programmers.pcquotation.domain.chat.repository.ChatRoomRepository;
-import com.programmers.pcquotation.domain.chat.service.ChatRoomService;
-import com.programmers.pcquotation.domain.estimate.entity.Estimate;
-import com.programmers.pcquotation.domain.estimate.repository.EstimateRepository;
+import com.programmers.pcquotation.domain.chat.entity.ChatRoom
+import com.programmers.pcquotation.domain.chat.repository.ChatRoomRepository
+import com.programmers.pcquotation.domain.chat.service.ChatRoomService
+import com.programmers.pcquotation.domain.estimate.entity.Estimate
+import com.programmers.pcquotation.domain.estimate.repository.EstimateRepository
+import org.junit.jupiter.api.Assertions
+import org.junit.jupiter.api.Test
+import org.mockito.ArgumentMatchers
+import org.mockito.InjectMocks
+import org.mockito.Mock
+import org.mockito.Mockito
+import org.springframework.boot.test.context.SpringBootTest
+import org.springframework.test.context.ActiveProfiles
+import java.util.*
 
 @ActiveProfiles("test")
 @SpringBootTest
-public class ChatRoomServiceTest {
+class ChatRoomServiceTest {
+    @Mock
+    private lateinit var chatRoomRepository: ChatRoomRepository
 
-	@Mock
-	private ChatRoomRepository chatRoomRepository;
+    @Mock
+    private lateinit var estimateRepository: EstimateRepository
 
-	@Mock
-	private EstimateRepository estimateRepository;
+    @InjectMocks
+    private lateinit var chatRoomService: ChatRoomService
 
-	@InjectMocks
-	private ChatRoomService chatRoomService;
+    @Test
+    fun createChatRoom_success() {
+        // Given
 
-	@Test
-	public void createChatRoom_success() {
+        val estimate = Mockito.mock(Estimate::class.java)
 
-		// Given
-		Estimate estimate = mock(Estimate.class);
+        // When
+        chatRoomService.createChatRoom(estimate)
 
-		// When
-		chatRoomService.createChatRoom(estimate);
+        // Then
+        Mockito.verify(chatRoomRepository).save(ArgumentMatchers.any(ChatRoom::class.java))
+    }
 
-		// Then
-		verify(chatRoomRepository).save(any(ChatRoom.class));
-	}
+    @Test
+    fun createChatRoom_estimateNotFound() {
+        // Given
+        val estimate: Estimate? = null
 
-	@Test
-	public void createChatRoom_estimateNotFound() {
-		// Given
-		Estimate estimate = null;
+        // When & Then
+        Assertions.assertThrows(
+            NullPointerException::class.java
+        ) {
+            chatRoomService.createChatRoom(estimate!!)
+        }
+    }
 
-		// When & Then
-		assertThrows(NullPointerException.class, () -> {
-			chatRoomService.createChatRoom(estimate);
-		});
-	}
+    @Test
+    fun deleteChatRoom_success() {
+        // Given
+        val estimateId = 1
+        val estimate = Mockito.mock(Estimate::class.java)
 
-	@Test
-	public void deleteChatRoom_success() {
-		// Given
-		int estimateId = 1;
-		Estimate estimate = mock(Estimate.class);
+        Mockito.`when`(estimateRepository.findById(estimateId)).thenReturn(Optional.of(estimate))
 
-		when(estimateRepository.findById(estimateId)).thenReturn(Optional.of(estimate));
+        // When
+        chatRoomService.deleteChatRoom(estimateId)
 
-		// When
-		chatRoomService.deleteChatRoom(estimateId);
+        // Then
+        Mockito.verify(chatRoomRepository).deleteByEstimate(estimate)
+    }
 
-		// Then
-		verify(chatRoomRepository).deleteByEstimate(estimate);
-	}
+    @Test
+    fun deleteChatRoom_estimateNotFound() {
+        // Given
+        val estimateId = 1
 
-	@Test
-	public void deleteChatRoom_estimateNotFound() {
-		// Given
-		int estimateId = 1;
+        // 모킹
+        Mockito.`when`(estimateRepository.findById(estimateId)).thenReturn(Optional.empty())
 
-		// 모킹
-		when(estimateRepository.findById(estimateId)).thenReturn(Optional.empty());
-
-		// When & Then
-		assertThrows(NoSuchElementException.class, () -> {
-			chatRoomService.deleteChatRoom(estimateId);
-		});
-	}
+        // When & Then
+        Assertions.assertThrows(NoSuchElementException::class.java) {
+            chatRoomService.deleteChatRoom(estimateId)
+        }
+    }
 }

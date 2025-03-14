@@ -1,132 +1,132 @@
-package com.programmers.pcquotation.member.service;
+package com.programmers.pcquotation.domain.member.service
 
+import com.programmers.pcquotation.domain.customer.dto.CustomerSignupRequest
+import com.programmers.pcquotation.domain.customer.entity.Customer
+import com.programmers.pcquotation.domain.customer.exception.CustomerAlreadyExistException
+import com.programmers.pcquotation.domain.customer.exception.IncorrectLoginAttemptException
+import com.programmers.pcquotation.domain.customer.exception.PasswordMismatchException
+import com.programmers.pcquotation.domain.customer.repository.CustomerRepository
+import com.programmers.pcquotation.domain.member.dto.LoginRequest
+import com.programmers.pcquotation.domain.member.service.AuthService
+import org.junit.jupiter.api.Assertions
+import org.junit.jupiter.api.Test
+import org.mockito.Mockito
+import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.boot.test.context.SpringBootTest
+import org.springframework.security.core.context.SecurityContextHolder
+import org.springframework.security.crypto.password.PasswordEncoder
+import org.springframework.test.context.ActiveProfiles
+import org.springframework.test.context.bean.override.mockito.MockitoBean
+import java.util.*
 
-import com.programmers.pcquotation.domain.customer.dto.CustomerSignupRequest;
-import com.programmers.pcquotation.domain.customer.entity.Customer;
-import com.programmers.pcquotation.domain.customer.exception.CustomerAlreadyExistException;
-import com.programmers.pcquotation.domain.customer.exception.IncorrectLoginAttemptException;
-import com.programmers.pcquotation.domain.customer.exception.PasswordMismatchException;
-import com.programmers.pcquotation.domain.customer.repository.CustomerRepository;
-import com.programmers.pcquotation.domain.member.dto.LoginRequest;
-import com.programmers.pcquotation.domain.member.service.AuthService;
-
-import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.bean.override.mockito.MockitoBean;
-
-import java.util.Optional;
-
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.when;
 @ActiveProfiles("test")
 @SpringBootTest
-public class AuthServiceTest {
+class AuthServiceTest {
     @Autowired
-    private AuthService authService;
+    private lateinit var authService: AuthService
 
     @MockitoBean
-    private CustomerRepository customerRepository;
+    private lateinit var customerRepository: CustomerRepository
 
     @MockitoBean
-    private PasswordEncoder passwordEncoder;
-
-
-
+    private lateinit var passwordEncoder: PasswordEncoder
 
     @Test
-    public void signup_passwordMismatch() {
-        CustomerSignupRequest customerSignupRequest = new CustomerSignupRequest(
-                "user1",
-                "1234",
-                "1111",
-                "홍길동",
-                "test@test.com",
-                "가장 좋아하는 음식은",
-                "밥"
-        );
+    fun signup_passwordMismatch() {
+        val customerSignupRequest = CustomerSignupRequest(
+            "user1",
+            "1234",
+            "1111",
+            "홍길동",
+            "test@test.com",
+            "가장 좋아하는 음식은",
+            "밥"
+        )
 
-        assertThrows(PasswordMismatchException.class, () -> authService.processCustomerSignup(customerSignupRequest));
+        Assertions.assertThrows(PasswordMismatchException::class.java) {
+            authService.processCustomerSignup(customerSignupRequest)
+        }
     }
 
     @Test
-    public void signup_customerUserNameAlreadyExist() {
-        CustomerSignupRequest customerSignupRequest = new CustomerSignupRequest(
-                "user1",
-                "1234",
-                "1234",
-                "홍길동",
-                "test@test.com",
-                "가장 좋아하는 음식은",
-                "밥"
-        );
+    fun signup_customerUserNameAlreadyExist() {
+        val customerSignupRequest = CustomerSignupRequest(
+            "user1",
+            "1234",
+            "1234",
+            "홍길동",
+            "test@test.com",
+            "가장 좋아하는 음식은",
+            "밥"
+        )
 
-        Customer customer = customerSignupRequest.toCustomer();
-        when(customerRepository.getCustomerByUsername(customerSignupRequest.getUsername())).thenReturn(Optional.of(customer));
+        val customer = customerSignupRequest.toCustomer()
+        Mockito.`when`(customerRepository.getCustomerByUsername(customerSignupRequest.username))
+            .thenReturn(Optional.of(customer))
 
-        assertThrows(CustomerAlreadyExistException.class, () -> authService.processCustomerSignup(customerSignupRequest));
+        Assertions.assertThrows(CustomerAlreadyExistException::class.java) {
+            authService.processCustomerSignup(customerSignupRequest)
+        }
     }
 
     @Test
-    public void signup_customerEmailAlreadyExist() {
-        CustomerSignupRequest customerSignupRequest = new CustomerSignupRequest(
-                "user1",
-                "1234",
-                "1234",
-                "홍길동",
-                "test@test.com",
-                "가장 좋아하는 음식은",
-                "밥"
-        );
+    fun signup_customerEmailAlreadyExist() {
+        val customerSignupRequest = CustomerSignupRequest(
+            "user1",
+            "1234",
+            "1234",
+            "홍길동",
+            "test@test.com",
+            "가장 좋아하는 음식은",
+            "밥"
+        )
 
-        Customer customer = customerSignupRequest.toCustomer();
-        when(customerRepository.getCustomerByEmail(customerSignupRequest.getEmail())).thenReturn(Optional.of(customer));
+        val customer = customerSignupRequest.toCustomer()
+        Mockito.`when`(customerRepository.getCustomerByEmail(customerSignupRequest.email))
+            .thenReturn(Optional.of(customer))
 
-        assertThrows(CustomerAlreadyExistException.class, () -> authService.processCustomerSignup(customerSignupRequest));
+        Assertions.assertThrows(CustomerAlreadyExistException::class.java) {
+            authService.processCustomerSignup(customerSignupRequest)
+        }
     }
 
 
-
     @Test
-    public void login_usernameNotFound() {
-        LoginRequest customerLoginRequest = new LoginRequest(
-                "user1",
-                "1234"
-        );
+    fun login_usernameNotFound() {
+        val customerLoginRequest = LoginRequest(
+            "user1",
+            "1234"
+        )
 
-        when(customerRepository.getCustomerByUsername("user1")).thenReturn(Optional.empty());
+        Mockito.`when`(customerRepository.getCustomerByUsername("user1")).thenReturn(Optional.empty())
 
-        assertThrows(IncorrectLoginAttemptException.class, () -> {
-            authService.processLoginCustomer(customerLoginRequest);
-        });
+        Assertions.assertThrows(IncorrectLoginAttemptException::class.java) {
+            authService.processLoginCustomer(customerLoginRequest)
+        }
 
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        assertNull(authentication);
+        val authentication = SecurityContextHolder.getContext().authentication
+        Assertions.assertNull(authentication)
     }
 
     @Test
-    public void login_incorrectPassword() {
-        LoginRequest customerLoginRequest = new LoginRequest(
-                "user1",
-                "1234"
-        );
+    fun login_incorrectPassword() {
+        val customerLoginRequest = LoginRequest(
+            "user1",
+            "1234"
+        )
 
-        Customer customer = new Customer(
-                "user1",
-                "1111");
+        val customer = Customer(
+            "user1",
+            "1111"
+        )
 
-        when(customerRepository.getCustomerByUsername("user1")).thenReturn(Optional.of(customer));
+        Mockito.`when`(customerRepository.getCustomerByUsername("user1")).thenReturn(Optional.of(customer))
 
-        assertThrows(IncorrectLoginAttemptException.class, () -> {
-            authService.processLoginCustomer(customerLoginRequest);
-        });
+        Assertions.assertThrows(IncorrectLoginAttemptException::class.java) {
+            authService.processLoginCustomer(customerLoginRequest)
+        }
 
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        assertNull(authentication);
+        val authentication = SecurityContextHolder.getContext().authentication
+        Assertions.assertNull(authentication)
     }
 }
