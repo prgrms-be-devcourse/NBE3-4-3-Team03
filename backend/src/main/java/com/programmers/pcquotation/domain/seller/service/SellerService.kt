@@ -2,7 +2,7 @@ package com.programmers.pcquotation.domain.seller.service
 
 import com.programmers.pcquotation.domain.member.entitiy.Member
 import com.programmers.pcquotation.domain.seller.dto.SellerUpdateDto
-import com.programmers.pcquotation.domain.seller.entitiy.Seller
+import com.programmers.pcquotation.domain.seller.entity.Seller
 import com.programmers.pcquotation.domain.seller.repository.SellerRepository
 import org.springframework.stereotype.Service
 import java.util.*

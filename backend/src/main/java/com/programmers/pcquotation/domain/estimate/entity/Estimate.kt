@@ -2,7 +2,7 @@ package com.programmers.pcquotation.domain.estimate.entity
 
 import com.programmers.pcquotation.domain.comment.emtity.Comment
 import com.programmers.pcquotation.domain.estimaterequest.entity.EstimateRequest
-import com.programmers.pcquotation.domain.seller.entitiy.Seller
+import com.programmers.pcquotation.domain.seller.entity.Seller
 import jakarta.persistence.*
 import java.time.LocalDateTime
 

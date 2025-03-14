@@ -1,6 +1,6 @@
 package com.programmers.pcquotation.domain.seller.dto
 
-import com.programmers.pcquotation.domain.seller.entitiy.Seller
+import com.programmers.pcquotation.domain.seller.entity.Seller
 import lombok.AllArgsConstructor
 import lombok.Builder
 import lombok.Getter

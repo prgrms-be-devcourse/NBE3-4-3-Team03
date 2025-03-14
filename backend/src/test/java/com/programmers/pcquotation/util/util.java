@@ -17,7 +17,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.programmers.pcquotation.domain.customer.entity.Customer;
 import com.programmers.pcquotation.domain.customer.service.CustomerService;
-import com.programmers.pcquotation.domain.seller.entitiy.Seller;
+import com.programmers.pcquotation.domain.seller.entity.Seller;
 import com.programmers.pcquotation.domain.seller.service.SellerService;
 @ActiveProfiles("test")
 public class util {

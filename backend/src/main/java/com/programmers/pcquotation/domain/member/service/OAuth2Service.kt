@@ -12,8 +12,8 @@ import com.programmers.pcquotation.domain.member.exception.Oauth2LoginException
 import com.programmers.pcquotation.domain.member.exception.RedirectInfoException
 import com.programmers.pcquotation.domain.member.exception.TokenNotFoundException
 import com.programmers.pcquotation.domain.member.exception.UserNotFoundException
-import com.programmers.pcquotation.global.Properties.OAuth2ProviderProperties
-import com.programmers.pcquotation.global.Properties.OAuth2RegistrationProperties
+import com.programmers.pcquotation.global.properties.OAuth2ProviderProperties
+import com.programmers.pcquotation.global.properties.OAuth2RegistrationProperties
 import com.programmers.pcquotation.global.config.RestTemplateConfig
 import com.programmers.pcquotation.global.enums.UserType
 import com.programmers.pcquotation.global.enums.UserType.*

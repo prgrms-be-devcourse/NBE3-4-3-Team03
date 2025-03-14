@@ -91,8 +91,8 @@ class ItemServiceTest {
 
 		ItemCreateResponse response = itemService.addItem(request);
 
-		assertThat(response.id()).isEqualTo(1L); // Mock에서 반환된 ID 검증
-		assertThat(response.message()).isEqualTo("부품 생성 완료");
+		assertThat(response.getId()).isEqualTo(1L); // Mock에서 반환된 ID 검증
+		assertThat(response.getMessage()).isEqualTo("부품 생성 완료");
 	}
 
 	@Test
@@ -123,8 +123,8 @@ class ItemServiceTest {
 
 		ItemUpdateResponse response = itemService.updateItem(1L, request);
 
-		assertThat(response.id()).isEqualTo(1L);
-		assertThat(response.message()).isEqualTo("부품 수정 완료");
+		assertThat(response.getId()).isEqualTo(1L);
+		assertThat(response.getMessage()).isEqualTo("부품 수정 완료");
 
 		assertThat(item.getName()).isEqualTo("새로운 부품 이름");
 		assertThat(item.getImgFilename()).isEqualTo("new-image.jpg");
@@ -147,8 +147,8 @@ class ItemServiceTest {
 
 		ItemDeleteResponse response = itemService.deleteItem(itemId);
 
-		assertThat(response.id()).isEqualTo(itemId);
-		assertThat(response.message()).isEqualTo("부품 삭제 완료");
+		assertThat(response.getId()).isEqualTo(itemId);
+		assertThat(response.getMessage()).isEqualTo("부품 삭제 완료");
 
 		verify(itemRepository, times(1)).findById(itemId);
 

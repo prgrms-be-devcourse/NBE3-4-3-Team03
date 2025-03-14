@@ -3,18 +3,18 @@ package com.programmers.pcquotation.domain.item.dto;
 import jakarta.validation.constraints.NotBlank;
 
 data class ItemInfoResponse(
-    @field:NotBlank
+    @NotBlank
     val id: Long,
 
-    @field:NotBlank
+    @NotBlank
     val name: String,
 
-    @field:NotBlank
+    @NotBlank
     val categoryId: Long,
 
-    @field:NotBlank
+    @NotBlank
     val categoryName: String,
 
-    @field:NotBlank
+    @NotBlank
     val filename: String
 )

@@ -1,4 +1,4 @@
-package com.programmers.pcquotation.domain.seller.entitiy
+package com.programmers.pcquotation.domain.seller.entity
 
 import com.programmers.pcquotation.domain.member.entitiy.Member
 import com.programmers.pcquotation.domain.seller.dto.SellerSignupRequest

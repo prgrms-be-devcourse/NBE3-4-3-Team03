@@ -7,17 +7,17 @@ import org.springframework.web.bind.annotation.ControllerAdvice
 import org.springframework.web.bind.annotation.ExceptionHandler
 
 @ControllerAdvice
-class Oauth2ExceptionHandler {
+class OAuth2ExceptionHandler {
 
     @ExceptionHandler(Oauth2InfoResponseException::class)
-    fun handleOauth2InfoResponse(ex: Oauth2InfoResponseException): ResponseEntity<Any> {
+    fun handleOAuth2InfoResponse(ex: Oauth2InfoResponseException): ResponseEntity<Any> {
         return ResponseEntity.status(HttpStatus.FOUND)
             .header(LOCATION, "http://localhost:3000/social/error/${ex.message}")
             .build()
     }
 
     @ExceptionHandler(Oauth2LoginException::class)
-    fun handleOauth2Login(ex: Oauth2LoginException): ResponseEntity<Any> {
+    fun handleOAuth2Login(ex: Oauth2LoginException): ResponseEntity<Any> {
         return ResponseEntity.status(HttpStatus.FOUND)
             .header(LOCATION, "http://localhost:3000/social/error/${ex.message}")
             .build()

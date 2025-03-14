@@ -1,6 +1,6 @@
 package com.programmers.pcquotation.domain.seller.repository
 
-import com.programmers.pcquotation.domain.seller.entitiy.Seller
+import com.programmers.pcquotation.domain.seller.entity.Seller
 import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.stereotype.Repository
 import java.util.*

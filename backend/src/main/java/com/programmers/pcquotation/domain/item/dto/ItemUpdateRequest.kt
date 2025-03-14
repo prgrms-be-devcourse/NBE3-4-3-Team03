@@ -1,16 +1,13 @@
-package com.programmers.pcquotation.domain.item.dto;
+package com.programmers.pcquotation.domain.item.dto
 
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotBlank
 
-public record ItemUpdateRequest(
-	@NotBlank
-	String name,
+data class ItemUpdateRequest(
+    @NotBlank
+    val name: String,
 
-	@NotBlank
-	String imgFilename,
+    @NotBlank
+    val imgFilename: String,
 
-	@NotNull
-	Long categoryId
-) {
-}
+    val categoryId: Long
+)

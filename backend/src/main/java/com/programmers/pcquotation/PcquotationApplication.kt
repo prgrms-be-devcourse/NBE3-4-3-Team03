@@ -1,16 +1,15 @@
-package com.programmers.pcquotation;
+package com.programmers.pcquotation
 
-import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.boot.context.properties.ConfigurationPropertiesScan;
-import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
+import org.springframework.boot.SpringApplication
+import org.springframework.boot.autoconfigure.SpringBootApplication
+import org.springframework.boot.context.properties.ConfigurationPropertiesScan
+import org.springframework.data.jpa.repository.config.EnableJpaAuditing
 
-@SpringBootApplication(scanBasePackages = "com.programmers.pcquotation")
+@SpringBootApplication(scanBasePackages = ["com.programmers.pcquotation"])
 @EnableJpaAuditing
-@ConfigurationPropertiesScan("com.programmers.pcquotation.global.Properties")
+@ConfigurationPropertiesScan("com.programmers.pcquotation.global.properties")
+class PcquotationApplication
 
-public class PcquotationApplication {
-    public static void main(String[] args) {
-        SpringApplication.run(PcquotationApplication.class, args);
-    }
+fun main(args: Array<String>) {
+    SpringApplication.run(PcquotationApplication::class.java, *args)
 }

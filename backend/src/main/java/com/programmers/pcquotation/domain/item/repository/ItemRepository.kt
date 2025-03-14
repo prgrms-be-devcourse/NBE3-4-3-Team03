@@ -1,17 +1,13 @@
-package com.programmers.pcquotation.domain.item.repository;
+package com.programmers.pcquotation.domain.item.repository
 
-import java.util.List;
-import java.util.Optional;
+import com.programmers.pcquotation.domain.item.entity.Item
+import org.springframework.data.jpa.repository.JpaRepository
+import org.springframework.data.jpa.repository.Query
+import java.util.*
 
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Query;
-import org.springframework.stereotype.Repository;
+interface ItemRepository : JpaRepository<Item, Long> {
+    @Query("SELECT i FROM Item i JOIN FETCH i.category WHERE i.category.id = :categoryId")
+    fun findByCategoryId(categoryId: Long): List<Item>
 
-import com.programmers.pcquotation.domain.admin.entitiy.Admin;
-import com.programmers.pcquotation.domain.item.entity.Item;
-
-public interface ItemRepository extends JpaRepository<Item, Long> {
-	@Query("SELECT i FROM Item i JOIN FETCH i.category WHERE i.category.id = :categoryId")
-	List<Item> findByCategoryId(Long categoryId);
-	Optional<Item> findByName(String name);
+    fun findByName(name: String): Optional<Item>
 }

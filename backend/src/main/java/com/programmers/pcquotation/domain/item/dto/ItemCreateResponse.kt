@@ -1,12 +1,7 @@
-package com.programmers.pcquotation.domain.item.dto;
+package com.programmers.pcquotation.domain.item.dto
 
-import org.springframework.lang.NonNull;
+data class ItemCreateResponse(
+    val id: Long,
 
-public record ItemCreateResponse(
-	@NonNull
-	Long id,
-
-	@NonNull
-	String message // 예: "부품이 성공적으로 생성되었습니다."
-) {
-}
+    val message: String // 예: "부품이 성공적으로 생성되었습니다."
+)

@@ -7,7 +7,7 @@ import com.programmers.pcquotation.domain.estimate.entity.EstimateComponent
 import com.programmers.pcquotation.domain.estimate.repository.EstimateRepository
 import com.programmers.pcquotation.domain.estimaterequest.service.EstimateRequestService
 import com.programmers.pcquotation.domain.item.service.ItemService
-import com.programmers.pcquotation.domain.seller.entitiy.Seller
+import com.programmers.pcquotation.domain.seller.entity.Seller
 import com.programmers.pcquotation.domain.seller.service.SellerService
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable

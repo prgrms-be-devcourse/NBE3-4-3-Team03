@@ -1,16 +1,11 @@
-package com.programmers.pcquotation.domain.item.dto;
+package com.programmers.pcquotation.domain.item.dto
 
-import org.springframework.web.multipart.MultipartFile;
+import jakarta.validation.constraints.NotEmpty
+import org.springframework.web.multipart.MultipartFile
 
-import jakarta.validation.constraints.NotEmpty;
-import jakarta.validation.constraints.NotNull;
-
-public record ItemCreateRequest(
-	@NotNull
-	Long categoryId,
-	@NotEmpty
-	String name,
-
-	MultipartFile image
-) {
-}
+data class ItemCreateRequest(
+    val categoryId: Long,
+    @NotEmpty
+    val name: String,
+    val image: MultipartFile
+)

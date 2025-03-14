@@ -2,7 +2,7 @@ package com.programmers.pcquotation.domain.alarm.service
 
 import com.programmers.pcquotation.domain.estimate.entity.Estimate
 import com.programmers.pcquotation.domain.estimate.repository.EstimateRepository
-import com.programmers.pcquotation.domain.seller.entitiy.Seller
+import com.programmers.pcquotation.domain.seller.entity.Seller
 import com.programmers.pcquotation.domain.seller.repository.SellerRepository
 import org.springframework.stereotype.Service
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter

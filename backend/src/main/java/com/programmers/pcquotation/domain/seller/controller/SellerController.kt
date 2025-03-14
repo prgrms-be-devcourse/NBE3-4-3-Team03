@@ -1,6 +1,6 @@
 package com.programmers.pcquotation.domain.seller.controller
 
-import com.programmers.pcquotation.domain.seller.dto.SellerInfoRespnse
+import com.programmers.pcquotation.domain.seller.dto.SellerInfoResponse
 import com.programmers.pcquotation.domain.seller.dto.SellerUpdateDto
 import com.programmers.pcquotation.domain.seller.service.BusinessConfirmationService
 import com.programmers.pcquotation.domain.seller.service.SellerService
@@ -19,11 +19,11 @@ class SellerController(
 
     @GetMapping
     @Transactional(readOnly = true)
-    fun info(principal: Principal): SellerInfoRespnse {
+    fun info(principal: Principal): SellerInfoResponse {
         val seller = sellerService
             .findByUserName(principal.name)
             .orElseThrow { NullPointerException("존재하지 않는 사용자입니다.") }
-        return SellerInfoRespnse(
+        return SellerInfoResponse(
             seller.id,
             seller.username,
             seller.companyName,

@@ -23,7 +23,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.programmers.pcquotation.domain.member.service.AuthService;
-import com.programmers.pcquotation.domain.seller.entitiy.Seller;
+import com.programmers.pcquotation.domain.seller.entity.Seller;
 import com.programmers.pcquotation.domain.seller.service.SellerService;
 @SpringBootTest
 @AutoConfigureMockMvc

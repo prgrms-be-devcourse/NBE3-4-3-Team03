@@ -14,7 +14,7 @@ import com.programmers.pcquotation.domain.member.dto.LoginResponse
 import com.programmers.pcquotation.domain.member.entitiy.Member
 import com.programmers.pcquotation.domain.seller.dto.SellerSignupRequest
 import com.programmers.pcquotation.domain.seller.dto.SellerSignupResponse
-import com.programmers.pcquotation.domain.seller.entitiy.Seller
+import com.programmers.pcquotation.domain.seller.entity.Seller
 import com.programmers.pcquotation.domain.seller.service.SellerService
 import com.programmers.pcquotation.global.enums.UserType
 import com.programmers.pcquotation.global.enums.UserType.*

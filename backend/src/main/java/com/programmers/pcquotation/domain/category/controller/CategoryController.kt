@@ -1,62 +1,37 @@
-package com.programmers.pcquotation.domain.category.controller;
+package com.programmers.pcquotation.domain.category.controller
 
-import java.util.List;
-
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-
-import com.programmers.pcquotation.domain.category.dto.CategoryCreateRequest;
-import com.programmers.pcquotation.domain.category.dto.CategoryCreateResponse;
-import com.programmers.pcquotation.domain.category.dto.CategoryDeleteResponse;
-import com.programmers.pcquotation.domain.category.dto.CategoryInfoResponse;
-import com.programmers.pcquotation.domain.category.dto.CategoryUpdateRequest;
-import com.programmers.pcquotation.domain.category.dto.CategoryUpdateResponse;
-import com.programmers.pcquotation.domain.category.service.CategoryService;
-
-import lombok.RequiredArgsConstructor;
+import com.programmers.pcquotation.domain.category.dto.*
+import com.programmers.pcquotation.domain.category.service.CategoryService
+import org.springframework.web.bind.annotation.*
 
 @RestController
-@RequiredArgsConstructor
 @RequestMapping("/api/admin/categories")
-public class CategoryController {
+class CategoryController(
+    private val categoryService: CategoryService
+) {
+    // 카테고리 추가
+    @PostMapping
+    fun createCategory(@RequestBody request: CategoryCreateRequest): CategoryCreateResponse {
+        return categoryService.addCategory(request)
+    }
 
-	private final CategoryService categoryService;
+    @GetMapping
+    fun getCategoryList(): List<CategoryInfoResponse> {
+        return categoryService.getCategoryList()
+    }
 
-	// 카테고리 추가
-	@PostMapping
-	public CategoryCreateResponse createCategory(
-		@RequestBody CategoryCreateRequest request
-	) {
-		return categoryService.addCategory(request);
-	}
+    //카테고리 수정
+    @PutMapping("/{id}")
+    fun updateCategory(
+        @PathVariable id: Long,
+        @RequestBody request: CategoryUpdateRequest
+    ): CategoryUpdateResponse {
+        return categoryService.updateCategory(id, request)
+    }
 
-	//카테고리 다건조회
-	@GetMapping
-	public List<CategoryInfoResponse> getCategoryList() {
-		return categoryService.getCategoryList();
-	}
-
-	//카테고리 수정
-	@PutMapping("/{id}")
-	public CategoryUpdateResponse updateCategory(
-		@PathVariable Long id,
-		@RequestBody CategoryUpdateRequest request
-	) {
-		return categoryService.updateCategory(id, request);
-	}
-
-	//카테고리 삭제
-	@DeleteMapping("/{id}")
-	public CategoryDeleteResponse deleteCategory(
-		@PathVariable Long id
-	) {
-		return categoryService.deleteCategory(id);
-
-	}
+    //카테고리 삭제
+    @DeleteMapping("/{id}")
+    fun deleteCategory(@PathVariable id: Long): CategoryDeleteResponse {
+        return categoryService.deleteCategory(id)
+    }
 }

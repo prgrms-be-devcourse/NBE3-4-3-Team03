@@ -1,7 +1,6 @@
-package com.programmers.pcquotation.domain.item.dto;
+package com.programmers.pcquotation.domain.item.dto
 
-public record ItemDeleteResponse(
-	Long id,
-	String message
-) {
-}
+data class ItemDeleteResponse(
+	val id: Long,
+	val message: String
+)

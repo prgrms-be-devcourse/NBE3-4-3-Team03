@@ -1,10 +1,6 @@
-package com.programmers.pcquotation.domain.item.exception.image;
+package com.programmers.pcquotation.domain.item.exception.image
 
 /**
  * 프론트에서 이미지 관련 잘못된 요청을 하는 경우 반환하는 예외
  */
-public class InvalidImageRequestException extends RuntimeException {
-	public InvalidImageRequestException(String message) {
-		super(message);
-	}
-}
+class InvalidImageRequestException(message: String) : RuntimeException(message)
