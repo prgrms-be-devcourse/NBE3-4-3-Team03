@@ -18,8 +18,7 @@ class DeliveryController(
 
     @GetMapping
     fun getDeliveryList()
-    : ResponseEntity<List<DeliveryDto>>
-    {
+            : ResponseEntity<List<DeliveryDto>> {
         return ResponseEntity
             .status(HttpStatus.OK)
             .body(deliveryService.findAll())
@@ -27,8 +26,7 @@ class DeliveryController(
 
     @GetMapping("/{id}")
     fun getDeliveryDetail(@PathVariable id: Int)
-    : ResponseEntity<DeliveryDto>
-    {
+            : ResponseEntity<DeliveryDto> {
         return ResponseEntity
             .status(HttpStatus.OK)
             .body(deliveryService.findByDeliveryId(id))
@@ -36,9 +34,9 @@ class DeliveryController(
 
     @PostMapping
     fun createDelivery(
-        @RequestBody deliveryCreateRequest: @Valid DeliveryCreateRequest, @RequestParam("id") estimateId: Int)
-    : ResponseEntity<String>
-    {
+        @RequestBody deliveryCreateRequest: @Valid DeliveryCreateRequest, @RequestParam("id") estimateId: Int
+    )
+            : ResponseEntity<String> {
         deliveryService.create(deliveryCreateRequest, estimateId)
         alarmService.adoptAlarmToSeller(estimateId)
         return ResponseEntity
@@ -48,8 +46,7 @@ class DeliveryController(
 
     @DeleteMapping("/{id}")
     fun deleteDelivery(@PathVariable id: Int)
-    : ResponseEntity<String>
-    {
+            : ResponseEntity<String> {
         deliveryService.deleteByDeliveryId(id)
         return ResponseEntity
             .status(HttpStatus.OK)
@@ -58,8 +55,7 @@ class DeliveryController(
 
     @PutMapping("/{id}")
     fun modifyDelivery(@PathVariable id: Int, @RequestBody deliveryCreateRequest: @Valid DeliveryCreateRequest)
-    : ResponseEntity<String>
-    {
+            : ResponseEntity<String> {
         deliveryService.modify(id, deliveryCreateRequest)
         return ResponseEntity
             .status(HttpStatus.OK)

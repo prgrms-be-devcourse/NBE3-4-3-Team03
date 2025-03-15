@@ -23,30 +23,35 @@ class AuthController(
     @PostMapping("/signup/customer")
     fun signup(@RequestBody customerSignupRequest: CustomerSignupRequest): ResponseEntity<CustomerSignupResponse> {
         val signupResponse = authService.processCustomerSignup(customerSignupRequest)
+
         return ResponseEntity(signupResponse, HttpStatus.CREATED)
     }
 
     @PostMapping("/signup/seller")
     fun signup(@RequestBody sellerSignupRequest: SellerSignupRequest): ResponseEntity<SellerSignupResponse> {
         val signupResponse = authService.processSellerSignup(sellerSignupRequest)
+
         return ResponseEntity(signupResponse, HttpStatus.CREATED)
     }
 
     @PostMapping("/login/customer")
     fun loginCustomer(@RequestBody customerLoginRequest: LoginRequest): ResponseEntity<LoginResponse> {
         val loginResponse = authService.processLoginCustomer(customerLoginRequest)
+
         return ResponseEntity(loginResponse, HttpStatus.OK)
     }
 
     @PostMapping("/login/seller")
     fun loginSeller(@RequestBody loginRequest: LoginRequest): ResponseEntity<LoginResponse> {
         val loginResponse = authService.processLoginSeller(loginRequest)
+
         return ResponseEntity(loginResponse, HttpStatus.OK)
     }
 
     @PostMapping("/login/admin")
     fun loginAdmin(@RequestBody loginRequest: LoginRequest): ResponseEntity<LoginResponse> {
         val loginResponse = authService.processLoginAdmin(loginRequest)
+
         return ResponseEntity(loginResponse, HttpStatus.OK)
     }
 
@@ -96,14 +101,15 @@ class AuthController(
 
     @GetMapping
     fun CheckAuthentication(): ResponseEntity<AuthRequest> {
-
         val authRequest = authService.memberFromRq
+
         return ResponseEntity(authRequest, HttpStatus.OK)
     }
 
     @PostMapping("/logout")
     fun logout(): ResponseEntity<Void> {
         authService.processLogout()
+
         return ResponseEntity(HttpStatus.OK)
     }
 }

@@ -18,6 +18,7 @@ class EstimateRequestExceptionHandler {
             .status(HttpStatus.BAD_REQUEST)
             .body("입력한 내용을 다시 확인해주세요")
     }
+
     @ExceptionHandler(SQLException::class)
     fun handleException(e: SQLException?): ResponseEntity<String> {
         return ResponseEntity

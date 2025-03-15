@@ -4,7 +4,6 @@ import jakarta.persistence.*
 import org.hibernate.annotations.CreationTimestamp
 import java.time.LocalDateTime
 
-
 @Entity
 class Chat(
     @ManyToOne(cascade = [CascadeType.DETACH], fetch = FetchType.LAZY)
@@ -25,4 +24,3 @@ class Chat(
     @Column(updatable = false)
     val sendDate: LocalDateTime = LocalDateTime.now()
 }
-

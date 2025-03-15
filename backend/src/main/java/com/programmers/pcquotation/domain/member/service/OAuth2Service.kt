@@ -12,8 +12,8 @@ import com.programmers.pcquotation.domain.member.exception.Oauth2LoginException
 import com.programmers.pcquotation.domain.member.exception.RedirectInfoException
 import com.programmers.pcquotation.domain.member.exception.TokenNotFoundException
 import com.programmers.pcquotation.domain.member.exception.UserNotFoundException
-import com.programmers.pcquotation.global.Properties.OAuth2ProviderProperties
-import com.programmers.pcquotation.global.Properties.OAuth2RegistrationProperties
+import com.programmers.pcquotation.global.properties.OAuth2ProviderProperties
+import com.programmers.pcquotation.global.properties.OAuth2RegistrationProperties
 import com.programmers.pcquotation.global.config.RestTemplateConfig
 import com.programmers.pcquotation.global.enums.UserType
 import com.programmers.pcquotation.global.enums.UserType.*
@@ -33,8 +33,6 @@ class OAuth2Service(
     private val authService: AuthService,
     private val customerService: CustomerService,
 ) {
-
-
     fun defaultHeader(): HttpHeaders {
         val headers = HttpHeaders()
         headers.contentType = MediaType.APPLICATION_FORM_URLENCODED
@@ -52,7 +50,7 @@ class OAuth2Service(
             when (authInfo.userType) {
                 CUSTOMER -> {
                     val customer = customerService.findCustomerByEmail(userInfo.response.email)
-                    if (customer.isEmpty)
+                    if (customer == null)
                         authService.processCustomerSignup(userInfo.toCustomerSignupRequest())
                     authService.processLoginCustomer(userInfo.toLoginRequest())
                 }
@@ -167,7 +165,7 @@ class OAuth2Service(
             when (authInfo.userType) {
                 CUSTOMER -> {
                     val customer = customerService.findCustomerByEmail(userInfo.response.email)
-                    if (customer.isEmpty)
+                    if (customer != null)
                         authService.processCustomerSignup(userInfo.toCustomerSignupRequest())
                     authService.processLoginCustomer(userInfo.toLoginRequest())
                 }

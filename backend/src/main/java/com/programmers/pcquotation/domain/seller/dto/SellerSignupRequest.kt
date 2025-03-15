@@ -1,6 +1,6 @@
 package com.programmers.pcquotation.domain.seller.dto
 
-import com.programmers.pcquotation.domain.seller.entitiy.Seller
+import com.programmers.pcquotation.domain.seller.entity.Seller
 import jakarta.validation.constraints.NotNull
 import jakarta.validation.constraints.Size
 

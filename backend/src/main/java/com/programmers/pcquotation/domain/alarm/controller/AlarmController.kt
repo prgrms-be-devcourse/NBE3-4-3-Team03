@@ -10,15 +10,15 @@ import org.springframework.web.servlet.mvc.method.annotation.SseEmitter
 
 @RestController
 @RequestMapping("/sse")
-class AlarmController (
-	private val alarmService: AlarmService
-){
-	
-	@GetMapping("/login")
-	fun subscribe(@AuthenticationPrincipal userDetails:UserDetails): SseEmitter {
-		val userName:String = userDetails.username
-		val sseEmitter: SseEmitter = alarmService.subscribe(userName)
-		return sseEmitter
-	}
+class AlarmController(
+    private val alarmService: AlarmService
+) {
+
+    @GetMapping("/login")
+    fun subscribe(@AuthenticationPrincipal userDetails: UserDetails): SseEmitter {
+        val userName: String = userDetails.username
+        val sseEmitter: SseEmitter = alarmService.subscribe(userName)
+        return sseEmitter
+    }
 
 }

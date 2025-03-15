@@ -17,6 +17,7 @@ import com.programmers.pcquotation.domain.item.repository.ItemRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.cache.annotation.CacheEvict
 import org.springframework.cache.annotation.Cacheable
+import org.springframework.data.repository.findByIdOrNull
 
 @Service
 class ItemService(
@@ -27,8 +28,8 @@ class ItemService(
     @Transactional
     @CacheEvict(value = ["items"], allEntries = true)
     fun addItem(request: ItemCreateRequest): ItemCreateResponse {
-        val category: Category = categoryRepository.findById(request.categoryId)
-            .orElseThrow { IllegalArgumentException("유효하지 않은 카테고리 ID입니다.") }
+        val category: Category = categoryRepository.findByIdOrNull(request.categoryId)
+            ?: throw IllegalArgumentException("유효하지 않은 카테고리 ID입니다.")
 
         val filename = imageService.storeImage(request.image)
 
@@ -59,11 +60,11 @@ class ItemService(
     @Transactional
     @CacheEvict(value = ["items"], allEntries = true)
     fun updateItem(id: Long, request: ItemUpdateRequest): ItemUpdateResponse {
-        val item: Item = itemRepository.findById(id)
-            .orElseThrow { ItemNotFoundException(id) }
+        val item: Item = itemRepository.findByIdOrNull(id)
+            ?: throw ItemNotFoundException(id)
 
-        val category: Category = categoryRepository.findById(request.categoryId)
-            .orElseThrow { IllegalArgumentException("유효하지 않은 카테고리 ID입니다.") }
+        val category: Category = categoryRepository.findByIdOrNull(request.categoryId)
+            ?: throw IllegalArgumentException("유효하지 않은 카테고리 ID입니다.")
 
         val imgFilename = request.imgFilename.takeIf { !it.isNullOrEmpty() } ?: item.imgFilename
 
@@ -79,8 +80,8 @@ class ItemService(
     @Transactional
     @CacheEvict(value = ["items"], allEntries = true)
     fun deleteItem(id: Long): ItemDeleteResponse {
-        val item: Item = itemRepository.findById(id)
-            .orElseThrow { ItemNotFoundException(id) }
+        val item: Item = itemRepository.findByIdOrNull(id)
+            ?: throw ItemNotFoundException(id)
 
         itemRepository.delete(item)
 
@@ -88,12 +89,12 @@ class ItemService(
     }
 
     fun findByName(name: String): Item? {
-        return itemRepository.findByName(name).orElse(null)
+        return itemRepository.findByName(name)
     }
 
     fun findById(id: Long): Item {
-        return itemRepository.findById(id)
-            .orElseThrow { NoSuchElementException("존재하지 않는 아이템입니다.") }
+        return itemRepository.findByIdOrNull(id)
+            ?: throw NoSuchElementException("존재하지 않는 아이템입니다.")
     }
 
     private fun toItemInfoResponse(item: Item): ItemInfoResponse {

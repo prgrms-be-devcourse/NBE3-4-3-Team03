@@ -7,7 +7,6 @@ import jakarta.persistence.*
 import org.springframework.data.annotation.CreatedDate
 import java.time.LocalDateTime
 
-
 @Entity
 class EstimateRequest @JvmOverloads constructor(
     @Column(length = 20)
@@ -30,7 +29,7 @@ class EstimateRequest @JvmOverloads constructor(
     var createDate: LocalDateTime = LocalDateTime.now()
 
     @Enumerated(EnumType.STRING)
-    var status: EstimateRequestStatus = EstimateRequestStatus.Wait // 0: 대기 중, 1: 채택됨
+    var status: EstimateRequestStatus = EstimateRequestStatus.WAIT // 0: 대기 중, 1: 채택됨
 
     @OneToMany(mappedBy = "estimateRequest", cascade = [CascadeType.REMOVE])
     var estimate: MutableList<Estimate>? = null

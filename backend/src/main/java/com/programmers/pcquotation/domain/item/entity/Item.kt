@@ -13,17 +13,16 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.validation.constraints.NotEmpty;
 
-
 @Entity
 class Item(
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     val id: Long? = null,
 
-    @field:NotEmpty
+    @NotEmpty
     var name: String,
 
-    @field:NotEmpty
+    @NotEmpty
     var imgFilename: String,
 
     @ManyToOne

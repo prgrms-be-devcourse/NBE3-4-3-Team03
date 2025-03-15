@@ -7,9 +7,9 @@ import com.programmers.pcquotation.domain.estimaterequest.entity.EstimateRequest
 import java.util.*
 
 interface EstimateRequestService {
-    fun createEstimateRequest(estimateRequestData : EstimateRequestData, customer : Customer)
+    fun createEstimateRequest(estimateRequestData: EstimateRequestData, customer: Customer)
 
-    fun getEstimateRequestById(id: Int): Optional<EstimateRequest>
+    fun getEstimateRequestById(id: Int): EstimateRequest
 
     fun getEstimateRequestByCustomerId(customer: Customer): List<EstimateRequestResDto>
 
@@ -19,5 +19,5 @@ interface EstimateRequestService {
 
     fun deleteByEstimateId(id: Int)
 
-    fun getAllEstimateRequest():List<EstimateRequestResDto>
+    fun getAllEstimateRequest(): List<EstimateRequestResDto>
 }

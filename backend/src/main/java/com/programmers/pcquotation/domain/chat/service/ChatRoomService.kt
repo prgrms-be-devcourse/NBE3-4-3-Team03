@@ -4,6 +4,7 @@ import com.programmers.pcquotation.domain.chat.entity.ChatRoom
 import com.programmers.pcquotation.domain.chat.repository.ChatRoomRepository
 import com.programmers.pcquotation.domain.estimate.entity.Estimate
 import com.programmers.pcquotation.domain.estimate.repository.EstimateRepository
+import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
@@ -12,7 +13,6 @@ class ChatRoomService(
     private val chatRoomRepository: ChatRoomRepository,
     private val estimateRepository: EstimateRepository
 ) {
-
     fun createChatRoom(estimate: Estimate) {
         val chatRoom = ChatRoom(estimate)
         chatRoomRepository.save(chatRoom)
@@ -20,8 +20,9 @@ class ChatRoomService(
 
     @Transactional
     fun deleteChatRoom(id: Int) {
-        val estimate = estimateRepository.findById(id)
-            .orElseThrow { NoSuchElementException("존재하지 않는 견적서입니다.") }
+        val estimate = estimateRepository.findByIdOrNull(id)
+            ?: throw NoSuchElementException("존재하지 않는 견적서입니다.")
+
         chatRoomRepository.deleteByEstimate(estimate);
     }
 }

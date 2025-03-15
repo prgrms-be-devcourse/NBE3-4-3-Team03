@@ -8,7 +8,7 @@ import org.springframework.security.core.userdetails.UserDetails
 import org.springframework.stereotype.Component
 import org.springframework.web.context.annotation.RequestScope
 import com.programmers.pcquotation.domain.estimaterequest.exception.NullEntityException
-import com.programmers.pcquotation.domain.member.entitiy.Member
+import com.programmers.pcquotation.domain.member.entity.Member
 import com.programmers.pcquotation.global.enums.UserType
 import com.programmers.pcquotation.global.security.CustomUserDetails
 import com.programmers.pcquotation.global.security.CustomUserDetailsService
@@ -37,7 +37,7 @@ class Rq @Autowired constructor(
         try {
             val authorization = getHeader("Authorization")
                 .takeIf { !it.isBlank() } ?: throw NullEntityException("인증 정보가 없습니다.")
-            
+
             if (!authorization.startsWith("Bearer ")) {
                 throw NullEntityException("잘못된 인증 형식입니다.")
             }
@@ -54,7 +54,7 @@ class Rq @Autowired constructor(
 
             val authentication = SecurityContextHolder.getContext().authentication
                 ?: throw NullEntityException("인증 컨텍스트가 없습니다.")
-                
+
             val userDetails = authentication.principal as? UserDetails
                 ?: throw NullEntityException("사용자 정보가 올바르지 않습니다.")
 

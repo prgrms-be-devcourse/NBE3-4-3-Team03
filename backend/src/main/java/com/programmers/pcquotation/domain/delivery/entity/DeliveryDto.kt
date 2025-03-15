@@ -6,7 +6,7 @@ data class DeliveryDto(
     val estimateId: Int,
     val status: DeliveryStatus,
 ) {
-    constructor(delivery: Delivery):this(
+    constructor(delivery: Delivery) : this(
         id = delivery.id,
         address = delivery.address,
         estimateId = delivery.estimate.id,

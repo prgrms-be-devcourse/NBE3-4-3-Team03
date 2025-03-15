@@ -8,19 +8,22 @@ import com.programmers.pcquotation.domain.delivery.repository.DeliveryRepository
 import com.programmers.pcquotation.domain.estimate.repository.EstimateRepository
 import com.programmers.pcquotation.domain.estimaterequest.entity.EstimateRequestStatus
 import jakarta.transaction.Transactional
+import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
+import java.util.NoSuchElementException
 
 @Service
 @Transactional
 class DeliveryServiceByJpa(
     private val deliveryRepository: DeliveryRepository,
     private val estimateRepository: EstimateRepository
-):DeliveryService{
+) : DeliveryService {
 
     //배달 생성을 통해 채택된 상태로 변경
-    override fun create(deliveryCreateRequest:DeliveryCreateRequest, estimateId: Int) {
-        val estimate = estimateRepository.getEstimateById(estimateId)
-        estimate.estimateRequest.updateEstimateRequestStatus(EstimateRequestStatus.Adopt)
+    override fun create(deliveryCreateRequest: DeliveryCreateRequest, id: Int) {
+        val estimate = estimateRepository.getEstimateById(id)
+        estimate.estimateRequest.updateEstimateRequestStatus(EstimateRequestStatus.ADOPT)
+
         val delivery = Delivery(estimate, deliveryCreateRequest.address)
         deliveryRepository.save(delivery)
     }
@@ -32,23 +35,23 @@ class DeliveryServiceByJpa(
     }
 
     override fun findByDeliveryId(id: Int): DeliveryDto {
-        return deliveryRepository
-            .findById(id)
-            .map { delivery -> DeliveryDto(delivery) }
-            .orElseThrow { NullEntityException() }
+        val delivery = deliveryRepository.findByIdOrNull(id)
+            ?: throw NoSuchElementException()
+        return DeliveryDto(delivery)
     }
 
     //배달 삭제 로직을 통해 견적 요청 상태가 초기값으로 돌아가게함
     override fun deleteByDeliveryId(id: Int) {
-        val delivery = deliveryRepository.findById(id).orElseThrow { NullEntityException() }
-        delivery.estimate.estimateRequest.updateEstimateRequestStatus(EstimateRequestStatus.Wait)
+        val delivery = deliveryRepository.findByIdOrNull(id) ?: throw NullEntityException()
+        delivery.estimate.estimateRequest.updateEstimateRequestStatus(EstimateRequestStatus.WAIT)
+
         deliveryRepository.delete(delivery)
     }
 
-    override fun modify(id: Int, deliveryCreateRequest:DeliveryCreateRequest) {
-        deliveryRepository
-            .findById(id)
-            .orElseThrow { NullEntityException() }
-            .updateAddress(deliveryCreateRequest.address)
+    override fun modify(id: Int, deliveryCreateRequest: DeliveryCreateRequest) {
+        val delivery = deliveryRepository.findByIdOrNull(id)
+            ?: throw NoSuchElementException()
+
+        delivery.updateAddress(deliveryCreateRequest.address)
     }
 }

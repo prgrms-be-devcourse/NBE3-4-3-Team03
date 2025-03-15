@@ -1,6 +1,5 @@
 package com.programmers.pcquotation.global.config;
 
-
 import org.springframework.context.annotation.Bean
 import org.springframework.http.HttpHeaders
 import org.springframework.http.MediaType

@@ -2,7 +2,7 @@ package com.programmers.pcquotation.global.security
 
 import org.springframework.security.core.GrantedAuthority
 import org.springframework.security.core.userdetails.UserDetails
-import com.programmers.pcquotation.domain.member.entitiy.Member
+import com.programmers.pcquotation.domain.member.entity.Member
 
 class CustomUserDetails(
     private val member: Member
