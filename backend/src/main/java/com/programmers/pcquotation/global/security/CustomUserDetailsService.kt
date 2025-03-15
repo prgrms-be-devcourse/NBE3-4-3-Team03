@@ -11,7 +11,6 @@ import com.programmers.pcquotation.domain.member.exception.UserNotFoundException
 import com.programmers.pcquotation.domain.seller.service.SellerService;
 import com.programmers.pcquotation.global.enums.UserType;
 
-
 @Service
 class CustomUserDetailsService(
     private val customerService: CustomerService,

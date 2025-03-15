@@ -25,7 +25,7 @@ import java.util.NoSuchElementException
 @AutoConfigureMockMvc
 @Transactional
 @ActiveProfiles("test")
-internal class SellerControllerTest {
+class SellerControllerTest {
     @Autowired
     private lateinit var sellerService: SellerService
 

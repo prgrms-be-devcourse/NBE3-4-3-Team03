@@ -91,7 +91,7 @@ class EstimateRequestControllerTest {
 		val estimateRequestData = EstimateRequestData("test purpose", 100, "")
 		val requestBody = ObjectMapper().writeValueAsString(estimateRequestData)
 		
-		Mockito.`when`(estimateRequestService.modify(id, estimateRequestData)).thenThrow(NullEntityException())
+		Mockito.`when`(estimateRequestService.modify(id, estimateRequestData)).thenThrow(NullEntityException(""))
 		
 		val resultActions = mvc.perform(
 			MockMvcRequestBuilders.put("/estimate/request/$id")
@@ -129,7 +129,7 @@ class EstimateRequestControllerTest {
 	fun 견적_요청_삭제_실패() {
 		val id = 2
 		
-		Mockito.`when`(estimateRequestService.deleteByEstimateId(id)).thenThrow(NullEntityException())
+		Mockito.`when`(estimateRequestService.deleteByEstimateId(id)).thenThrow(NullEntityException(""))
 		
 		val resultActions = mvc.perform(
 			MockMvcRequestBuilders.delete("/estimate/request/$id")

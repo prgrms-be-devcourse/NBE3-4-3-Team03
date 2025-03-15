@@ -21,7 +21,7 @@ import org.springframework.web.multipart.MultipartFile
 import java.util.*
 
 @ActiveProfiles("test")
-internal class ItemServiceTest {
+class ItemServiceTest {
     @InjectMocks
     private lateinit var itemService: ItemService
 

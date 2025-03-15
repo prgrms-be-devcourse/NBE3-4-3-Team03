@@ -8,7 +8,6 @@ import org.springframework.web.bind.annotation.ExceptionHandler
 
 @ControllerAdvice
 class OAuth2ExceptionHandler {
-
     @ExceptionHandler(Oauth2InfoResponseException::class)
     fun handleOAuth2InfoResponse(ex: Oauth2InfoResponseException): ResponseEntity<Any> {
         return ResponseEntity.status(HttpStatus.FOUND)
@@ -43,6 +42,4 @@ class OAuth2ExceptionHandler {
             .header(LOCATION, "http://localhost:3000/social/error/${ex.message}")
             .build()
     }
-
-
 }

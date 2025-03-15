@@ -5,7 +5,6 @@ import com.programmers.pcquotation.domain.customer.repository.CustomerRepository
 import com.programmers.pcquotation.domain.member.entity.Member
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
-import java.util.*
 
 @Service
 class CustomerService(

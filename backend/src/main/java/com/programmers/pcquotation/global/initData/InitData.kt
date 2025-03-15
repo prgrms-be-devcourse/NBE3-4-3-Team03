@@ -2,7 +2,6 @@ package com.programmers.pcquotation.global.initData;
 
 import java.util.UUID;
 
-
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;

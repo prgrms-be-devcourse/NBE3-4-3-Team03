@@ -7,7 +7,7 @@ import com.programmers.pcquotation.domain.estimate.repository.EstimateRepository
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
-import com.programmers.pcquotation.domain.chat.repository.ChatRepository as ChatRepository
+import com.programmers.pcquotation.domain.chat.repository.ChatRepository
 
 @Service
 class ChatService(

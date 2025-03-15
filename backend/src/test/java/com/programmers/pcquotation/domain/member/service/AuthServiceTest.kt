@@ -7,7 +7,6 @@ import com.programmers.pcquotation.domain.customer.exception.IncorrectLoginAttem
 import com.programmers.pcquotation.domain.customer.exception.PasswordMismatchException
 import com.programmers.pcquotation.domain.customer.repository.CustomerRepository
 import com.programmers.pcquotation.domain.member.dto.LoginRequest
-import com.programmers.pcquotation.domain.member.service.AuthService
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
 import org.mockito.Mockito
@@ -17,7 +16,6 @@ import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.bean.override.mockito.MockitoBean
-import java.util.*
 
 @ActiveProfiles("test")
 @SpringBootTest

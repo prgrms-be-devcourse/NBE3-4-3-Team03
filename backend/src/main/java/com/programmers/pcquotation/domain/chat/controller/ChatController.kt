@@ -11,11 +11,9 @@ import org.springframework.stereotype.Controller
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.ResponseBody
-import org.springframework.web.bind.annotation.RestController
 
 @Controller
 class ChatController(private val chatService: ChatService) {
-
     @MessageMapping("/chat.{chatRoomId}")
     @SendTo("/sub/chat.{chatRoomId}")
     fun sendMessage(request: ChatMessageReq, @DestinationVariable chatRoomId: Long): ChatMessageRes {
@@ -28,5 +26,4 @@ class ChatController(private val chatService: ChatService) {
     fun getChatMemory(@PathVariable("chatRoomId") chatRoomId: Long): List<ChatMemoryRes> {
         return chatService.getChatMemory(chatRoomId)
     }
-
 }

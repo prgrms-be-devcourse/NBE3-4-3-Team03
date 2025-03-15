@@ -1,13 +1,7 @@
 package com.programmers.pcquotation.domain.seller.dto
 
 import com.programmers.pcquotation.domain.seller.entity.Seller
-import lombok.AllArgsConstructor
-import lombok.Builder
-import lombok.Getter
 
-@Getter
-@AllArgsConstructor
-@Builder
 class SellerSignupResponse {
     var id: Long?
     var username: String?

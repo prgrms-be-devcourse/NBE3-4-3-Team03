@@ -115,7 +115,7 @@ object Util {
             .andExpect(MockMvcResultMatchers.status().isCreated())
             .andExpect(MockMvcResultMatchers.jsonPath("$.message").value("회원가입 성공"))
         val customer = customerService.findCustomerByUsername(username)
-            ?:throw NoSuchElementException()
+            ?: throw NoSuchElementException()
         Assertions.assertNotNull(customer)
         return customer
     }

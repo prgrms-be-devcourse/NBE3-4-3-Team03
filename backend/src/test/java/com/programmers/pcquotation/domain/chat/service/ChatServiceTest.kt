@@ -4,7 +4,6 @@ import com.programmers.pcquotation.domain.chat.entity.Chat
 import com.programmers.pcquotation.domain.chat.entity.ChatRoom
 import com.programmers.pcquotation.domain.chat.repository.ChatRepository
 import com.programmers.pcquotation.domain.chat.repository.ChatRoomRepository
-import com.programmers.pcquotation.domain.chat.service.ChatService
 import com.programmers.pcquotation.domain.estimate.entity.Estimate
 import com.programmers.pcquotation.domain.estimate.repository.EstimateRepository
 import org.junit.jupiter.api.Assertions
@@ -96,50 +95,50 @@ class ChatServiceTest {
 
     @Test
     fun getChat_success() {
-            // Given
-            val chatRoomId = 1L
+        // Given
+        val chatRoomId = 1L
 
-            // 모킹
-            val estimate = Mockito.mock(Estimate::class.java)
-            val chatRoom = Mockito.mock(ChatRoom::class.java)
-            val chat1 = Chat(chatRoom, "user1", "안녕하세요")
-            val chat2 = Chat(chatRoom, "user2", "반갑습니다")
+        // 모킹
+        val estimate = Mockito.mock(Estimate::class.java)
+        val chatRoom = Mockito.mock(ChatRoom::class.java)
+        val chat1 = Chat(chatRoom, "user1", "안녕하세요")
+        val chat2 = Chat(chatRoom, "user2", "반갑습니다")
 
-            Mockito.`when`(estimateRepository.getEstimateById(chatRoomId.toInt())).thenReturn(estimate)
-            Mockito.`when`(chatRoomRepository.findFirstByEstimate(estimate))
-                .thenReturn(chatRoom)
-            Mockito.`when`<List<Chat>>(chatRepository.findByChatRoom(chatRoom))
-                .thenReturn(Arrays.asList(chat1, chat2))
+        Mockito.`when`(estimateRepository.getEstimateById(chatRoomId.toInt())).thenReturn(estimate)
+        Mockito.`when`(chatRoomRepository.findFirstByEstimate(estimate))
+            .thenReturn(chatRoom)
+        Mockito.`when`<List<Chat>>(chatRepository.findByChatRoom(chatRoom))
+            .thenReturn(Arrays.asList(chat1, chat2))
 
-            // When
-            val result = chatService.getChatMemory(chatRoomId)
+        // When
+        val result = chatService.getChatMemory(chatRoomId)
 
-            // Then
-            Assertions.assertEquals(2, result.size)
-            Assertions.assertEquals("user1", result[0].sender)
-            Assertions.assertEquals("안녕하세요", result[0].content)
-            Assertions.assertEquals("user2", result[1].sender)
-            Assertions.assertEquals("반갑습니다", result[1].content)
-        }
+        // Then
+        Assertions.assertEquals(2, result.size)
+        Assertions.assertEquals("user1", result[0].sender)
+        Assertions.assertEquals("안녕하세요", result[0].content)
+        Assertions.assertEquals("user2", result[1].sender)
+        Assertions.assertEquals("반갑습니다", result[1].content)
+    }
 
     @Test
     fun chat_chatRoomNotFound() {
-            // Given
-            val chatRoomId = 1L
+        // Given
+        val chatRoomId = 1L
 
-            // 모킹
-            val estimate = Mockito.mock(Estimate::class.java)
+        // 모킹
+        val estimate = Mockito.mock(Estimate::class.java)
 
-            Mockito.`when`(estimateRepository.getEstimateById(chatRoomId.toInt())).thenReturn(estimate)
-            Mockito.`when`(chatRoomRepository.findFirstByEstimate(estimate))
-                .thenReturn(null)
+        Mockito.`when`(estimateRepository.getEstimateById(chatRoomId.toInt())).thenReturn(estimate)
+        Mockito.`when`(chatRoomRepository.findFirstByEstimate(estimate))
+            .thenReturn(null)
 
-            // When
-            val result = chatService.getChatMemory(chatRoomId)
+        // When
+        val result = chatService.getChatMemory(chatRoomId)
 
-            // Then
-            Assertions.assertTrue(result.isEmpty())
-        }
+        // Then
+        Assertions.assertTrue(result.isEmpty())
+    }
 
     @Test
     fun deleteChat_success() {

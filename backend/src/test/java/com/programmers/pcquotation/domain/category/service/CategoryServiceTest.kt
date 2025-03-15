@@ -50,42 +50,42 @@ class CategoryServiceTest {
     @DisplayName("카테고리 다건조회 테스트")
     @Test
     fun getCategoryListTest() {
-            val category1 =
-                Category(
-                    1L,
-                    "카테고리",
-                    ArrayList()
-                )
-            val category2 =
-                Category(
-                    2L,
-                    "카테고리2",
-                    ArrayList()
-                )
-
-            Mockito.`when`(
-                categoryRepository.findAll()
-            ).thenReturn(
-                listOf(
-                    category1,
-                    category2
-                )
+        val category1 =
+            Category(
+                1L,
+                "카테고리",
+                ArrayList()
+            )
+        val category2 =
+            Category(
+                2L,
+                "카테고리2",
+                ArrayList()
             )
 
-            val response = categoryService.getCategoryList()
-
-            val expectedList = listOf(
-                CategoryInfoResponse(1L, "카테고리"),
-                CategoryInfoResponse(2L, "카테고리2")
+        Mockito.`when`(
+            categoryRepository.findAll()
+        ).thenReturn(
+            listOf(
+                category1,
+                category2
             )
+        )
 
-            Assertions.assertThat(response).hasSize(expectedList.size)
-            for (i in response.indices) {
-                Assertions.assertThat(response[i].id).isEqualTo(expectedList[i].id)
-                Assertions.assertThat(response[i].category)
-                    .isEqualTo(expectedList[i].category)
-            }
+        val response = categoryService.getCategoryList()
+
+        val expectedList = listOf(
+            CategoryInfoResponse(1L, "카테고리"),
+            CategoryInfoResponse(2L, "카테고리2")
+        )
+
+        Assertions.assertThat(response).hasSize(expectedList.size)
+        for (i in response.indices) {
+            Assertions.assertThat(response[i].id).isEqualTo(expectedList[i].id)
+            Assertions.assertThat(response[i].category)
+                .isEqualTo(expectedList[i].category)
         }
+    }
 
     @Test
     @DisplayName("카테고리 수정 테스트")

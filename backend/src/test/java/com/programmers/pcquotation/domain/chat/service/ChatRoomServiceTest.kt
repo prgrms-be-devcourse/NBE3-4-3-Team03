@@ -2,7 +2,6 @@ package com.programmers.pcquotation.domain.chat.service
 
 import com.programmers.pcquotation.domain.chat.entity.ChatRoom
 import com.programmers.pcquotation.domain.chat.repository.ChatRoomRepository
-import com.programmers.pcquotation.domain.chat.service.ChatRoomService
 import com.programmers.pcquotation.domain.estimate.entity.Estimate
 import com.programmers.pcquotation.domain.estimate.repository.EstimateRepository
 import org.junit.jupiter.api.Assertions

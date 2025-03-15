@@ -15,8 +15,6 @@ class SellerController(
     private val sellerService: SellerService,
     private val businessConfirmationService: BusinessConfirmationService
 ) {
-
-
     @GetMapping
     @Transactional(readOnly = true)
     fun info(principal: Principal): SellerInfoResponse {

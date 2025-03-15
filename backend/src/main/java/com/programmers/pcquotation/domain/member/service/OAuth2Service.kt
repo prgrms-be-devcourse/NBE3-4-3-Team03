@@ -33,8 +33,6 @@ class OAuth2Service(
     private val authService: AuthService,
     private val customerService: CustomerService,
 ) {
-
-
     fun defaultHeader(): HttpHeaders {
         val headers = HttpHeaders()
         headers.contentType = MediaType.APPLICATION_FORM_URLENCODED

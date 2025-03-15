@@ -8,7 +8,6 @@ import com.programmers.pcquotation.domain.estimate.dto.EstimateSortType
 import com.programmers.pcquotation.domain.estimate.dto.EstimateUpdateReqDto
 import com.programmers.pcquotation.domain.estimate.entity.Estimate
 import com.programmers.pcquotation.domain.estimate.repository.EstimateRepository
-import com.programmers.pcquotation.domain.estimate.service.EstimateService
 import com.programmers.pcquotation.domain.estimaterequest.entity.EstimateRequest
 import com.programmers.pcquotation.domain.estimaterequest.service.EstimateRequestService
 import com.programmers.pcquotation.domain.item.entity.Item
@@ -159,43 +158,43 @@ class EstimateServiceTest {
 
     @Test
     fun estimateByEstimateRequest_Success() {
-            Mockito.`when`(estimateRepository.getAllByEstimateRequestId(1))
-                .thenReturn(listOf(sampleEstimate))
+        Mockito.`when`(estimateRepository.getAllByEstimateRequestId(1))
+            .thenReturn(listOf(sampleEstimate))
 
-            Assertions.assertEquals(
-                1,
-                estimateService.getEstimatesByEstimateRequest(1, EstimateSortType.LATEST).size
-            )
-        }
+        Assertions.assertEquals(
+            1,
+            estimateService.getEstimatesByEstimateRequest(1, EstimateSortType.LATEST).size
+        )
+    }
 
     @Test
     fun getEstimatesBySeller_Success() {
-            Mockito.`when`(
-                sellerService.findById(
-                    1L
-                )
-            ).thenReturn(sampleSeller)
-            Mockito.`when`(
-                estimateRepository.findAllBySeller(
-                    sampleSeller,
-                    Pageable.unpaged()
-                )
-            ).thenReturn(PageImpl(listOf(sampleEstimate)))
-
-            Assertions.assertEquals(
-                1,
-                estimateService.getEstimatesBySeller(1, Pageable.unpaged()).size
+        Mockito.`when`(
+            sellerService.findById(
+                1L
             )
-        }
+        ).thenReturn(sampleSeller)
+        Mockito.`when`(
+            estimateRepository.findAllBySeller(
+                sampleSeller,
+                Pageable.unpaged()
+            )
+        ).thenReturn(PageImpl(listOf(sampleEstimate)))
+
+        Assertions.assertEquals(
+            1,
+            estimateService.getEstimatesBySeller(1, Pageable.unpaged()).size
+        )
+    }
 
     @Test
     fun getEstimatesBySeller_SellerNotFound() {
-            Mockito.`when`(sellerService.findById(1L)).thenThrow(NoSuchElementException::class.java)
+        Mockito.`when`(sellerService.findById(1L)).thenThrow(NoSuchElementException::class.java)
 
-            Assertions.assertThrows(NoSuchElementException::class.java) {
-                estimateService.getEstimatesBySeller(1, Pageable.unpaged())
-            }
+        Assertions.assertThrows(NoSuchElementException::class.java) {
+            estimateService.getEstimatesBySeller(1, Pageable.unpaged())
         }
+    }
 
     @Test
     fun deleteEstimate_Success() {

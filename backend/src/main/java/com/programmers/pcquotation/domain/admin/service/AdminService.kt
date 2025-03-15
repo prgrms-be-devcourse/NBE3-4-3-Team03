@@ -11,7 +11,6 @@ import org.springframework.stereotype.Service
 class AdminService(
     private val adminRepository: AdminRepository
 ) {
-
     fun findAdminByUsername(username: String): Admin? {
         return adminRepository.findByUsername(username)
     }
