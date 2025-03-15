@@ -93,6 +93,3 @@ SELECT 2, 650000, 2
 INSERT INTO estimate_component (item_id, price, estimate_id)
 SELECT 4, 150000, 2
     WHERE NOT EXISTS (SELECT 1 FROM estimate_component WHERE item_id = 4 AND estimate_id = @estimate_id); -- Corsair 32GB DDR5
-
--- 기존 댓글들의 type을 CUSTOMER로 설정
-UPDATE comment SET type = 'CUSTOMER' WHERE type IS NULL;
