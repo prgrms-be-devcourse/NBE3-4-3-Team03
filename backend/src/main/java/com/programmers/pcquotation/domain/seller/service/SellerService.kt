@@ -39,11 +39,9 @@ class SellerService(
             ?: throw NoSuchElementException()
     }
 
-    fun findByApiKey(apiKey: String): Member {
+    fun findByApiKey(apiKey: String): Member? {
         return sellerRepository.findByApiKey(apiKey)
-            ?: throw NoSuchElementException()
     }
-
 
     fun findSellerByUsername(username: String): Seller? {
         return sellerRepository.findByUsername(username)

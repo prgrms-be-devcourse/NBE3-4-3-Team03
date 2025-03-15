@@ -301,7 +301,7 @@ export default function ItemList() {
     };
 
     const crawlItems = () => {
-        fetch(`http://localhost:8080/crawl-items`, {
+        fetch(`http://localhost:8080/api/crawl-items`, {
             method: 'GET',
             credentials: "include",
         });

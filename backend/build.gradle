@@ -36,28 +36,31 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-validation'
     implementation 'org.springframework.boot:spring-boot-starter-web'
     implementation 'org.springframework.boot:spring-boot-starter-cache'
-    compileOnly 'org.projectlombok:lombok'
-    runtimeOnly 'com.mysql:mysql-connector-j'
     developmentOnly 'org.springframework.boot:spring-boot-devtools'
-    annotationProcessor 'org.projectlombok:lombok'
+
+    // Test
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testImplementation 'org.springframework.security:spring-security-test'
     testImplementation 'org.mockito.kotlin:mockito-kotlin:3.2.0'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+
+    // DB
+    runtimeOnly 'com.mysql:mysql-connector-j'
+
+    // JSON
     implementation 'org.json:json:20231013'
 
     // JWT
-
     implementation "io.jsonwebtoken:jjwt-api:0.12.6"
     runtimeOnly "io.jsonwebtoken:jjwt-impl:0.12.6"
     runtimeOnly "io.jsonwebtoken:jjwt-jackson:0.12.6"
 
-    //코틀린 관련
+    // Kotlin
     implementation "org.jetbrains.kotlin:kotlin-stdlib"
     implementation "org.jetbrains.kotlin:kotlin-reflect"
     implementation "com.fasterxml.jackson.module:jackson-module-kotlin"
 
-    //소셜로그인 관련
+    // 소셜 로그인
     implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
 
     // WebSocket
@@ -69,9 +72,8 @@ dependencies {
     implementation 'org.jsoup:jsoup:1.15.3'
     implementation 'com.opencsv:opencsv:5.7.1'
 
-
-    //oauth2-client
-    implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
+    // Spring Doc
+    implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.1'
 }
 
 tasks.named('test') {

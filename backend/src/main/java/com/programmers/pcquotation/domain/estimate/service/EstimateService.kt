@@ -41,12 +41,12 @@ class EstimateService(
     fun getEstimatesByEstimateRequest(
         estimateRequestId: Int,
         sortType: EstimateSortType = EstimateSortType.LATEST
-    ): List<EstimateResponse> {
+    ): List<EstimateDto> {
         val estimates = estimateRepository.getAllByEstimateRequestId(estimateRequestId)
 
-        val estimateResponses = estimates.map { estimate ->
+        val estimateRespons = estimates.map { estimate ->
             with(estimate) {
-                EstimateResponse(
+                EstimateDto(
                     id = estimate.id,
                     purpose = estimateRequest.purpose,
                     budget = estimateRequest.budget,
@@ -60,18 +60,18 @@ class EstimateService(
         }
 
         return when (sortType) {
-            EstimateSortType.LATEST -> estimateResponses.sortedByDescending { it.createdDate }
-            EstimateSortType.PRICE_ASC -> estimateResponses.sortedBy { it.totalPrice }
-            EstimateSortType.PRICE_DESC -> estimateResponses.sortedByDescending { it.totalPrice }
+            EstimateSortType.LATEST -> estimateRespons.sortedByDescending { it.createdDate }
+            EstimateSortType.PRICE_ASC -> estimateRespons.sortedBy { it.totalPrice }
+            EstimateSortType.PRICE_DESC -> estimateRespons.sortedByDescending { it.totalPrice }
         }
     }
 
-    fun getEstimatesBySeller(id: Int, pageable: Pageable): Page<EstimateResponse> {
+    fun getEstimatesBySeller(id: Int, pageable: Pageable): Page<EstimateDto> {
         val seller = sellerService.findById(id.toLong()) as Seller
 
         return estimateRepository.findAllBySeller(seller, pageable).map { estimate ->
             with(estimate) {
-                EstimateResponse(
+                EstimateDto(
                     id = estimate.id,
                     purpose = estimateRequest.purpose,
                     budget = estimateRequest.budget,
