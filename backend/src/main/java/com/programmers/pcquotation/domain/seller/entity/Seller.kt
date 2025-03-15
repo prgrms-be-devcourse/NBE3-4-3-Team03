@@ -1,6 +1,6 @@
 package com.programmers.pcquotation.domain.seller.entity
 
-import com.programmers.pcquotation.domain.member.entitiy.Member
+import com.programmers.pcquotation.domain.member.entity.Member
 import com.programmers.pcquotation.domain.seller.dto.SellerSignupRequest
 import jakarta.persistence.*
 import org.springframework.security.core.GrantedAuthority
@@ -29,7 +29,8 @@ class Seller(
 
     @Column(length = 100)
     var verificationAnswer: String? = null,
-    var isVerified:Boolean = false,
+
+    var isVerified: Boolean = false,
 
     @Column(unique = true)
     override var apiKey: String? = null
@@ -40,8 +41,8 @@ class Seller(
         .map { role: String? -> SimpleGrantedAuthority(role) }
         .toList()
 
-    constructor(sellerSignupRequest: SellerSignupRequest,apiKey: String,encodingPassword: String) : this() {
-        this.username =  sellerSignupRequest.username
+    constructor(sellerSignupRequest: SellerSignupRequest, apiKey: String, encodingPassword: String) : this() {
+        this.username = sellerSignupRequest.username
         this.password = encodingPassword
         this.companyName = sellerSignupRequest.companyName
         this.email = sellerSignupRequest.email

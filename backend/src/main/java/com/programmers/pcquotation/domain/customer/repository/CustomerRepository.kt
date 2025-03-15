@@ -7,11 +7,9 @@ import java.util.*
 
 @Repository
 interface CustomerRepository : JpaRepository<Customer, Long> {
-    fun getCustomerByUsername(username: String): Optional<Customer>
+    fun getCustomerByUsername(username: String): Customer?
 
-    fun getCustomerByEmail(email: String): Optional<Customer>
+    fun getCustomerByEmail(email: String): Customer?
 
-    fun findByApiKey(apiKey: String): Optional<Customer>
-	fun existsByUsername(username: String): Boolean
-	fun findByUsername(username: String): MutableList<Customer>
+    fun findByApiKey(apiKey: String): Customer?
 }

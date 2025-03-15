@@ -6,7 +6,8 @@ import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.stereotype.Repository
 
 
-interface ChatRepository : JpaRepository<Chat, Long>{
-    fun findByChatRoom(chatRoom: ChatRoom): MutableList<Chat>
+interface ChatRepository : JpaRepository<Chat, Long> {
+    fun findByChatRoom(chatRoom: ChatRoom): List<Chat>
+
     fun deleteByChatRoom(chatRoom: ChatRoom)
 }

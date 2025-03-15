@@ -94,13 +94,12 @@ class EstimateServiceTest {
         5000,
         ArrayList(),
         LocalDateTime.of(2025, 3, 4, 12, 0),
-        listOf()
     )
 
     @Test
     fun createEstimate_success() {
-        Mockito.`when`(estimateRequestService.getEstimateRequestById(1)).thenReturn(Optional.of(estimateRequest))
-        Mockito.`when`(sellerService.findByUserName("seller1")).thenReturn(Optional.of(sampleSeller))
+        Mockito.`when`(estimateRequestService.getEstimateRequestById(1)).thenReturn(estimateRequest)
+        Mockito.`when`(sellerService.findByUserName("seller1")).thenReturn(sampleSeller)
         Mockito.`when`(itemService.findById(1L)).thenReturn(sampleItem1)
         Mockito.`when`(itemService.findById(2L)).thenReturn(sampleItem2)
         Mockito.`when`(estimateRepository.save(ArgumentMatchers.any(Estimate::class.java))).thenReturn(sampleEstimate)
@@ -126,7 +125,7 @@ class EstimateServiceTest {
 
     @Test
     fun createEstimate_estimateRequestNotFound() {
-        Mockito.`when`(estimateRequestService.getEstimateRequestById(1)).thenReturn(Optional.empty())
+        Mockito.`when`(estimateRequestService.getEstimateRequestById(1)).thenReturn(null)
 
         val request = EstimateCreateRequest(
             1,
@@ -143,7 +142,7 @@ class EstimateServiceTest {
 
     @Test
     fun createEstimate_sellerNotFound() {
-        Mockito.`when`(sellerService.findById(1L)).thenReturn(Optional.empty())
+        Mockito.`when`(sellerService.findById(1L)).thenReturn(null)
 
         val request = EstimateCreateRequest(
             1,
@@ -175,7 +174,7 @@ class EstimateServiceTest {
                 sellerService.findById(
                     1L
                 )
-            ).thenReturn(Optional.of(sampleSeller))
+            ).thenReturn(sampleSeller)
             Mockito.`when`(
                 estimateRepository.findAllBySeller(
                     sampleSeller,
@@ -191,7 +190,7 @@ class EstimateServiceTest {
 
     @Test
     fun getEstimatesBySeller_SellerNotFound() {
-            Mockito.`when`(sellerService.findById(1L)).thenReturn(Optional.empty())
+            Mockito.`when`(sellerService.findById(1L)).thenThrow(NoSuchElementException::class.java)
 
             Assertions.assertThrows(NoSuchElementException::class.java) {
                 estimateService.getEstimatesBySeller(1, Pageable.unpaged())

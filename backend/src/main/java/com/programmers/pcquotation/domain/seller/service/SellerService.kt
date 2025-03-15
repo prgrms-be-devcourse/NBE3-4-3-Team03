@@ -1,20 +1,17 @@
 package com.programmers.pcquotation.domain.seller.service
 
-import com.programmers.pcquotation.domain.member.entitiy.Member
+import com.programmers.pcquotation.domain.member.entity.Member
 import com.programmers.pcquotation.domain.seller.dto.SellerUpdateDto
 import com.programmers.pcquotation.domain.seller.entity.Seller
 import com.programmers.pcquotation.domain.seller.repository.SellerRepository
+import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
-import java.util.*
-
 
 @Service
 class SellerService(
     private val sellerRepository: SellerRepository,
 ) {
-
-
-    fun findByUserName(name: String): Optional<Seller> {
+    fun findByUserName(name: String): Seller? {
         return sellerRepository.findByUsername(name)
     }
 
@@ -37,20 +34,22 @@ class SellerService(
         return seller
     }
 
-    fun findById(id: Long): Optional<Member> {
-        return sellerRepository.findById(id).map { seller: Seller? -> seller }
+    fun findById(id: Long): Member {
+        return sellerRepository.findByIdOrNull(id)
+            ?: throw NoSuchElementException()
     }
 
-    fun findByApiKey(apiKey: String): Optional<Member> {
-        return sellerRepository.findByApiKey(apiKey).map { seller: Seller? -> seller }
+    fun findByApiKey(apiKey: String): Member {
+        return sellerRepository.findByApiKey(apiKey)
+            ?: throw NoSuchElementException()
     }
 
 
-    fun findSellerByUsername(username: String): Optional<Seller> {
+    fun findSellerByUsername(username: String): Seller? {
         return sellerRepository.findByUsername(username)
     }
 
-    fun findSellerByEmail(email: String): Optional<Seller> {
+    fun findSellerByEmail(email: String): Seller? {
         return sellerRepository.findByEmail(email)
     }
 }

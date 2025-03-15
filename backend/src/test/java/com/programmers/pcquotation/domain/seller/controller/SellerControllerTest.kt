@@ -19,6 +19,7 @@ import org.springframework.test.web.servlet.result.MockMvcResultHandlers
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers
 import org.springframework.transaction.annotation.Transactional
 import java.nio.charset.StandardCharsets
+import java.util.NoSuchElementException
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -64,8 +65,10 @@ internal class SellerControllerTest {
             )
             .andDo(MockMvcResultHandlers.print())
         val sellers = sellerService.findByUserName("test1234")
-        Assertions.assertNotNull(sellers.get())
-        return sellers.get()
+            ?: throw NoSuchElementException()
+
+        Assertions.assertNotNull(sellers)
+        return sellers
     }
 
     @Throws(Exception::class)

@@ -52,7 +52,7 @@ class OAuth2Service(
             when (authInfo.userType) {
                 CUSTOMER -> {
                     val customer = customerService.findCustomerByEmail(userInfo.response.email)
-                    if (customer.isEmpty)
+                    if (customer == null)
                         authService.processCustomerSignup(userInfo.toCustomerSignupRequest())
                     authService.processLoginCustomer(userInfo.toLoginRequest())
                 }
@@ -167,7 +167,7 @@ class OAuth2Service(
             when (authInfo.userType) {
                 CUSTOMER -> {
                     val customer = customerService.findCustomerByEmail(userInfo.response.email)
-                    if (customer.isEmpty)
+                    if (customer != null)
                         authService.processCustomerSignup(userInfo.toCustomerSignupRequest())
                     authService.processLoginCustomer(userInfo.toLoginRequest())
                 }

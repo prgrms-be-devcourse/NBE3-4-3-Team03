@@ -11,7 +11,7 @@ import com.programmers.pcquotation.domain.customer.service.CustomerService
 import com.programmers.pcquotation.domain.member.dto.AuthRequest
 import com.programmers.pcquotation.domain.member.dto.LoginRequest
 import com.programmers.pcquotation.domain.member.dto.LoginResponse
-import com.programmers.pcquotation.domain.member.entitiy.Member
+import com.programmers.pcquotation.domain.member.entity.Member
 import com.programmers.pcquotation.domain.seller.dto.SellerSignupRequest
 import com.programmers.pcquotation.domain.seller.dto.SellerSignupResponse
 import com.programmers.pcquotation.domain.seller.entity.Seller
@@ -45,11 +45,11 @@ class AuthService(
             throw PasswordMismatchException()
         }
 
-        if (customerService.findCustomerByUsername(customerSignupRequest.username).isPresent) {
+        if (customerService.findCustomerByUsername(customerSignupRequest.username) != null) {
             throw CustomerAlreadyExistException()
         }
 
-        if (customerService.findCustomerByEmail(customerSignupRequest.email).isPresent) {
+        if (customerService.findCustomerByEmail(customerSignupRequest.email) != null) {
             throw CustomerAlreadyExistException()
         }
 
@@ -68,11 +68,11 @@ class AuthService(
             throw PasswordMismatchException()
         }
 
-        if (sellerService.findSellerByUsername(sellerSignupRequest.username).isPresent) {
+        if (sellerService.findSellerByUsername(sellerSignupRequest.username) != null) {
             throw CustomerAlreadyExistException()
         }
 
-        if (sellerService.findSellerByEmail(sellerSignupRequest.email).isPresent) {
+        if (sellerService.findSellerByEmail(sellerSignupRequest.email) != null) {
             throw CustomerAlreadyExistException()
         }
 
@@ -89,7 +89,7 @@ class AuthService(
     fun processLoginCustomer(customerLoginRequest: LoginRequest): LoginResponse? {
         val username = customerLoginRequest.username
         val customer = customerService.findCustomerByUsername(username)
-            .orElseThrow { IncorrectLoginAttemptException() }
+            ?: throw IncorrectLoginAttemptException()
 
         if (!passwordEncoder.matches(customerLoginRequest.password, customer.password)) {
             throw IncorrectLoginAttemptException()
@@ -112,7 +112,7 @@ class AuthService(
     fun processLoginSeller(loginRequest: LoginRequest): LoginResponse {
         val username = loginRequest.username
         val seller = sellerService.findByUserName(username)
-            .orElseThrow { IncorrectLoginAttemptException() }
+            ?: throw IncorrectLoginAttemptException()
 
         if (!passwordEncoder.matches(loginRequest.password, seller.password)) {
             throw IncorrectLoginAttemptException()
@@ -135,15 +135,15 @@ class AuthService(
     fun processLoginAdmin(loginRequest: LoginRequest): LoginResponse {
         val username = loginRequest.username
         val admin = adminService.findAdminByUsername(username)
-            .orElseThrow { IncorrectLoginAttemptException() }
+            ?: throw NoSuchElementException()
+
         if (!passwordEncoder.matches(loginRequest.password, admin.password)) {
             throw IncorrectLoginAttemptException()
         }
-        val accessToken = this.getAccessToken(admin)
+        val accessToken = this.getAccessToken(admin as Member)
         rq.setCookie("accessToken", accessToken)
         rq.setCookie("apiKey", admin.apiKey ?: throw Exception("ApiKey가 존재하지 않습니다."))
         rq.setCookie("userType", ADMIN.value)
-
 
         return admin.apiKey?.let {
             LoginResponse(
@@ -163,8 +163,8 @@ class AuthService(
             return AuthRequest(userType)
         }
 
-    fun getMemberFromAccessToken(accessToken: String, userType: UserType): Optional<Member> {
-        val payload = this.payload(accessToken) ?: return Optional.empty()
+    fun getMemberFromAccessToken(accessToken: String, userType: UserType): Member? {
+        val payload = this.payload(accessToken) ?: return null
 
         val id = payload["id"] as Long
         return when (userType) {
@@ -180,7 +180,7 @@ class AuthService(
                 adminService.findById(id)
             }
 
-            NOTHING -> Optional.empty()
+            NOTHING -> null
         }
     }
 
@@ -194,7 +194,7 @@ class AuthService(
         )
     }
 
-    fun findByApiKey(apiKey: String, userType: UserType): Optional<Member> {
+    fun findByApiKey(apiKey: String, userType: UserType): Member? {
         return when (userType) {
             CUSTOMER -> {
                 customerService.findByApiKey(apiKey)
@@ -208,7 +208,7 @@ class AuthService(
                 adminService.findByApiKey(apiKey)
             }
 
-            NOTHING -> Optional.empty()
+            NOTHING -> null
         }
 
     }

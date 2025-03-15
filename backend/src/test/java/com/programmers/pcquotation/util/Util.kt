@@ -13,6 +13,7 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers
 import java.nio.charset.StandardCharsets
+import java.util.NoSuchElementException
 
 @ActiveProfiles("test")
 object Util {
@@ -45,8 +46,9 @@ object Util {
             .andExpect(MockMvcResultMatchers.jsonPath("$.message").value("회원가입 성공"))
             .andDo(MockMvcResultHandlers.print())
         val sellers = sellerService.findByUserName(username)
-        Assertions.assertNotNull(sellers.get())
-        return sellers.get()
+            ?: throw NoSuchElementException()
+        Assertions.assertNotNull(sellers)
+        return sellers
     }
 
     @Throws(Exception::class)
@@ -83,7 +85,7 @@ object Util {
 
     @Throws(Exception::class)
     fun registerCustomer(
-        username: String?, password: String?, mvc: MockMvc,
+        username: String, password: String, mvc: MockMvc,
         customerService: CustomerService
     ): Customer {
         val resultActions = mvc
@@ -113,12 +115,13 @@ object Util {
             .andExpect(MockMvcResultMatchers.status().isCreated())
             .andExpect(MockMvcResultMatchers.jsonPath("$.message").value("회원가입 성공"))
         val customer = customerService.findCustomerByUsername(username)
-        Assertions.assertNotNull(customer.get())
-        return customer.get()
+            ?:throw NoSuchElementException()
+        Assertions.assertNotNull(customer)
+        return customer
     }
 
     @Throws(Exception::class)
-    fun loginCustomer(username: String?, password: String?, mvc: MockMvc, customerService: CustomerService): String {
+    fun loginCustomer(username: String, password: String, mvc: MockMvc, customerService: CustomerService): String {
         registerCustomer(username, password, mvc, customerService)
         val resultActions = mvc
             .perform(

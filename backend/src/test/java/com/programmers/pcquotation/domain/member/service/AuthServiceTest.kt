@@ -62,7 +62,7 @@ class AuthServiceTest {
 
         val customer = customerSignupRequest.toCustomer()
         Mockito.`when`(customerRepository.getCustomerByUsername(customerSignupRequest.username))
-            .thenReturn(Optional.of(customer))
+            .thenReturn(customer)
 
         Assertions.assertThrows(CustomerAlreadyExistException::class.java) {
             authService.processCustomerSignup(customerSignupRequest)
@@ -83,7 +83,7 @@ class AuthServiceTest {
 
         val customer = customerSignupRequest.toCustomer()
         Mockito.`when`(customerRepository.getCustomerByEmail(customerSignupRequest.email))
-            .thenReturn(Optional.of(customer))
+            .thenReturn(customer)
 
         Assertions.assertThrows(CustomerAlreadyExistException::class.java) {
             authService.processCustomerSignup(customerSignupRequest)
@@ -98,7 +98,7 @@ class AuthServiceTest {
             "1234"
         )
 
-        Mockito.`when`(customerRepository.getCustomerByUsername("user1")).thenReturn(Optional.empty())
+        Mockito.`when`(customerRepository.getCustomerByUsername("user1")).thenReturn(null)
 
         Assertions.assertThrows(IncorrectLoginAttemptException::class.java) {
             authService.processLoginCustomer(customerLoginRequest)
@@ -120,7 +120,7 @@ class AuthServiceTest {
             "1111"
         )
 
-        Mockito.`when`(customerRepository.getCustomerByUsername("user1")).thenReturn(Optional.of(customer))
+        Mockito.`when`(customerRepository.getCustomerByUsername("user1")).thenReturn(customer)
 
         Assertions.assertThrows(IncorrectLoginAttemptException::class.java) {
             authService.processLoginCustomer(customerLoginRequest)

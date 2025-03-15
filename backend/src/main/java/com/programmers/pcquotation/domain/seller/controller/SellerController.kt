@@ -22,7 +22,8 @@ class SellerController(
     fun info(principal: Principal): SellerInfoResponse {
         val seller = sellerService
             .findByUserName(principal.name)
-            .orElseThrow { NullPointerException("존재하지 않는 사용자입니다.") }
+            ?: throw NullPointerException("존재하지 않는 사용자입니다.")
+
         return SellerInfoResponse(
             seller.id,
             seller.username,
@@ -35,7 +36,7 @@ class SellerController(
     fun modify(@RequestBody customerUpdateDto: @Valid SellerUpdateDto, principal: Principal): String {
         val seller = sellerService
             .findByUserName(principal.name)
-            .orElseThrow { NullPointerException("존재하지 않는 사용자입니다.") }
+            ?: throw NullPointerException("존재하지 않는 사용자입니다.")
 
         sellerService.modify(seller, customerUpdateDto)
         return "정보수정이 성공했습니다."

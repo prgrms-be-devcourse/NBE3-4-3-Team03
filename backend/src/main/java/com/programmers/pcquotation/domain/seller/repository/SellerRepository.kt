@@ -7,10 +7,9 @@ import java.util.*
 
 @Repository
 interface SellerRepository : JpaRepository<Seller, Long> {
-    fun findByUsername(username: String): Optional<Seller>
+    fun findByUsername(username: String): Seller?
 
-    fun findByApiKey(apiKey: String): Optional<Seller>
+    fun findByApiKey(apiKey: String): Seller?
 
-    fun findByEmail(email: String): Optional<Seller>
-    fun existsByUsername(username: String): Boolean
+    fun findByEmail(email: String): Seller?
 }

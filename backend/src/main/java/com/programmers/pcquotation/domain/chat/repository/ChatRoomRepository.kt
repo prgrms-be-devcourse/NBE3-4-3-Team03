@@ -7,6 +7,6 @@ import java.util.*
 
 interface ChatRoomRepository : JpaRepository<ChatRoom, Long> {
     fun deleteByEstimate(estimate: Estimate)
-    fun findFirstByEstimate(estimate: Estimate?): Optional<ChatRoom>
 
+    fun findFirstByEstimate(estimate: Estimate?): ChatRoom?
 }

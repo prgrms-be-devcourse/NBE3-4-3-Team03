@@ -1,4 +1,4 @@
-package com.programmers.pcquotation.domain.member.entitiy
+package com.programmers.pcquotation.domain.member.entity
 
 import org.springframework.security.core.GrantedAuthority
 

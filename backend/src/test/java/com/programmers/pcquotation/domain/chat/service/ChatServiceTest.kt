@@ -45,7 +45,7 @@ class ChatServiceTest {
         val chat = Mockito.mock(Chat::class.java)
 
         Mockito.`when`(estimateRepository.getEstimateById(chatRoomId.toInt())).thenReturn(estimate)
-        Mockito.`when`(chatRoomRepository.findFirstByEstimate(estimate)).thenReturn(Optional.of(chatRoom))
+        Mockito.`when`(chatRoomRepository.findFirstByEstimate(estimate)).thenReturn(chatRoom)
         Mockito.`when`(chatRepository.save(ArgumentMatchers.any(Chat::class.java))).thenReturn(chat)
 
         // When
@@ -66,7 +66,7 @@ class ChatServiceTest {
         val estimate = Mockito.mock(Estimate::class.java)
 
         Mockito.`when`(estimateRepository.getEstimateById(chatRoomId.toInt())).thenReturn(estimate)
-        Mockito.`when`(chatRoomRepository.findFirstByEstimate(estimate)).thenReturn(Optional.empty())
+        Mockito.`when`(chatRoomRepository.findFirstByEstimate(estimate)).thenReturn(null)
 
         // When & Then
         Assertions.assertThrows(
@@ -107,7 +107,7 @@ class ChatServiceTest {
 
             Mockito.`when`(estimateRepository.getEstimateById(chatRoomId.toInt())).thenReturn(estimate)
             Mockito.`when`(chatRoomRepository.findFirstByEstimate(estimate))
-                .thenReturn(Optional.of(chatRoom))
+                .thenReturn(chatRoom)
             Mockito.`when`<List<Chat>>(chatRepository.findByChatRoom(chatRoom))
                 .thenReturn(Arrays.asList(chat1, chat2))
 
@@ -132,7 +132,7 @@ class ChatServiceTest {
 
             Mockito.`when`(estimateRepository.getEstimateById(chatRoomId.toInt())).thenReturn(estimate)
             Mockito.`when`(chatRoomRepository.findFirstByEstimate(estimate))
-                .thenReturn(Optional.empty())
+                .thenReturn(null)
 
             // When
             val result = chatService.getChatMemory(chatRoomId)
@@ -151,7 +151,7 @@ class ChatServiceTest {
         val chatRoom = Mockito.mock(ChatRoom::class.java)
 
         Mockito.`when`(estimateRepository.findById(estimateId)).thenReturn(Optional.of(estimate))
-        Mockito.`when`(chatRoomRepository.findFirstByEstimate(estimate)).thenReturn(Optional.of(chatRoom))
+        Mockito.`when`(chatRoomRepository.findFirstByEstimate(estimate)).thenReturn(chatRoom)
 
         // When
         chatService.deleteChat(estimateId)
@@ -169,7 +169,7 @@ class ChatServiceTest {
         val estimate = Mockito.mock(Estimate::class.java)
 
         Mockito.`when`(estimateRepository.findById(estimateId)).thenReturn(Optional.of(estimate))
-        Mockito.`when`(chatRoomRepository.findFirstByEstimate(estimate)).thenReturn(Optional.empty())
+        Mockito.`when`(chatRoomRepository.findFirstByEstimate(estimate)).thenReturn(null)
 
         // When & Then
         Assertions.assertThrows(NoSuchElementException::class.java) {

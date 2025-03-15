@@ -1,6 +1,6 @@
-package com.programmers.pcquotation.domain.admin.entitiy
+package com.programmers.pcquotation.domain.admin.entity
 
-import com.programmers.pcquotation.domain.member.entitiy.Member
+import com.programmers.pcquotation.domain.member.entity.Member
 import jakarta.persistence.*
 import org.springframework.security.core.GrantedAuthority
 import org.springframework.security.core.authority.SimpleGrantedAuthority
