@@ -22,11 +22,10 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers
 
-
 @SpringBootTest
 @Transactional
 @AutoConfigureMockMvc
-class 견적요청테스트 {
+class EstimateRequestControllerTest {
 	
 	@MockitoBean
 	private lateinit var estimateRequestService: EstimateRequestService
@@ -92,7 +91,7 @@ class 견적요청테스트 {
 		val estimateRequestData = EstimateRequestData("test purpose", 100, "")
 		val requestBody = ObjectMapper().writeValueAsString(estimateRequestData)
 		
-		Mockito.`when`(estimateRequestService.modify(id, estimateRequestData)).thenThrow(NullEntityException())
+		Mockito.`when`(estimateRequestService.modify(id, estimateRequestData)).thenThrow(NullEntityException(""))
 		
 		val resultActions = mvc.perform(
 			MockMvcRequestBuilders.put("/estimate/request/$id")
@@ -130,7 +129,7 @@ class 견적요청테스트 {
 	fun 견적_요청_삭제_실패() {
 		val id = 2
 		
-		Mockito.`when`(estimateRequestService.deleteByEstimateId(id)).thenThrow(NullEntityException())
+		Mockito.`when`(estimateRequestService.deleteByEstimateId(id)).thenThrow(NullEntityException(""))
 		
 		val resultActions = mvc.perform(
 			MockMvcRequestBuilders.delete("/estimate/request/$id")

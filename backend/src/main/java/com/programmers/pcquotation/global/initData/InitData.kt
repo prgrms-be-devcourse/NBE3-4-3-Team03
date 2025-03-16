@@ -2,14 +2,13 @@ package com.programmers.pcquotation.global.initData;
 
 import java.util.UUID;
 
-
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.programmers.pcquotation.domain.admin.entitiy.Admin;
+import com.programmers.pcquotation.domain.admin.entity.Admin;
 import com.programmers.pcquotation.domain.admin.service.AdminService;
 import com.programmers.pcquotation.domain.customer.dto.CustomerSignupRequest;
 import com.programmers.pcquotation.domain.customer.service.CustomerService;
@@ -44,7 +43,7 @@ class InitData(
     }
 
     fun insertAdmin() {
-        if (adminService.findAdminByUsername("admin").isEmpty) {
+        if (adminService.findAdminByUsername("admin") == null) {
             val admin = Admin(
                 username = "admin",
                 password = passwordEncoder.encode("password"),
@@ -55,7 +54,7 @@ class InitData(
     }
 
     private fun insertSeller() {
-        if (sellerService.findSellerByUsername("seller0001").isPresent) return
+        if (sellerService.findSellerByUsername("seller0001") != null) return
         val sellerSignupRequest = SellerSignupRequest(
             username = "seller0001",
             password = "seller",
@@ -70,7 +69,7 @@ class InitData(
     }
 
     private fun insertCustomer() {
-        if (customerService.findCustomerByUsername("customer0001").isPresent) return
+        if (customerService.findCustomerByUsername("customer0001") != null) return
         val customerSignupRequest = CustomerSignupRequest(
             username = "customer0001",
             password = "customer",

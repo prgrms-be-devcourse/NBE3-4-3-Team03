@@ -1,6 +1,5 @@
 package com.programmers.pcquotation.domain.category.service;
 
-
 import org.springframework.stereotype.Service;
 
 import com.programmers.pcquotation.domain.category.dto.CategoryCreateRequest;
@@ -14,6 +13,7 @@ import com.programmers.pcquotation.domain.category.exception.CategoryNotFoundExc
 import com.programmers.pcquotation.domain.category.repository.CategoryRepository;
 
 import jakarta.transaction.Transactional;
+import org.springframework.data.repository.findByIdOrNull
 
 @Service
 class CategoryService(
@@ -21,8 +21,8 @@ class CategoryService(
 ) {
 
     private fun getCategory(id: Long): Category {
-        return categoryRepository.findById(id)
-            .orElseThrow { CategoryNotFoundException(id) }
+        return categoryRepository.findByIdOrNull(id)
+            ?: throw CategoryNotFoundException(id)
     }
 
     @Transactional
@@ -38,11 +38,11 @@ class CategoryService(
     fun addCategory(categoryName: String): Category {
         val category = categoryRepository.findByCategory((categoryName))
 
-        return if (category.isEmpty) {
+        return if (category == null) {
             val newCategory = Category(category = categoryName)
             categoryRepository.save(newCategory)
         } else {
-            category.get()
+            category
         }
     }
 

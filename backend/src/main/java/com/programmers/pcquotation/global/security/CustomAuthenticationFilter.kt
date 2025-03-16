@@ -5,7 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
-import com.programmers.pcquotation.domain.member.entitiy.Member;
+import com.programmers.pcquotation.domain.member.entity.Member;
 import com.programmers.pcquotation.domain.member.service.AuthService;
 
 import com.programmers.pcquotation.global.enums.UserType;
@@ -32,7 +32,7 @@ constructor(
     private fun getAuthTokensFromRequest(): AuthTokens? {
         val authorization = rq.getHeader("Authorization")
 
-        authorization?.takeIf { it.startsWith("Bearer ") }?.let {
+        authorization.takeIf { it.startsWith("Bearer ") }?.let {
             val tokenBits = it.removePrefix("Bearer ").split(" ", limit = 3)
             if (tokenBits.size == 3) {
                 return AuthTokens(tokenBits[0], tokenBits[1], UserType.fromString(tokenBits[2]))
@@ -58,7 +58,7 @@ constructor(
     }
 
     private fun refreshAccessTokenByApiKey(apiKey: String, userType: UserType): Member? {
-        return authService.findByApiKey(apiKey, userType).orElse(null)?.also {
+        return authService.findByApiKey(apiKey, userType)?.also {
             refreshAccessToken(it, userType)
         }
     }
@@ -77,7 +77,6 @@ constructor(
         val (apiKey, accessToken, userType) = authTokens
 
         var member: Member? = authService.getMemberFromAccessToken(accessToken ?: "", userType ?: UserType.NOTHING)
-            .orElse(null)
 
         if (member == null && apiKey != null && userType != null) {
             member = refreshAccessTokenByApiKey(apiKey, userType)

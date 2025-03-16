@@ -5,7 +5,6 @@ import jakarta.persistence.*
 
 import jakarta.validation.constraints.NotEmpty
 
-
 @Entity
 class Category(
     @Id
@@ -18,7 +17,6 @@ class Category(
     @OneToMany(mappedBy = "category", cascade = [CascadeType.ALL], orphanRemoval = true)
     val items: MutableList<Item> = mutableListOf()
 ) {
-
     fun updateCategory(category: String) {
         this.category = category
     }
